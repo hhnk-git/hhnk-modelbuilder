@@ -3,6 +3,7 @@ version: '2'
 services:
 
   db:
+    build: .
     image: postgres
     restart: always
     environment:
