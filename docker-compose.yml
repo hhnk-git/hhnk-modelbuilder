@@ -1,9 +1,8 @@
 version: '2'
 
 services:
-  
+
   adminer:
-    build: .
     image: adminer
     restart: always
     ports:
@@ -14,3 +13,6 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
+
+  hhnk:
+    build: .
