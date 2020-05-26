@@ -16,3 +16,5 @@ services:
 
   hhnk:
     build: .
+    depends_on:
+      - db
