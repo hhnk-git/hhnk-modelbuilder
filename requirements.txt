@@ -1,1 +1,2 @@
 psycopg2==2.8.5
+sqlparse==0.3.1
