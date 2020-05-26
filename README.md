@@ -17,8 +17,11 @@ will exit as it isn't a service that stays up, which is fine.
 `docker-compose run hhnk SOMETHING` runs "SOMETHING" on the commandline of the
 hhnk docker. "bash", "python", etc.
 
-Afterwards, `docker-compose stop` to stop everything.
+For instance: `docker-compose run hhnk psql -h db -U postgres`
+Or: `docker-compose run hhnk psql -h db -U postgres -f sql/example.sql`
 
+
+Afterwards, `docker-compose stop` to stop everything.
 
 Periodically, run `docker system prune` to clean up old stuff.
 
