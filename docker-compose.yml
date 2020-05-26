@@ -18,3 +18,9 @@ services:
     build: .
     depends_on:
       - db
+    # Automatically pick up changes in the sql/ directory without needing to
+    # re-build the entire docker. The "deploy" docker doesn't do this, so
+    # there only the sql files present during docker generation are
+    # available.
+    volumes:
+      - ./sql:/code/sql
