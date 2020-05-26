@@ -12,7 +12,7 @@ WORKDIR /code
 COPY requirements.txt ./
 <<<<<<< Updated upstream
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .COPY . .
+COPY . .
 =======
 RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . .
