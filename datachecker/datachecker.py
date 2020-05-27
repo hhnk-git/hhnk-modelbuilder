@@ -6,8 +6,13 @@ Python script reading sql and bash files in order to automatically execute datac
 
 #import libraries
 import os
+import subprocess
+
 import sqlparse
 import psycopg2
+from psycopg2 import sql
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
 import logging
 import configparser
 
@@ -16,7 +21,9 @@ logging.basicConfig(filename='datachecker.log',filemode='w',format='%(asctime)s 
 
 #Read configuration file
 config = configparser.ConfigParser()
-config.read('datachecker_config.ini')
+config.read('/code/datachecker/datachecker_config.ini')
+
+walk_dir = '/code/datachecker/scripts/polder'
 
 #Execute .sql file with one query per transaction (speeds up the queries)
 def execute_sql_file_multiple_transactions(file_path):
@@ -28,6 +35,7 @@ def execute_sql_file_multiple_transactions(file_path):
         raise
         
     #Read file
+    logging.info("Executing SQL script: {}".format(file_path))
     sqlfile = open(file_path)
     sqlfile_content = sqlfile.read()
     sqlfile.close() 
@@ -65,6 +73,52 @@ def execute_bash_file(file_path):
     subprocess.call(['bash',file_path])
     
 
-logging.info("Starting datachecker")
-execute_sql_file_multiple_transactions('./scripts/boezem/01_lizard_db_vullen/01_work_db_opzetten.sql')
-logging.info("Finishing datachecker")
+def create_database(db_name):
+    logging.info("Creating database {}".format(db_name))
+    con = psycopg2.connect(dbname='postgres', host=config['db']['hostname'], user=config['db']['username'], password=config['db']['password'])
+    con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = con.cursor()
+    
+    cur.execute(sql.SQL("DROP DATABASE IF EXISTS {}").format(
+        sql.Identifier(db_name))
+    )
+    
+    cur.execute(sql.SQL("CREATE DATABASE {}").format(
+        sql.Identifier(db_name))
+    )
+    
+
+
+def main():
+    logging.info("Starting datachecker")
+    create_database(config['db']['database'])
+    
+    #execute_sql_file_multiple_transactions('./scripts/polder/01_lizard_db_vullen/01_work_db_opzetten.sql')
+    #execute_bash_file("./scripts/polder/01_lizard_db_vullen/02_data_inladen.sh")
+    
+    script = 0
+    try:
+        for root, subdirs, files in sorted(os.walk(walk_dir)):
+            for f in sorted(files):
+                script += 1
+                file_path = root+'/'+f
+                logging.debug('Opening file: {}'.format(file_path))
+                result = ""
+                if file_path.endswith('.sql'):
+                    #execute .sql file
+                    logging.debug('Executing .sql file')
+                    #result = execute_sql_file_multiple_transactions(file_path)
+                    result = execute_sql_file_multiple_transactions(file_path)
+                elif file_path.endswith('.sh'):
+                    logging.debug('Executing .sh file')
+                    result = execute_bash_file(file_path)
+                
+                else:
+                    logging.debug("File is no .sql or .sh file, don't know what to do with it, skipping")
+    except psycopg2.Error as e:
+        logging.error(e)
+    logging.info("Stopping datachecker")
+
+    
+if __name__ == "__main__":
+    main()
