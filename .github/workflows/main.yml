@@ -27,5 +27,5 @@ jobs:
           docker login -u publisher -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
           docker tag hhnk-modelbuilder-temp_hhnk docker.pkg.github.com/nens/hhnk-modelbuilder-temp/hhnk-modelbuilder
           docker push docker.pkg.github.com/nens/hhnk-modelbuilder-temp/hhnk-modelbuilder
-        # if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         # Running this job only for master branch.
