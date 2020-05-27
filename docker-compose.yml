@@ -18,8 +18,6 @@ services:
     build: .
     depends_on:
       - db
-<<<<<<< Updated upstream
-=======
       - adminer
     # Automatically pick up changes in the sql/ directory without needing to
     # re-build the entire docker. The "deploy" docker doesn't do this, so
@@ -27,5 +25,5 @@ services:
     # available. When running the container on Windows, share this folder under
     # Docker -> Settings -> Resources -> File sharing
     volumes:
-      - ./sql:/code/sql
->>>>>>> Stashed changes
+      - ./datachecker:/code/datachecker
+      - ./modelbuilder:/code/modelbuilder
