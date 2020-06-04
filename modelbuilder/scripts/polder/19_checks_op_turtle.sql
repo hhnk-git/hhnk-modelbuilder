@@ -978,11 +978,11 @@ WHERE id IN (SELECT connection_node_start_id FROM v2_pumpstation WHERE connectio
 
 -- duikers omzetten naar orifice voor snelheid
 INSERT INTO v2_orifice(
-            id, display_name, code, max_capacity, crest_level, sewerage, 
+            id, display_name, code, crest_level, sewerage, 
             cross_section_definition_id, friction_value, friction_type, discharge_coefficient_positive, 
             discharge_coefficient_negative, zoom_category, crest_type, connection_node_start_id, 
             connection_node_end_id)
-SELECT id+100000, display_name, code, NULL, greatest(invert_level_start_point,invert_level_end_point), FALSE,
+SELECT id+100000, display_name, code, greatest(invert_level_start_point,invert_level_end_point), FALSE,
       cross_section_definition_id, friction_value, friction_type, discharge_coefficient_positive, 
       discharge_coefficient_negative, zoom_category,4, connection_node_start_id, 
       connection_node_end_id

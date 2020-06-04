@@ -372,9 +372,9 @@ WITH lijst AS (
  )
 INSERT INTO v2_impervious_surface(
             id, display_name, code, surface_class, surface_sub_class, surface_inclination, 
-            zoom_category, nr_of_inhabitants, dry_weather_flow, function, 
+            zoom_category, nr_of_inhabitants, dry_weather_flow, 
             area, the_geom)
-SELECT DISTINCT nodeid, nodeid, nodeid, 'gesloten verharding', NULL, 'uitgestrekt', -1, 0, 0, NULL, opppernode, NULL
+SELECT DISTINCT nodeid, nodeid, nodeid, 'gesloten verharding', NULL, 'uitgestrekt', -1, 0, 0, opppernode, NULL
 FROM lijst
 WHERE nodeid IS NOT NULL
 ;

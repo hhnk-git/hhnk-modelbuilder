@@ -248,11 +248,11 @@ NULL,			--cfl_strictness_factor_2d
 
 -- BRIDGE
 INSERT INTO v2_orifice(
-            id, display_name, code, max_capacity, crest_level, sewerage, 
+            id, display_name, code, crest_level, sewerage, 
             cross_section_definition_id, friction_value, friction_type, discharge_coefficient_positive, 
             discharge_coefficient_negative, zoom_category, crest_type, connection_node_start_id, 
             connection_node_end_id)
-SELECT DISTINCT ON (a.id) a.id, a.code, a.code, NULL, b.bed_level, FALSE, 
+SELECT DISTINCT ON (a.id) a.id, a.code, a.code, b.bed_level, FALSE, 
 	c.id, 0.003, 2, 1,
 	1, 4, 4, a.connection_node_start_id,
 	a.connection_node_end_id
