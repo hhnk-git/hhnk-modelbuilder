@@ -1,8 +1,5 @@
 -- clip database uit voor deelgebied
-DROP SCHEMA IF EXISTS deelgebied CASCADE;
-CREATE SCHEMA deelgebied;
-DROP SCHEMA IF EXISTS feedback CASCADE;
-CREATE SCHEMA feedback;
+
 /*
 deelgebied, polder_id
 Purmer, 20

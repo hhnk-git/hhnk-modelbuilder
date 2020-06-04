@@ -66,7 +66,7 @@ CREATE TABLE tmp.wrong_channels AS
 --3) culvert heeft GEEN sturingsregeling meegekregen
 DROP TABLE IF EXISTS tmp.unusable_culvert_endpoints;
 CREATE TABLE tmp.unusable_culvert_endpoints AS(
-	SELECT ST_Line_Interpolate_Point(geom,0.1) as geom, opmerking
+	SELECT ST_LineInterpolatePoint(geom,0.1) as geom, opmerking
 	FROM checks.culvert
 	WHERE opmerking LIKE ANY(ARRAY['%geen watergang%']) -- '%niet afsluitbaar op peilgrens%'
     AND (op_peilgrens = 1 OR type_art = 2)
@@ -74,7 +74,7 @@ CREATE TABLE tmp.unusable_culvert_endpoints AS(
 	
 	UNION ALL
 	
-	SELECT ST_Line_Interpolate_Point(geom,0.9) as geom, opmerking
+	SELECT ST_LineInterpolatePoint(geom,0.9) as geom, opmerking
 	FROM checks.culvert
 	WHERE opmerking LIKE ANY(ARRAY['%geen watergang%']) -- '%niet afsluitbaar op peilgrens%'
     AND (op_peilgrens = 1 OR type_art = 2)

@@ -2,8 +2,8 @@
 ALTER TABLE checks.polder DROP COLUMN IF EXISTS cnt_afvrkw;
 ALTER TABLE checks.polder ADD cnt_afvrkw integer;
 UPDATE checks.polder as a
-SET cnt_afvrkw = count(b.*)
-FROM (	SELECT count(b.*), a.polder_id
+SET cnt_afvrkw = cnt 
+FROM (	SELECT count(b.*) as cnt, a.polder_id
 	FROM checks.polder as a
 	LEFT JOIN checks.afvoerkunstwerken as b
 	ON ST_Intersects(a.geom,b.linegeom)
@@ -15,8 +15,8 @@ WHERE a.polder_id = b.polder_id
 ALTER TABLE checks.afvoergebieden DROP COLUMN IF EXISTS cnt_afvrkw;
 ALTER TABLE checks.afvoergebieden ADD cnt_afvrkw integer;
 UPDATE checks.afvoergebieden as a
-SET cnt_afvrkw = count(b.*)
-FROM (	SELECT count(b.*), a.afvoer_id
+SET cnt_afvrkw = cnt
+FROM (	SELECT count(b.*) as cnt, a.afvoer_id
 	FROM checks.afvoergebieden as a
 	LEFT JOIN checks.afvoerkunstwerken as b
 	ON ST_Intersects(a.geom,b.linegeom)

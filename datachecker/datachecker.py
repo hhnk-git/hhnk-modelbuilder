@@ -105,6 +105,8 @@ def create_database(db_name):
         sql.Identifier(db_name))
     )
     
+    #Fill with 3di template
+    result = execute_sql_file_multiple_transactions('/code/datachecker/tools/threedi-template/work_empty_schema_2020-01-15.sql')
 
 def datachecker(**kwargs):
 

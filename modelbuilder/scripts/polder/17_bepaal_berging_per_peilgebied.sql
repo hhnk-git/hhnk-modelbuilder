@@ -159,7 +159,7 @@ GROUP BY id);
 --Voeg midpoints van de v2_channel toe
 DROP TABLE IF EXISTS tmp.channel_surface_area_midpoints;
 CREATE TABLE tmp.channel_surface_area_midpoints AS(
-SELECT a.id, a.surface_area, ST_Line_Interpolate_Point(b.the_geom, 0.5) as midpoint FROM tmp.channel_surface_area a, v2_channel b
+SELECT a.id, a.surface_area, ST_LineInterpolatePoint(b.the_geom, 0.5) as midpoint FROM tmp.channel_surface_area a, v2_channel b
 WHERE a.id = b.id
 );
 

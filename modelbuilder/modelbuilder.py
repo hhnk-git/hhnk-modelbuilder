@@ -19,13 +19,13 @@ import logging
 import configparser
 
 #setup logging to write debug log to file
-logging.basicConfig(filename='datachecker.log',filemode='w',format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
+logging.basicConfig(filename='/code/modelbuilder/modelbuilder.log',filemode='w',format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
 
 #Read configuration file
 config = configparser.ConfigParser()
-config.read('/code/datachecker/datachecker_config.ini')
+config.read('/code/modelbuilder/modelbuilder_config.ini')
 
-walk_dir = '/code/datachecker/scripts/polder'
+walk_dir = '/code/modelbuilder/scripts/polder'
 
 
 def get_parser():
@@ -36,12 +36,18 @@ def get_parser():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
+        'polder_id',
+        help='id of polder to model, based on ids from datachecker')
+    parser.add_argument(
+        'polder_name',default='unnamed',
+        help='name of polder to model')
+    parser.add_argument(
         '-f', '--file',
         help='script to execute')
     return parser
     
 
-def execute_sql_file_multiple_transactions(file_path):
+def execute_sql_file_multiple_transactions(file_path,polder_id, polder_name):
     """Execute .sql file with one query per transaction (speeds up the queries)"""
 
     try:
@@ -54,7 +60,7 @@ def execute_sql_file_multiple_transactions(file_path):
     #Read file
     logging.info("Executing SQL script: {}".format(file_path))
     sqlfile = open(file_path)
-    sqlfile_content = sqlfile.read()
+    sqlfile_content = sqlfile.read().replace("<<polder_id>>",polder_id).replace("<<polder_name>>",polder_name);
     sqlfile.close() 
     
     #parse content naar queries
@@ -86,10 +92,22 @@ def execute_sql_file_multiple_transactions(file_path):
     db_conn.close()
         
 #Define function for executing bash files        
-def execute_bash_file(file_path):
+def execute_bash_file(file_path,polder_id, polder_name):
     logging.info("START execute bash file: {}".format(file_path))
     subprocess.call(['bash',file_path])
     
+def execute_file(file_path, polder_id, polder_name):    
+    if file_path.endswith('.sql'):
+        #execute .sql file
+        logging.debug('Executing .sql file')
+        #result = execute_sql_file_multiple_transactions(file_path)
+        result = execute_sql_file_multiple_transactions(file_path, polder_id, polder_name)
+    elif file_path.endswith('.sh'):
+        logging.debug('Executing .sh file')
+        result = execute_bash_file(file_path, polder_id, polder_name)
+    
+    else:
+        logging.debug("File is no .sql or .sh file, don't know what to do with it, skipping")
 
 def create_database(db_name):
     logging.info("Creating database {}".format(db_name))
@@ -106,11 +124,14 @@ def create_database(db_name):
     )
     
 
-def datachecker(**kwargs):
-
+def modelbuilder(**kwargs):
+    polder_id = kwargs.get('polder_id')
+    polder_name = kwargs.get('polder_name')
+    file_path = kwargs.get('file')
+    
     if(kwargs.get('file') is None):
-        logging.info("Starting datachecker")
-        create_database(config['db']['database'])
+        logging.info("Starting modelbuilder")
+        #create_database(config['db']['database'])
         
         #execute_sql_file_multiple_transactions('./scripts/polder/01_lizard_db_vullen/01_work_db_opzetten.sql')
         #execute_bash_file("./scripts/polder/01_lizard_db_vullen/02_data_inladen.sh")
@@ -123,28 +144,18 @@ def datachecker(**kwargs):
                     file_path = root+'/'+f
                     logging.debug('Opening file: {}'.format(file_path))
                     result = ""
-                    if file_path.endswith('.sql'):
-                        #execute .sql file
-                        logging.debug('Executing .sql file')
-                        #result = execute_sql_file_multiple_transactions(file_path)
-                        result = execute_sql_file_multiple_transactions(file_path)
-                    elif file_path.endswith('.sh'):
-                        logging.debug('Executing .sh file')
-                        result = execute_bash_file(file_path)
-                    
-                    else:
-                        logging.debug("File is no .sql or .sh file, don't know what to do with it, skipping")
+                    execute_file(file_path, polder_id, polder_name)
         except psycopg2.Error as e:
             logging.error(e)
-        logging.info("Stopping datachecker")
+        logging.info("Stopping modelbuilder")
     
     else:
-        result = execute_sql_file_multiple_transactions(kwargs.get('file'))
+        result = execute_file(file_path, polder_id, polder_name)
 
 
 def main():
     try:
-        return datachecker(**vars(get_parser().parse_args()))
+        return modelbuilder(**vars(get_parser().parse_args()))
     except SystemExit:
         raise  # argparse does this
 

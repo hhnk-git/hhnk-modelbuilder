@@ -37,9 +37,9 @@ FROM deelgebied.tmp_sel_branches_without_structures
 --Check if middle of channel is in primary or secundary linemerge.
 DROP TABLE IF EXISTS tmp.v2_channel_type;
 CREATE TABLE tmp.v2_channel_type AS(
-SELECT a.id as v2_channel_id, b.channel_type_id, ST_Line_Interpolate_Point(a.the_geom, 0.5) as centerpoint, b.bufgeom
+SELECT a.id as v2_channel_id, b.channel_type_id, ST_LineInterpolatePoint(a.the_geom, 0.5) as centerpoint, b.bufgeom
 FROM v2_channel a, deelgebied.channel b
-WHERE ST_Within(ST_Line_Interpolate_Point(a.the_geom, 0.5),b.bufgeom));
+WHERE ST_Within(ST_LineInterpolatePoint(a.the_geom, 0.5),b.bufgeom));
 
 UPDATE v2_channel SET zoom_category = 4 WHERE id IN (SELECT v2_channel_id FROM tmp.v2_channel_type WHERE channel_type_id = 1);
 UPDATE v2_channel SET zoom_category = 3 WHERE id IN (SELECT v2_channel_id FROM tmp.v2_channel_type WHERE channel_type_id = 2);
@@ -61,7 +61,7 @@ FROM deelgebied.tmp_v2_cross_section_definition
 -- CROSS SECTION LOCATIONS
 -- sommige crs liggen op het einde van een kanaal en dat mag eigenlijk niet
 UPDATE deelgebied.tmp_v2_cross_section_location as a
-SET the_geom = ST_Line_Interpolate_Point(c.the_geom,0.5)
+SET the_geom = ST_LineInterpolatePoint(c.the_geom,0.5)
 FROM v2_channel as c, v2_connection_nodes as b
 WHERE c.id = a.channel_id AND ST_DWithin(a.the_geom,b.the_geom,0.05)
 ;

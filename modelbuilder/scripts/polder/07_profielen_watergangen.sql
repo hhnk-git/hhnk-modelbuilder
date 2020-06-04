@@ -57,7 +57,7 @@ ALTER TABLE deelgebied.tmp_sel_branches_without_structures ADD COLUMN channel_ty
 ALTER TABLE deelgebied.tmp_sel_branches_without_structures ADD COLUMN pointgeom geometry(Point,28992);
 ALTER TABLE deelgebied.tmp_sel_branches_without_structures ADD COLUMN bufgeom geometry(Polygon,28992);
 UPDATE deelgebied.tmp_sel_branches_without_structures
-SET pointgeom = ST_Line_Interpolate_Point(geom,0.5),
+SET pointgeom = ST_LineInterpolatePoint(geom,0.5),
 	bufgeom = ST_Buffer(geom,0.5)
 ;
 
@@ -65,7 +65,7 @@ CREATE INDEX deelgebied_tmp_sel_branches_without_structures_pointgeom ON deelgeb
 CREATE INDEX deelgebied_tmp_sel_branches_without_structures_bufgeom ON deelgebied.tmp_sel_branches_without_structures USING gist(bufgeom);
 
 --Add vertex at centerpoint when line is only 2 vertices
-UPDATE deelgebied.tmp_sel_branches_without_structures SET geom = ST_LineMerge(ST_Union(ST_MakeLine(ST_StartPoint(geom),ST_Line_Interpolate_Point(geom,0.5)),ST_MakeLine(ST_Line_Interpolate_Point(geom,0.5),ST_EndPoint(geom))))
+UPDATE deelgebied.tmp_sel_branches_without_structures SET geom = ST_LineMerge(ST_Union(ST_MakeLine(ST_StartPoint(geom),ST_LineInterpolatePoint(geom,0.5)),ST_MakeLine(ST_LineInterpolatePoint(geom,0.5),ST_EndPoint(geom))))
 WHERE ST_NPoints(geom) = 2;
 
 
@@ -324,9 +324,9 @@ WHERE code LIKE 'HO%'
 
 -- fix als location niet op lijn ligt
 UPDATE deelgebied.tmp_v2_cross_section_location as a
-SET the_geom = ST_Line_Interpolate_point(b.geom,0.5)
+SET the_geom = ST_LineInterpolatePoint(b.geom,0.5)
 FROM deelgebied.tmp_sel_branches_without_structures as b
-WHERE a.channel_id = b.reach_id AND ST_Line_locate_point(b.geom,a.the_geom) NOT BETWEEN 0.01 AND 0.99
+WHERE a.channel_id = b.reach_id AND ST_Linelocatepoint(b.geom,a.the_geom) NOT BETWEEN 0.01 AND 0.99
 ;
 
 
@@ -355,8 +355,8 @@ BEGIN
           geom = ST_LineMerge(
            ST_SnapToGrid(
              ST_Union(
-                ST_Line_Substring(tmp_sel_branches_without_structures.geom, 0, ST_Line_Locate_Point(tmp_sel_branches_without_structures.geom, $1)),
-                ST_Line_Substring(tmp_sel_branches_without_structures.geom, ST_Line_Locate_Point(tmp_sel_branches_without_structures.geom, $1), 1)
+                ST_LineSubstring(tmp_sel_branches_without_structures.geom, 0, ST_LineLocatePoint(tmp_sel_branches_without_structures.geom, $1)),
+                ST_LineSubstring(tmp_sel_branches_without_structures.geom, ST_LineLocatePoint(tmp_sel_branches_without_structures.geom, $1), 1)
              ),0,0,0.05,0.05))
         WHERE ($2 = tmp_sel_branches_without_structures.reach_id);
     END IF;

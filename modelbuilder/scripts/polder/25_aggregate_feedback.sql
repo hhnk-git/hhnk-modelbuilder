@@ -36,7 +36,7 @@ FROM feedback.xs_locations_without_definition;
 
 --Channels without xs-locations
 INSERT INTO deelgebied.feedback(id, level, feature_id, table_name, geom, message)
-SELECT nextval('seq_feedback_id'), 'ERROR', id, 'v2_channel', ST_Line_Interpolate_Point(the_geom, 0.5), remark
+SELECT nextval('seq_feedback_id'), 'ERROR', id, 'v2_channel', ST_LineInterpolatePoint(the_geom, 0.5), remark
 FROM feedback.channel_without_xs_location;
 
 
@@ -135,5 +135,5 @@ FROM feedback.boundaries_with_multiple_connections;
 
 --channels
 INSERT INTO deelgebied.feedback(id, level, feature_id, table_name, geom, message)
-SELECT nextval('seq_feedback_id'), 'WARNING', id, 'v2_channel', ST_Line_Interpolate_Point(the_geom, 0.5), remark
+SELECT nextval('seq_feedback_id'), 'WARNING', id, 'v2_channel', ST_LineInterpolatePoint(the_geom, 0.5), remark
 FROM feedback.short_lines;

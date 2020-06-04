@@ -65,7 +65,7 @@ a.id,
 a.nr,
 a.cnt,
 a.from_width,
-(ST_Dump(ST_Buffer(ST_Line_Substring(b.the_geom,0,from_frac),from_width/2,'endcap=flat'))).geom
+(ST_Dump(ST_Buffer(ST_LineSubstring(b.the_geom,0,from_frac),from_width/2,'endcap=flat'))).geom
 FROM tmp.fractioned a, v2_channel b
 WHERE a.id = b.id
 AND a.nr = 1
@@ -85,7 +85,7 @@ a.nr,
 a.cnt,
 to_frac,
 a.from_width,
-(ST_Dump(ST_Buffer(ST_Line_Substring(b.the_geom,to_frac,1),to_width/2,'endcap=flat'))).geom
+(ST_Dump(ST_Buffer(ST_LineSubstring(b.the_geom,to_frac,1),to_width/2,'endcap=flat'))).geom
 FROM tmp.fractioned a, v2_channel b
 WHERE a.id = b.id
 AND a.nr+1 = a.cnt
@@ -104,10 +104,10 @@ a.id,
 a.nr,
 a.cnt,
 a.from_width,
-ST_Buffer(ST_Line_Substring(b.the_geom,from_frac,to_frac),((from_width+to_width)/2)/2,'endcap=flat')
+ST_Buffer(ST_LineSubstring(b.the_geom,from_frac,to_frac),((from_width+to_width)/2)/2,'endcap=flat')
 FROM tmp.fractioned a, v2_channel b
 WHERE a.id = b.id
-AND ST_GeometryType(ST_Buffer(ST_Line_Substring(b.the_geom,from_frac,to_frac),((from_width+to_width)/2)/2,'endcap=flat')) NOT LIKE 'ST_MultiPolygon'
+AND ST_GeometryType(ST_Buffer(ST_LineSubstring(b.the_geom,from_frac,to_frac),((from_width+to_width)/2)/2,'endcap=flat')) NOT LIKE 'ST_MultiPolygon'
 ;
 
 --Watergangen met maar 1 profiel

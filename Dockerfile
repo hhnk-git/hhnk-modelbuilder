@@ -18,4 +18,5 @@ COPY . .
 RUN git clone https://github.com/nens/raster-tools.git
 WORKDIR /code/raster-tools
 RUN git checkout emiel-hhnk
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv sync --dev
+#RUN PIPENV_VENV_IN_PROJECT=1 pipenv sync --dev
+WORKDIR /code
