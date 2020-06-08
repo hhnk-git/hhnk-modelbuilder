@@ -1,0 +1,2 @@
+threedi-base-production.3di.lizard.net ansible_ssh_host=nens-p-3di-task-04.nens.local
+threedi-base-production-deltares.3di.lizard.net ansible_ssh_host=deltares-3di-task-01.nens.local
