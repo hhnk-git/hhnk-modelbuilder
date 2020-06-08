@@ -1,0 +1,18 @@
+# capitalized variables are django settings
+deployer: buildout
+deployer_password: buildout
+
+repo: ssh://git@github.com/nens/threedi-base.git
+repo_version: master
+
+sitename: "{{ inventory_hostname }}"
+repo_path: "/srv/{{ inventory_hostname }}"
+
+# these settings should be overriden in the host_vars file
+DATABASE_NAME: ''
+DATABASE_ENGINE: 'django.contrib.gis.db.backends.postgis'
+DATABASE_USER: ''
+DATABASE_PASSWORD: ''
+DATABASE_HOST: ''
+DATABASE_PORT: 5432
+DATABASE_SCHEMA: ''

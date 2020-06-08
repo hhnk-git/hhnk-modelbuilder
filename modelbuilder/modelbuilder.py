@@ -92,9 +92,11 @@ def execute_sql_file_multiple_transactions(file_path,polder_id, polder_name):
     db_conn.close()
         
 #Define function for executing bash files        
-def execute_bash_file(file_path,polder_id, polder_name):
-    logging.info("START execute bash file: {}".format(file_path))
-    subprocess.call(['bash',file_path])
+def execute_bash_file(file_path, polder_id, polder_name):
+    logging.info('START execute bash file')
+    file_name = file_path.split('/')[-1]
+    f = open("/code/modelbuilder/logging_" + file_name + ".log", "w")
+    subprocess.call(['bash',file_path,polder_id,polder_name], stdout=f)
     
 def execute_file(file_path, polder_id, polder_name):    
     if file_path.endswith('.sql'):

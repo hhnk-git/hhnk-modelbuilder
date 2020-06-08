@@ -1,0 +1,9 @@
+repo_version: '0.4'
+
+DATABASE_NAME: '<TODO>'
+DATABASE_ENGINE: 'django.contrib.gis.db.backends.postgis'
+DATABASE_USER: 'threedi'
+DATABASE_PASSWORD: '1S418lTYWLFsYxud4don'
+DATABASE_HOST: 'nens-3di-db-03'
+DATABASE_PORT: 5432
+DATABASE_SCHEMA: 'deelgebied'

@@ -1,0 +1,10 @@
+---
+- name: Put a default_config.ini example file in place
+  sudo: yes
+  sudo_user: "{{ deployer }}"
+  template: >
+    src=default_config.ini.j2
+    dest={{ repo_path }}/default_config.ini
+    owner={{ deployer }}
+    group={{ deployer }}
+    mode=0644

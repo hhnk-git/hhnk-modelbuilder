@@ -1,0 +1,64 @@
+---
+- name: Make sure the ~/.ssh path is created
+  sudo: yes
+  file: >
+    path=/home/{{ deployer }}/.ssh
+    owner={{ deployer }}
+    group={{ deployer }}
+    mode=0755
+    state=directory
+
+# make sure the deployer user has id_rsa key when on vm; to check out git
+# repos
+- name: Add github pull key for the deployer
+  sudo: yes
+  copy: >
+    src=github-key
+    dest=/home/{{ deployer }}/.ssh/id_rsa
+    owner={{ deployer }}
+    group={{ deployer }}
+    mode=0600
+
+# debug statement
+- name: Display repo_version variable
+  debug: msg="repo_version = {{ repo_version }}"
+
+# register most recent repo tag if required
+- name: Get most recent repo tag if repo_version == 'tag'
+  sudo: yes
+  sudo_user: "{{ deployer }}"
+  shell: git ls-remote --tags {{ repo }} | sort -t '/' -k 3 -V | tail -n 1 | awk -F' ' '{print $1}'
+  when: repo_version == 'tag'
+  register: latest_tag
+
+# debug statement
+- name: Display latest_tag variable
+  debug: msg="Latest repo tag {{ latest_tag.stdout }}."
+  when: latest_tag.stdout is defined
+
+- name: Make sure the repo path is created
+  sudo: yes
+  file: >
+    path={{ repo_path }}
+    owner={{ deployer }}
+    group={{ deployer }}
+    mode=0755
+    state=directory
+
+# checkout git repo with the latest_tag if it is defined
+- name: Checkout/update repo with latest tag if available
+  sudo: yes
+  sudo_user: "{{ deployer }}"
+  git: repo={{ repo }} dest={{ repo_path }} accept_hostkey=yes version={{ latest_tag.stdout }}
+  when: latest_tag.stdout is defined
+
+# checkout git repo with the given repo_version
+- name: Checkout/update repo
+  sudo: yes
+  sudo_user: "{{ deployer }}"
+  git: repo={{ repo }} dest={{ repo_path }} accept_hostkey=yes version={{ repo_version}}
+  when: latest_tag.stdout is not defined
+
+- name: Remove all the __pycache__ folders and .pyc/.pyo files
+  sudo: yes
+  shell: find ./ \( -name \*.pyc -o -name \*.pyo -o -name __pycache__ \) -prune -exec rm -rf {} +; chdir={{ repo_path }}

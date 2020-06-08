@@ -1,0 +1,11 @@
+---
+- name: Make sure virtualenv is installed
+  sudo: yes
+  apt: name=python-virtualenv
+
+- name: Make sure a virtualenv is created in the root directory
+  sudo: yes
+  sudo_user: "{{ deployer }}"
+  pip: >
+    virtualenv={{ repo_path }}
+    requirements={{ repo_path }}/requirements.txt
