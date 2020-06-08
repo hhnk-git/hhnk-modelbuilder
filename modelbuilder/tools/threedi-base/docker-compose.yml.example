@@ -1,0 +1,32 @@
+version: '2'
+
+volumes:
+  pgdata: {}
+
+services:
+  postgres:
+    image: kartoza/postgis:9.5
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - <TODO:/path/to/db/dumps>:/dumps
+    environment:
+      ALLOW_IP_RANGE: "0.0.0.0/0"
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/Dockerfile
+    command: /start.sh
+    ports:
+      - "8083:8000"
+    volumes:
+      - .:/srv
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_NAME: gis
+      DATABASE_USER: docker
+      DATABASE_PASSWORD: docker
+    depends_on:
+      - postgres
+    links:
+      - postgres
