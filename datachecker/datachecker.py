@@ -19,7 +19,7 @@ import logging
 import configparser
 
 #setup logging to write debug log to file
-logging.basicConfig(filename='datachecker.log',filemode='w',format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
+logging.basicConfig(filename='/code/datachecker/datachecker.log',filemode='w',format='%(asctime)s - %(levelname)s - %(message)s',level=logging.DEBUG)
 
 #Read configuration file
 config = configparser.ConfigParser()
