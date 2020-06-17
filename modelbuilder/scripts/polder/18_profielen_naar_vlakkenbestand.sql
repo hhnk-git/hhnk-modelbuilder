@@ -1,3 +1,7 @@
+/*
+De analyse uit stap 17_bepaal_berging_per_peilgebied wordt visueel gemaakt in een watervlakkenkaart. Hiermee is snel te zien waar de gemodelleerde profielen sterk afwijken met de aangeleverde watervlakkenkaart. 
+*/
+
 --Determine per channel arrays of the cross sections, fractions at which they are located, withds at waterlevel and length of the channel
 DROP TABLE IF EXISTS tmp.interpolation_width;
 CREATE TABLE tmp.interpolation_width AS(

@@ -1,4 +1,32 @@
--- For pumps on the boundary of the polder, they wil forme the end and thresefore no channel or boundary behind them
+/*
+Gemalen op de poldergrens krijgen geen connection end node zodat ze als randvoorwaarde fungeren.
+*/
+
+
+-- koppeling tussen gemalen en peil
+DROP TABLE IF EXISTS tmp.pumpstation_peil;
+CREATE TABLE tmp.pumpstation_peil AS(
+	SELECT 
+	a.*,
+	b.fdla_code as schema_from_fixeddrainagelevelarea_code,
+	c.fdla_code as schema_to_fixeddrainagelevelarea_code,
+	b.streefpeil_bwn2 as schema_from_peil,
+	c.streefpeil_bwn2 as schema_to_peil,
+	d.from_fixeddrainagelevelarea_code::text as data_from_fixeddrainagelevelarea_code,
+	d.to_fixeddrainagelevelarea_code::text as data_to_fixeddrainagelevelarea_code
+
+	FROM
+		v2_pumpstation a
+
+	LEFT JOIN tmp.connection_node_fdla b
+	ON a.connection_node_start_id = b.connection_node_id
+
+	LEFT JOIN tmp.connection_node_fdla c
+	ON a.connection_node_end_id = c.connection_node_id
+
+	LEFT JOIN deelgebied.pumpstation d
+	ON a.code = d.code
+);
 
 -- onderstaande gemalen zijn aanvoergemalen volgens de van/naar peilgebied gegevens
 DELETE FROM deelgebied.afvoerkunstwerken WHERE code IN (
