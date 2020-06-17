@@ -1,3 +1,8 @@
+/*
+Kunstwerken die niet verlijnd kunnen worden worden naar een misfits tabel geexporteerd. Kanaalelementen < 0.1 m worden verwijderd (kleiner dan het snap-grid).
+*/
+
+-- TODO: moeten deze checks naar een tabel?
 SELECT  * FROM deelgebied.channel_snapped WHERE ST_GeometryType(geom) = 'ST_MultiLineString';
 SELECT  * FROM deelgebied.tmp_sel_branches_without_structures WHERE ST_GeometryType(geom) = 'ST_MultiLineString';
 

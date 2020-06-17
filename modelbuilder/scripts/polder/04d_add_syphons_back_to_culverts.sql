@@ -1,3 +1,7 @@
+/*
+In dit sript worden de sifons weer toegevoegd aan de tabel met duikers. Ook worden watergangen waar nodig opgeknipt. Dit is nodig omdat de watergangen zijn samengevoegd tijdens voorgaande stappen, maar er soms opnieuw een verbinding met de sifons moet worden gemaakt.
+*/
+
 --Insert into deelgebied.culvert the syphons with all data
 INSERT INTO deelgebied.culvert SELECT * FROM deelgebied.syphon;
 

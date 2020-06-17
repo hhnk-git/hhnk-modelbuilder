@@ -1,4 +1,7 @@
 ------------------------- profielen voor kunstwerken -------------------------------------
+/*
+Profielen worden voorbereid voor de kunstwerken. Indien een duiker een ei-vormige vorm heeft wordt de hoogte aangenomen als 1.5x de breedte. 
+*/
 
 -- stuwen
 SELECT setval('crsdefserial', (select max(id) from deelgebied.tmp_v2_cross_section_definition));
@@ -42,7 +45,7 @@ FROM deelgebied.bridge
 ;
 
 
-
+-- TODO: uizoeken waar dit voor geburuikt wordt
 DROP TABLE IF EXISTS tmp.measured_bed_level_on_connection_node;
 CREATE TABLE tmp.measured_bed_level_on_connection_node AS(
 	WITH measured_locations AS(

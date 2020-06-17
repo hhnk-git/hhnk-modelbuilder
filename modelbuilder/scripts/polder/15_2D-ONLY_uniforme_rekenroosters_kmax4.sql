@@ -28,7 +28,9 @@ $$ LANGUAGE sql IMMUTABLE STRICT;
 DROP SEQUENCE IF EXISTS k;
 CREATE SEQUENCE k MINVALUE 1 INCREMENT BY 1;
 drop table if exists tmp.gridspace_kmax;
-create table tmp.gridspace_kmax as select nextval('k')::integer as k, NULL::integer as grid_size from generate_series(1,10) i;
+create table tmp.gridspace_kmax as select nextval('k')::integer as k, NULL::integer as grid_size 
+from generate_series(1,10) i
+;
 -- INVULLEN GRID_SPACE en K_MAX in regel hieronder!!
 with parameters as (select 20 as grid_space, 4 as kmax) --> standaard bwn = 20x20, 40x40, 80x80, 160x160m cellen.
 update tmp.gridspace_kmax a set grid_size = b.grid_space from parameters b where a.k <= b.kmax;
@@ -40,7 +42,7 @@ select * from tmp.gridspace_kmax order by k;
 where nrow and ncol are the number of rows and columns, xsize and ysize are the lengths of the cell size, and optional x0 and y0 are coordinates for the bottom-left corner.
 The result is row and col numbers, starting from 1 at the bottom-left corner, and geom rectangular polygons for each cell. 
 
-So for example:
+source: https://gis.stackexchange.com/questions/16374/creating-regular-polygon-grid-in-postgis
 */
 
 -- een kmax+1 rekenrooster maken 
@@ -49,11 +51,13 @@ create table tmp.box as
 SELECT  split_part(split_part(ST_Extent(geom)::varchar, '(', 2),' ',1)::numeric as x0, 
         split_part(split_part(ST_Extent(geom)::varchar, ' ', 2),',',1)::numeric as y0,
 		split_part(split_part(ST_Extent(geom)::varchar, ' ', 2),',',2)::numeric as xm, 
-        substring(split_part(split_part(ST_Extent(geom)::varchar, ',', 2),' ',2) FROM '[0-9]+.[0-9]+')::numeric as ym, 
+        substring(split_part(split_part(ST_Extent(geom)::varchar, ',', 2),' ',2) 
+		FROM '[0-9]+.[0-9]+')::numeric as ym, 
 		geom
 FROM (SELECT polder_id, ST_Union(geom) as geom FROM deelgebied.polder GROUP BY polder_id) as foo -- REPLACE WITH YOUR EXTENT SHAPEFILE
---FROM (SELECT polder_id, ST_Buffer(ST_Union(geom),10) as geom FROM deelgebied.polder GROUP BY polder_id) as foo -- REPLACE WITH YOUR EXTENT SHAPEFILE
 GROUP BY polder_id, geom;
+
+
 drop table if exists tmp.net;
 create table tmp.net as 
 with grid_size as (select grid_size*2 as size from tmp.gridspace_kmax where k=4) -- kmax+1 <-- als wij kmax=4 dan hebben een tmp.k5 rekenrooster nodig voor het querien
@@ -64,7 +68,9 @@ SELECT 	ST_SetSRID((ST_Dump(ST_Collect(cells.geom))).geom,28992) as geom FROM ST
 		(SELECT size FROM grid_size),
 		(SELECT x0 FROM tmp.box),
 		(SELECT y0 FROM tmp.box)
-		) AS cells;
+		) AS cells
+		;
+
 DROP SEQUENCE IF EXISTS id;
 CREATE SEQUENCE id RESTART WITH 1; 
 DROP TABLE IF EXISTS tmp.k5; -- CHANGE tmp.k to K YOU WANT
@@ -86,7 +92,9 @@ SELECT  	split_part(split_part(ST_Extent(geom)::varchar, '(', 2),' ',1)::numeric
 		split_part(split_part(ST_Extent(geom)::varchar, ' ', 2),',',2)::numeric as xm, substring(split_part(split_part(ST_Extent(geom)::varchar, ',', 2),' ',2) FROM '[0-9]+.[0-9]+')::numeric as ym, 
 		geom
 FROM tmp.outerring -- REPLACE WITH YOUR EXTENT SHAPEFILE
-GROUP BY id, geom;
+GROUP BY id, geom
+;
+
 drop table if exists tmp.net;
 create table tmp.net as 
 with grid_size as (select grid_size as size from tmp.gridspace_kmax where k=4) -- CHANGE TO K YOU WANT
@@ -97,7 +105,9 @@ SELECT 	ST_SetSRID((ST_Dump(ST_Collect(cells.geom))).geom,28992) as geom FROM ST
 		(SELECT size FROM grid_size),
 		(SELECT x0 FROM tmp.box),
 		(SELECT y0 FROM tmp.box)
-		) AS cells;
+		) AS cells
+		;
+
 DROP SEQUENCE IF EXISTS id;
 CREATE SEQUENCE id RESTART WITH 1; 
 DROP TABLE IF EXISTS tmp.k4; -- CHANGE tmp.k to K YOU WANT
@@ -113,7 +123,9 @@ SELECT  	split_part(split_part(ST_Extent(geom)::varchar, '(', 2),' ',1)::numeric
 		split_part(split_part(ST_Extent(geom)::varchar, ' ', 2),',',2)::numeric as xm, substring(split_part(split_part(ST_Extent(geom)::varchar, ',', 2),' ',2) FROM '[0-9]+.[0-9]+')::numeric as ym, 
 		geom
 FROM tmp.outerring -- REPLACE WITH YOUR EXTENT SHAPEFILE
-GROUP BY id, geom;
+GROUP BY id, geom
+;
+
 drop table if exists tmp.net;
 create table tmp.net as 
 with grid_size as (select grid_size as size from tmp.gridspace_kmax where k=3) -- CHANGE TO K YOU WANT
@@ -124,8 +136,10 @@ SELECT 	ST_SetSRID((ST_Dump(ST_Collect(cells.geom))).geom,28992) as geom FROM ST
 		(SELECT size FROM grid_size),
 		(SELECT x0 FROM tmp.box),
 		(SELECT y0 FROM tmp.box)
-		) AS cells;
-DROP SEQUENCE IF EXISTS id;
+		) AS cells
+		;
+
+		DROP SEQUENCE IF EXISTS id;
 CREATE SEQUENCE id RESTART WITH 1; 
 DROP TABLE IF EXISTS tmp.k3; -- CHANGE tmp.k to K YOU WANT
 CREATE TABLE tmp.k3 AS SELECT b.geom, nextval('id') as pk -- CHANGE tmp.k to K YOU WANT 
@@ -140,7 +154,9 @@ SELECT  	split_part(split_part(ST_Extent(geom)::varchar, '(', 2),' ',1)::numeric
 		split_part(split_part(ST_Extent(geom)::varchar, ' ', 2),',',2)::numeric as xm, substring(split_part(split_part(ST_Extent(geom)::varchar, ',', 2),' ',2) FROM '[0-9]+.[0-9]+')::numeric as ym, 
 		geom
 FROM tmp.outerring -- REPLACE WITH YOUR EXTENT SHAPEFILE
-GROUP BY id, geom;
+GROUP BY id, geom
+;
+
 drop table if exists tmp.net;
 create table tmp.net as 
 with grid_size as (select grid_size as size from tmp.gridspace_kmax where k=2) -- CHANGE TO K YOU WANT
@@ -152,13 +168,15 @@ SELECT 	ST_SetSRID((ST_Dump(ST_Collect(cells.geom))).geom,28992) as geom FROM ST
 		(SELECT x0 FROM tmp.box),
 		(SELECT y0 FROM tmp.box)
 		) AS cells;
-DROP SEQUENCE IF EXISTS id;
+DROP SEQUENCE IF EXISTS id
+;
+
 CREATE SEQUENCE id RESTART WITH 1; 
 DROP TABLE IF EXISTS tmp.k2; -- CHANGE tmp.k to K YOU WANT
 CREATE TABLE tmp.k2 AS SELECT b.geom, nextval('id') as pk -- CHANGE tmp.k to K YOU WANT 
 FROM tmp.box as a, tmp.net as b
 WHERE ST_Intersects(a.geom,b.geom)
-; -- 7sec
+; 
 
 -- k1 rekenrooster maken
 drop table if exists tmp.box;
@@ -167,7 +185,9 @@ SELECT  	split_part(split_part(ST_Extent(geom)::varchar, '(', 2),' ',1)::numeric
 		split_part(split_part(ST_Extent(geom)::varchar, ' ', 2),',',2)::numeric as xm, substring(split_part(split_part(ST_Extent(geom)::varchar, ',', 2),' ',2) FROM '[0-9]+.[0-9]+')::numeric as ym, 
 		geom
 FROM tmp.outerring -- REPLACE WITH YOUR EXTENT SHAPEFILE
-GROUP BY id, geom;
+GROUP BY id, geom
+;
+
 drop table if exists tmp.net;
 create table tmp.net as 
 with grid_size as (select grid_size as size from tmp.gridspace_kmax where k=1) -- CHANGE TO K YOU WANT
@@ -178,7 +198,9 @@ SELECT 	ST_SetSRID((ST_Dump(ST_Collect(cells.geom))).geom,28992) as geom FROM ST
 		(SELECT size FROM grid_size),
 		(SELECT x0 FROM tmp.box),
 		(SELECT y0 FROM tmp.box)
-		) AS cells;
+		) AS cells
+		;
+		
 DROP SEQUENCE IF EXISTS id;
 CREATE SEQUENCE id RESTART WITH 1; 
 DROP TABLE IF EXISTS tmp.k1; -- CHANGE tmp.k to K YOU WANT
@@ -201,14 +223,14 @@ DROP TABLE IF EXISTS tmp.fdla_EXPLODE;
 CREATE TABLE tmp.fdla_EXPLODE AS
 SELECT nextval('serial') as id, code, streefpeil_bwn2, (ST_Dump(geom)).geom 
 FROM deelgebied.fixeddrainagelevelarea;
+UPDATE tmp.fdla_EXPLODE SET geom = ST_Buffer(geom,0); --Fix fdla_explode polygonen
 
 -- koppel peilgebied aan watergangen
-UPDATE tmp.fdla_EXPLODE SET geom = ST_Buffer(geom,0); --Fix fdla_explode polygonen
 DROP TABLE IF EXISTS deelgebied.channel_peil;
 CREATE TABLE deelgebied.channel_peil AS
 SELECT DISTINCT ON (a.id) a.*, b.code as pgbcode, b.streefpeil_bwn2
 FROM deelgebied.channel as a, tmp.fdla_EXPLODE as b
-WHERE ST_Intersects(b.geom,a.geom) --GEBRUIK "WHERE ST_Intersects(ST_Buffer(b.geom,0),a.geom)" indien hij hierop crasht, duurt wel langer
+WHERE ST_Intersects(b.geom,a.geom) 
 ORDER BY a.id ASC, b.code DESC
 ;
 CREATE INDEX deelgebied_channel_peil_geom ON deelgebied.channel_peil USING gist(geom);
@@ -252,7 +274,7 @@ ON ST_Intersects(a.geom,b.geom)
 LEFT JOIN deelgebied.peilgrens_met_waterpeil as c
 ON ST_Intersects(a.geom,c.geom)
 GROUP BY a.pk, a.geom
-; -- 35 sec
+; 
 DROP TABLE IF EXISTS tmp.k1_count;
 CREATE TABLE tmp.k1_count AS
 SELECT a.*, count(b.teller), max(maximum_water_level) as max_peil -- HIER STARKS LEVEE HEIGHT
@@ -262,7 +284,7 @@ ON ST_Intersects(a.geom,b.geom)
 LEFT JOIN deelgebied.peilgrens_met_waterpeil as c
 ON ST_Intersects(a.geom,c.geom)
 GROUP BY a.pk, a.geom
-; --138sec
+; 
 
 DROP INDEX IF EXISTS tmp.k5_index_pk;
 CREATE INDEX k5_index_pk ON tmp.k5 USING btree(pk);
@@ -338,7 +360,7 @@ update tmp.k2 a set k1_1 = b.pk from tmp.k1 b where st_contains(a.geom, b.geom);
 update tmp.k2 a set k1_2 = b.pk from tmp.k1 b where st_contains(a.geom, b.geom) and b.pk <> a.k1_1;
 update tmp.k2 a set k1_3 = b.pk from tmp.k1 b where st_contains(a.geom, b.geom) and b.pk <> a.k1_1 and b.pk <> a.k1_2;
 update tmp.k2 a set k1_4 = b.pk from tmp.k1 b where st_contains(a.geom, b.geom) and b.pk <> a.k1_1 and b.pk <> a.k1_2 and b.pk <> a.k1_3; -- tot hier 13 sec
--- 21sec
+
 
 -- we doen bovenstaande ook omgekeerd: een k3 cel behoort tot 1 k4 cel.
 alter table tmp.k1 add column k2 integer;
@@ -350,7 +372,7 @@ update tmp.k1 a set k2 = b.pk from tmp.k2 b where st_contains(b.geom, a.geom);
 update tmp.k2 a set k3 = b.pk from tmp.k3 b where st_contains(b.geom, a.geom);
 update tmp.k3 a set k4 = b.pk from tmp.k4 b where st_contains(b.geom, a.geom);
 update tmp.k4 a set k5 = b.pk from tmp.k5 b where st_contains(b.geom, a.geom);
--- 10 sec
+
 
 -- tabllen weggooien
 DROP TABLE IF EXISTS tmp.fdla_EXPLODE;
