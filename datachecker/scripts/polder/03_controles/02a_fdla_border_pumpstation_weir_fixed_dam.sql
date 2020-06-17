@@ -37,14 +37,14 @@ WHERE
 
 
 -- selecteer alle stuwen die niet binnen de zoekradius van een peilgrens liggen
-ALTER TABLE checks.weir DROP COLUMN IF EXISTS on_fdla_border;
-ALTER TABLE checks.weir ADD COLUMN on_fdla_border boolean DEFAULT false;
+ALTER TABLE checks.weirs DROP COLUMN IF EXISTS on_fdla_border;
+ALTER TABLE checks.weirs ADD COLUMN on_fdla_border boolean DEFAULT false;
 
-UPDATE checks.weir
+UPDATE checks.weirs
 SET on_fdla_border = true
 WHERE code IN(
     SELECT a.code
-	FROM checks.weir as a, 
+	FROM checks.weirs as a, 
 	tmp.peilgrenzen as b 
 	WHERE ST_Intersects(b.geom,a.geom)
 );
