@@ -1,4 +1,8 @@
 #!/bin/bash
+# De feedbacktabel uit stap 25 wordt geëxporteerd naar een shapefile.  
+# De misfits uit stap 5 worden geëxporteerd naar een shapefile 
+# Logfiles worden weggeschreven 
+
 rm -rf /code/data/output/models/feedback/
 mkdir /code/data/output/models/feedback/
 ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.feedback" -nln feedback -f "ESRI Shapefile" /code/data/output/models/feedback/model_feedback.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -nlt Point -a_srs EPSG:28992

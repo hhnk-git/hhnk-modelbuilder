@@ -1,10 +1,9 @@
---Stappenplan
---Stap 1. bepaal bergend oppervlak per peilgebied volgens BGT watervlakkenkaart
+/*
+Het bergende wateroppervlak in 1D per peilgebied wordt bepaald. Eerst wordt per dwarsdoorsnede de breedte op streefpeil bepaald. Deze breedte wordt aan het deel van het kanaal gekoppeld waarvoor dit punt het meest dichtbij is. Hiermee wordt per kanaal en per peilgebied een bergend oppervlak bepaald. Ook wordt aan de hand van de aangeleverde watervlakkenkaart een oppervlakte bepaald. 
+Als er bergend oppervlak in het model mist wordt dit in connection nodes die geen deel uitmaken van het primaire systeem toegevoegd, mits de toevoeging > 2 m2 per connection_node. 
+*/
 
-
---STAP 1
 --maak channelsurface/fixeddrainagelevelarea valid
-
 UPDATE deelgebied.channelsurface SET geom = ST_MakeValid(geom) WHERE NOT ST_IsValid(geom);
 UPDATE deelgebied.fixeddrainagelevelarea SET geom = ST_MakeValid(geom) WHERE NOT ST_IsValid(geom);
 UPDATE deelgebied.fixeddrainagelevelarea SET geom = ST_CollectionExtract(geom,3);

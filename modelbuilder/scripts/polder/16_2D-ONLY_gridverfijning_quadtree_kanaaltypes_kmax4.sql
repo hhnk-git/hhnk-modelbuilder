@@ -274,14 +274,6 @@ WHERE c.channel_id = d.id
     AND d.height IS NOT NULL
 ;
 
-
-select count(*) from deelgebied.grid;
--- purmer = 14960 rekencellen 27 feb 2017
--- purmer = 19810 rekencellen 3 aprl 2017
--- Drieban = 11751 rekencellen 17-05-2017
--- Koegras = 27549 rekencellen 22-05-2017
-
-
 -- set the calculation distance to maximum calculation cell size
 WITH link AS (
 	SELECT a.id, max(b.refinement_level) as max_level
