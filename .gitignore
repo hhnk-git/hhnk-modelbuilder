@@ -1,4 +1,4 @@
 data/ 
 *.zip
-*/*.pyc
-*.pyc
+__pycache__/
+*.py[cod]
