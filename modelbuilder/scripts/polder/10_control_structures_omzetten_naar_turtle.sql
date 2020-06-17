@@ -1,3 +1,8 @@
+/*
+Alle v2_control_* tabellen worden eerst leeggegooid. Het aangeleverde meetpunt zoekt de dichtstbijzijnde watergang en vervolgens het dichtstbijzijnde uiteinde. Dit zal het effectieve meetpunt voor de aangeleverde sturingsregel worden. Tevens worden de id’s van de te sturen kunstwerken gekoppeld aan de hand van de kunstwerk code. 
+Vervolgens worden de tabellen gevuld.
+*/
+
 UPDATE v2_global_settings SET control_group_id = NULL;
 DELETE FROM v2_control;
 DELETE FROM v2_control_delta;
@@ -20,7 +25,7 @@ CREATE TABLE tmp.closest_connection_nodes AS(
 	FROM deelgebied.control_table a, v2_connection_nodes b
 	WHERE ST_DWithin(a.measurement_location, b.the_geom,1)
 	ORDER BY a.id, ST_Distance(a.measurement_location, b.the_geom)
-	LIMIT 1--why only one?
+	LIMIT 1 --why only one? TODO
 );
 
 --Add connection_node_id to deelgebied.control_table

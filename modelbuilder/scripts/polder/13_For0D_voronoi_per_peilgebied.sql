@@ -1,20 +1,20 @@
 /* 
-	Dit script berekent thiessen/voronoi polygonen adhv punten per peilgebied.
-	Wordt uitgevoerd in schema: tmp
-	De invoer is als volgt:
-	-Tabel met punten
-	-Tabel met peilgebieden, bevat per peilgebied een unieke identifier
-	
-	Deels ontworpen adhv de volgende stackexchange thread: http://gis.stackexchange.com/questions/114764/how-to-use-st-delaunaytriangles-to-construct-a-voronoi-diagram
+Om de instroomoppervlak in het 0D1D model zo goed mogelijk te bepalen worden per peilgebied alle daarbinnen liggende connection_nodes gebruikt om een voronoi-diagram te maken. Dit diagram wordt vervolgens uitgeknipt op de geometrie van het betreffende peilgebied. Hierdoor wordt het aantal vierkante meters instroomoppervlak per connection_node bepaald. 
 
+Wordt uitgevoerd in schema: tmp
+De invoer is als volgt:
+-Tabel met punten
+-Tabel met peilgebieden, bevat per peilgebied een unieke identifier
 
+Deels ontworpen adhv de volgende stackexchange thread: http://gis.stackexchange.com/questions/114764/how-to-use-st-delaunaytriangles-to-construct-a-voronoi-diagram
 
-	Kopieer relevante data van peilgebied tabel. Moet minimaal bevatten:
-	-id
-	-geom
-	
-	Draait de purmer in 8 minuten
-    Koegras in 5.6 minuten
+Kopieer relevante data van peilgebied tabel. Moet minimaal bevatten:
+-id
+-geom
+
+Indicatie van duur van deze stap:
+De Purmer in 8 minuten
+Koegras in 5.6 minuten
 */
 
 --Cleanup geometries

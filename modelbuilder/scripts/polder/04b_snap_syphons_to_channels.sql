@@ -1,3 +1,7 @@
+/*
+Dit script verwijderd delen uit de watergangen waar sifonnen op liggen.
+*/
+
 --Create Syphons table from culvert
 DROP TABLE IF EXISTS deelgebied.syphon;
 CREATE TABLE deelgebied.syphon AS(
