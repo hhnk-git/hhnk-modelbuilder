@@ -68,7 +68,7 @@ DROP TABLE IF EXISTS tmp.unusable_culvert_endpoints;
 CREATE TABLE tmp.unusable_culvert_endpoints AS(
 	SELECT ST_LineInterpolatePoint(geom,0.1) as geom, opmerking
 	FROM checks.culvert
-	WHERE opmerking LIKE ANY(ARRAY['%geen watergang%']) -- '%niet afsluitbaar op peilgrens%'
+	WHERE NOT on_channel
     AND (op_peilgrens = 1 OR type_art = 2)
     AND code NOT IN (SELECT structure_code FROM checks.control_table)
 	
@@ -76,7 +76,7 @@ CREATE TABLE tmp.unusable_culvert_endpoints AS(
 	
 	SELECT ST_LineInterpolatePoint(geom,0.9) as geom, opmerking
 	FROM checks.culvert
-	WHERE opmerking LIKE ANY(ARRAY['%geen watergang%']) -- '%niet afsluitbaar op peilgrens%'
+	WHERE NOT on_channel
     AND (op_peilgrens = 1 OR type_art = 2)
     AND code NOT IN (SELECT structure_code FROM checks.control_table)
 );
