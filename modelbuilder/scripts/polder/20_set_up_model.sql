@@ -1,6 +1,57 @@
--- Dit script maakt de scenarios in de spatialite en export de spatialite
--- Vervang handmatig export locaties en <<polder_name>>namen
+-- Dit script maakt de scenarios in de spatialite en andere instellingen
+-- Variabele <<polder_name>> wordt ingevuld
 
+
+--NUMERICAL SETTINGS
+INSERT INTO v2_numerical_settings(
+id,
+integration_method,
+max_nonlin_iterations,
+convergence_eps,
+max_degree,
+use_of_cg,
+precon_cg,
+use_of_nested_newton,
+preissmann_slot,
+cfl_strictness_factor_1d,
+cfl_strictness_factor_2d,
+pump_implicit_ratio,
+frict_shallow_water_correction,
+limiter_slope_crossectional_area_2d,
+limiter_slope_friction_2d,
+limiter_grad_2d,
+limiter_grad_1d,
+flow_direction_threshold,
+minimum_friction_velocity,
+convergence_cg,
+general_numerical_threshold,
+minimum_surface_area
+)VALUES(
+1,				--id
+0,				--integration_method
+20,				--max_nonlin_iterations
+1e-05,			--convergence_eps
+7,				--max_degree
+20,				--use_of_cg
+1,				--precon_cg
+1,				--use_of_nested_newton
+0,				--preissmann_slot
+NULL,			--cfl_strictness_factor_1d
+NULL,			--cfl_strictness_factor_2d
+1,			--pump_implicit_ratio
+0,				--frict_shallow_water_correction
+0,				--limiter_slope_crossectional_area_2d
+0,				--limiter_slope_friction_2d
+1,				--limiter_grad_2d
+1			,	--limiter_grad_1d
+0.000001,		--flow_direction_threshold
+0.05,			--minimum_friction_velocity
+0.000000001,	--convergence_cg
+0.00000001,		--general_numerical_threshold
+0.00000001		--minimum_surface_area
+);
+
+-- Simple infiltration
 DELETE FROM v2_simple_infiltration;
 INSERT INTO v2_simple_infiltration(
 	id, 

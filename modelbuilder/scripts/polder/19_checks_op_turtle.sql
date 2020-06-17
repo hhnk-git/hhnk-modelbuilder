@@ -1,5 +1,9 @@
 -- CHECKS en OPLOSSINGEN
-
+/*
+Verschillende checks worden uitgevoerd op de 3Di schematisatie om problemen (voor de rekenkern) te signaleren 
+en te voorkomen. Resultaat van deze checks wordt meegeleverd bij de output van de Modelbuilder. Oplossingen worden 
+direct doorgevoerd in de schematisatie.
+*/
 -- ============================ Channels ====================================
 --CHECK alle locaties hebben een definitie
 DROP TABLE IF EXISTS feedback.xs_locations_without_definition;
@@ -58,12 +62,6 @@ CREATE TABLE feedback.xs_location_lowered_reference_level AS(
 UPDATE v2_cross_section_location SET reference_level = bank_level - 1
 WHERE reference_level >= bank_level
 ;
-
--- 48 records (03-04-2017)
--- 3 (02-05-2017)
--- Drieban (17-5-2017): 0
--- Koegras (22-5-2017): 0
--- Koegras (30-11-2017):5
 
 -- CHECK bank level is minimaal initial level aan beide zijde + 10cm
 DROP TABLE IF EXISTS feedback.xs_location_increased_bank_level;
@@ -267,12 +265,6 @@ WITH channel_conection_nodes AS
 UPDATE v2_connection_nodes SET storage_area = 10
 WHERE id IN (SELECT id FROM loose_nodes)
 ;
--- 18 (03-04-2017)
--- 3 (02-05-2017)
--- Drieban (17-05-2017): 19
--- hoorn (19-5-2017): 113
--- Koegras (22-05-2017): 28
--- hhw (21 juni 2016): 17
 
 -- ===================================WEIRS================================================
 -- CHECK alle weirs hebben een cross section definition
@@ -332,12 +324,6 @@ WITH channel_conection_nodes AS
 UPDATE v2_connection_nodes SET storage_area = 10
 WHERE id IN (SELECT connection_node_start_id FROM loose_nodes)
 ;
--- 27 (03-04-2017)
--- 15 (02-05-2017)
--- Drieban (17-05-2017): 13
--- hoorn (19-5-2017): 45
--- Koegras (22-05-2017): 31
--- hhw (21 juni 2016): 5
 
 -- Helps with finding the lowest crest level of weirs with a variable crest level
 DROP TABLE IF EXISTS tmp.min_ctrl_crest_level_weirs;
@@ -456,12 +442,6 @@ WITH start_node_reference_levels as -- select profile nearest to channel start f
 	) as b 
 	WHERE o.id = b.ref_id
 ;
--- 4 (03-04-2017)
--- 0 (02-05-2017)
--- Drieban (17-05-2017): 0
--- hoorn (19-5-2017): 4
--- Koegras (22-05-2017): 1
--- hhw (21 juni 2016): 0
 
 -- CHECK alle velden ingevuld
 DROP TABLE IF EXISTS feedback.weir_without_crest_level;
@@ -475,7 +455,7 @@ WHERE a.connection_node_start_id = b.id AND a.connection_node_end_id = c.id
 );
 
 -- ===================================ORIFICES================================================
--- CHECK alle weirs hebben een cross section definition
+-- CHECK alle orifices hebben een cross section definition
 DROP TABLE IF EXISTS feedback.orifice_without_xs_definition;
 CREATE TABLE feedback.orifice_without_xs_definition AS(
 WITH orifices AS(
@@ -529,16 +509,8 @@ WITH channel_conection_nodes AS
 UPDATE v2_connection_nodes SET storage_area = 10
 WHERE id IN (SELECT id FROM loose_nodes)
 ;
--- 27 (03-04-2017)
--- 15 (02-05-2017)
--- Drieban (17-05-2017): 13
--- hoorn (19-5-2017): 45
--- Koegras (22-05-2017): 31
--- hhw (21 juni 2016): 5
-
 
 -- CHECK Orifice crest level below connection node reference level, reference level is updated
-
 DROP TABLE IF EXISTS feedback.lowered_reference_level_orifice;
 CREATE TABLE feedback.lowered_reference_level_orifice AS(
 WITH start_node_reference_levels as -- select profile nearest to channel start for every channel
@@ -633,12 +605,6 @@ WITH start_node_reference_levels as -- select profile nearest to channel start f
 	) as b 
 	WHERE o.id = b.ref_id
 ;
--- 4 (03-04-2017)
--- 0 (02-05-2017)
--- Drieban (17-05-2017): 0
--- hoorn (19-5-2017): 4
--- Koegras (22-05-2017): 1
--- hhw (21 juni 2016): 0
 
 -- CHECK alle velden ingevuld
 DROP TABLE IF EXISTS feedback.orifice_without_crest_level;
@@ -708,12 +674,6 @@ WITH node_reference_levels as
 UPDATE v2_cross_section_location SET reference_level = lower_stop_level - 1
 FROM shortlist 
 WHERE id = csid;
--- 13 (03-04-2017)
--- 0 (02-05-2017)
--- Drieban (17-05-2017): 0
--- hoorn (19-5-2017): 1
--- Koegras (22-05-2017): 0
--- hhw (21 juni 2016): 0
 
 -- CHECK pump has no channel at start
 WITH node_reference_levels as
@@ -747,13 +707,6 @@ SELECT      DISTINCT ON (connection_node_start_id) connection_node_start_id, dis
             start_level + 2, NULL, 0
 FROM shortlist
 ;
--- 0 (03-04-2017)
--- 0 (02-05-2017)
--- Drieban (17-05-2017): 0
--- hoorn (19-5-20178): 5
--- Koegras (22-05-2017): 9
--- hhw (21 juni 2016): 0
-
 
 -- CHECK pump has no channel at end
 WITH node_reference_levels as
@@ -788,12 +741,6 @@ FROM shortlist
 WHERE connection_node_end_id NOT IN (SELECT id FROM v2_manhole) --Geen manhole toevoegen indien al aanwezig
 	AND connection_node_end_id IS NOT NULL
 ;
--- 0 (03-04-2017)
--- 0 (02-05-2017)
--- Drieban (17-05-2017): 1
--- hoorn (19-5-2017): 0
--- Koegras (22-05-2017): 5
--- hhw (21 juni 2016): 0
 
 -- CHECK losliggende connection nodes
 DROP TABLE IF EXISTS feedback.loose_connection_nodes;
@@ -828,12 +775,6 @@ SELECT id FROM v2_connection_nodes WHERE
 	AND id NOT IN (select connection_node_start_id from v2_orifice WHERE connection_node_start_id is not NULL)
 	AND id NOT IN (select connection_node_end_id from v2_orifice WHERE connection_node_end_id is not NULL))
 );
--- 0 (03-04-2017)
--- 0 (02-05-2017)
--- Drieban (17-05-2017): 0
--- hoorn (19-5-2017): 0
--- Koegras (22-05-2017): 0
--- hhw (21 juni 2016): 0
 
 -- helpt bij checken losse v2_connection_nodes
 DROP TABLE IF EXISTS tmp.pumpstation_view;
@@ -864,16 +805,6 @@ SELECT *, 'Connection node is only connected to v2_pumpstation'::text as remark 
 	))
 ; --> Hier goed naar kijken, waarom liggen ze op het einde en wat kunnen we er aan doen
 --> als de pomp aan het startpunt geen kanaal heeft pompt hij water uit het niets... 
---> Dit is mogelijke oorzaak van de crash van Koegras.
-
-/* 
-
-in castricum bevindt zich een gemaal dat uit een onderbemaling zonder watergangen pompt. Kan eigenlijk helemaalweg:
-DELETE FROM v2_pumpstation WHERE code LIKE 'KGM-Q-30545';
-DELETE FROM v2_manhole WHERE connection_node_id = 107;
-Hierna losse connection nodes nog weg gooien (staart hierboven nog eens draaien)
-
-*/
 
 -- CHECK alle connection nodes hebben initiele waterstand
 DROP TABLE IF EXISTS feedback.connection_node_without_initial_waterlevel;
@@ -927,24 +858,8 @@ WHERE a.cn_id = b.id
 DROP TABLE IF EXISTS feedback.short_lines;
 CREATE TABLE feedback.short_lines AS(
 SELECT *, 'Channel segment too short (<5m)'::text as remark FROM v2_channel WHERE ST_Length(the_geom) < 5);
--- 12 segmenten korter dan 1 meter (23 feb 2017)
--- 20 segmenten korter dan 1 meter (3 maart 2017)
--- 19 segmenten korter dan 1 meter (03-04-2017)
--- 17 segmenten korter dan 1 meter (02-05-2017)
--- Drieban (17-05-2017): 10 segmenten korter dan 1 meter
--- hoorn (19-5-2017): 75 segmenten korter dan 1 meter
--- Koegras (22-05-2017): 15 segmenten korter dan 1 meters
--- hhw (21 juni 2016): 14 segmenten kortdan dan 1 meters
 
---SELECT ST_Length(geom), inp_id FROM v1.channel ORDER BY ST_Length(geom)
-/*
--- CHECK alle v2 levees moeten binenn de dem liggen. Strenger dan v1
-DELETE FROM v2_levee
-WHERE id NOT IN (SELECT a.id FROM v2_levee as a, deelgebied.polder as b WHERE ST_Contains(b.geom,a.the_geom));
-*/
-
-
--- korte kanalsegmenten extra berging geven om het model sneller te maken
+-- korte kanaalsegmenten extra berging geven om het model sneller te maken
 WITH plenty_storage_channels AS (
 	SELECT connection_node_start_id as id
 	FROM v2_channel
@@ -998,8 +913,6 @@ UPDATE v2_control_table SET target_type = 'v2_orifice', target_id = target_id+10
 DELETE FROM v2_culvert
 WHERE ST_Length(the_geom) < 10
 ;
-
-
 
 -- tabllen weggooien
 DROP TABLE IF EXISTS tmp.pumpstation_view;
