@@ -36,22 +36,24 @@ ALTER TABLE checks.culvert DROP COLUMN IF EXISTS isusable;
 ALTER TABLE checks.culvert ADD COLUMN isusable integer DEFAULT 1;
 UPDATE checks.culvert
 SET isusable = 0
-WHERE opmerking LIKE ANY(ARRAY['%geen watergang%','%culvert on channel_nowayout%','%culvert on channel_loose%']); -- '%niet afsluitbaar op peilgrens%','%pomp op duiker%','%stuw op duiker%']);
+WHERE opmerking LIKE ANY(ARRAY['%geen watergang%','%culvert on channel_nowayout%','%culvert on channel_loose%'])
+OR NOT on_channel; -- '%niet afsluitbaar op peilgrens%','%pomp op duiker%','%stuw op duiker%']);
 
 --fixed_dam
 ALTER TABLE checks.fixed_dam DROP COLUMN IF EXISTS isusable;
 ALTER TABLE checks.fixed_dam ADD COLUMN isusable integer DEFAULT 1;
 UPDATE checks.fixed_dam
 SET isusable = 0
-WHERE opmerking IS NOT NULL;
+WHERE opmerking IS NOT NULL
+OR NOT on_channel;
 
 --pumpstation
 ALTER TABLE checks.pumpstation DROP COLUMN IF EXISTS isusable;
 ALTER TABLE checks.pumpstation ADD COLUMN isusable integer DEFAULT 1;
 UPDATE checks.pumpstation
 SET isusable = 0
-WHERE opmerking LIKE 
-ANY(ARRAY['%meerdere watergangen:%','%niet op peilgrens%','%geen watergang%'])
+WHERE (opmerking LIKE 
+ANY(ARRAY['%meerdere watergangen:%','%niet op peilgrens%','%geen watergang%']) OR NOT on_channel)
 AND opmerking NOT LIKE '%afvoer%'
 ;
 UPDATE checks.pumpstation
@@ -65,7 +67,8 @@ ALTER TABLE checks.weirs ADD COLUMN isusable integer DEFAULT 1;
 UPDATE checks.weirs
 SET isusable = 0
 WHERE opmerking LIKE 
-ANY(ARRAY['%meerdere watergangen:%','%niet op peilgrens%','%geen watergang%']); -- '%crest/startlevel onbetrouwbaar%' verwijderd
+ANY(ARRAY['%meerdere watergangen:%','%niet op peilgrens%','%geen watergang%'])
+OR NOT on_channel; -- '%crest/startlevel onbetrouwbaar%' verwijderd
 
 UPDATE checks.weirs
 SET isusable = 0
