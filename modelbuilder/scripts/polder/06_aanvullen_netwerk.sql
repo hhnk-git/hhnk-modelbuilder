@@ -1,5 +1,5 @@
 /*
-Vul het netwerk, gemaakt in de vorige stap, aan met de orginele code’s van de kunstwerken.
+Vul het netwerk, gemaakt in de vorige stap, aan met de orginele codes van de kunstwerken.
 */
 
 --TODO: moeten deze selectie naar een check tabel?

@@ -1,5 +1,5 @@
 /*
-Alle v2_control_* tabellen worden eerst leeggegooid. Het aangeleverde meetpunt zoekt de dichtstbijzijnde watergang en vervolgens het dichtstbijzijnde uiteinde. Dit zal het effectieve meetpunt voor de aangeleverde sturingsregel worden. Tevens worden de id’s van de te sturen kunstwerken gekoppeld aan de hand van de kunstwerk code. 
+Alle v2_control_* tabellen worden eerst leeggegooid. Het aangeleverde meetpunt zoekt de dichtstbijzijnde watergang en vervolgens het dichtstbijzijnde uiteinde. Dit zal het effectieve meetpunt voor de aangeleverde sturingsregel worden. Tevens worden de ids van de te sturen kunstwerken gekoppeld aan de hand van de kunstwerk code. 
 Vervolgens worden de tabellen gevuld.
 */
 
