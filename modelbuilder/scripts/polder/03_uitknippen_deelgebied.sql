@@ -1,12 +1,6 @@
--- clip database uit voor deelgebied
-
 /*
-deelgebied, polder_id
-Purmer, 20
-Heerhugo, 10
-Koegras, 54
-Drieban, 5
-Castricu, 30
+Dit script selecteerd uit de gecontroleerde gegevens alles dat binnen een deelgebied ligt. Het deelgebied is een poldercluster. Telkens wordt ook een selectie gedaan op 'isuable' of objecten in de nowayout vlakken, dus alleen objecten die correct zijn worden in het schema deelgebied meegenomen.
+Er wordt daarnaast feedback verzameld van slivers in de polder laag.
 */
 
 --Bepaal deelgebied polygon
@@ -55,9 +49,6 @@ WHERE ST_Intersects(b.geom,a.geom) AND a.isusable = 1
 ;
 DELETE FROM deelgebied.pumpstation a USING checks.channel_nowayout b WHERE ST_Intersects(a.geom,b.geom);
 CREATE INDEX deelgebied_pumpstation_geom ON deelgebied.pumpstation USING gist(geom);
-
---Verwijder alles wat niet 'afvoergemaal' of 'aan/afvoergemaal' is (PAS OP, watergangen worden niet verwijderd)
---DELETE FROM deelgebied.pumpstation WHERE type IN ('1','3','6','8','9') AND opmerking NOT LIKE '%afvoergemaal op poldergrens%';-- LET OP, keuze welke type pompen in model komen -- naar isusable?
 
 --Zet capaciteit van gemalen anders dan 'afvoergemaal' of 'aan/afvoergemaal' op 0 ipv verwijderen
 UPDATE deelgebied.pumpstation SET capacity = 0.0
@@ -274,18 +265,6 @@ FROM checks.orifice as a, deelgebied.polder as b
 WHERE ST_Intersects(b.geom,a.geom) 
 ;
 
-/*
-DROP TABLE IF EXISTS deelgebied.pump;
-CREATE TABLE deelgebied.pump AS
-SELECT a.* 
-FROM checks.pump as a 
-WHERE pump_station_id IN (
-	SELECT b.id
-	FROM deelgebied.pumpstation as b
-	)
-;
-*/
-
 --Knip peilgrenzen met waterpeil uit
 DROP TABLE IF EXISTS deelgebied.peilgrens_met_waterpeil;
 CREATE TABLE deelgebied.peilgrens_met_waterpeil AS
@@ -333,18 +312,3 @@ CREATE TABLE deelgebied.control_table AS(
 	WHERE ST_Intersects(b.geom,a.measurement_location)
 	AND is_usable
 	);
-
---Voer ogr2ogr uit om deelgebied naar nieuwe database te kopieren (voer uit op lokale pc met cmd.exe)
-/*
-cd I:\Data_Sources\work\E_verstegen\R0227_BWN2
-I:
-pg_dump --file=deelgebied_dump.backup --format=t --schema=deelgebied --host=nens-3di-db-03.nens.local --port=5432 --username=threedi --no-password work_r0227_referentiemodellen_20170704
-pg_dump --file=checks_fdla_dump.backup --format=t --table=checks.fixeddrainagelevelarea --host=nens-3di-db-03.nens.local --port=5432 --username=threedi --no-password work_r0227_referentiemodellen_20170704
-pg_dump --file=tmp_culvert_dump.backup --format=t --table=tmp.culvert_to_pumpstation --host=nens-3di-db-03.nens.local --port=5432 --username=threedi --no-password work_r0227_referentiemodellen_20170704
-
---GOOI DEELGEBIED LEEG (in target database)
-DROP SCHEMA IF EXISTS deelgebied CASCADE;
-CREATE SCHEMA deelgebied;
-
-pg_restore --dbname=work_r0227_heerhugowaard --schema=deelgebied --host=nens-3di-db-03.nens.local --port=5432 --username=threedi --no-password deelgebied_dump.backup
-*/

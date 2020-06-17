@@ -1,4 +1,7 @@
 #!/bin/bash
+# Bereidt de mappenstructuur voor het aanmaken van de rasters voor. Exporteer de polder en de uitgeknipte 
+# watervlakken als shapefiles en veraster de watervlakken om deze later dicht te smeren. 
+# Bepaalt de pixelgrootte afhankelijk van de omvang van de rasters
 rm /code/data/rasters -rf
 mkdir /code/data/rasters
 mkdir /code/data/rasters/tmp

@@ -1,3 +1,11 @@
+/*
+Voorbereiding van de profielen van de watergangen. Koppelt de ingemeten profiel-puntgeometrie aan een watergang. Watergangen die geen profiel hebben gekregen maar wel hun reach_id delen met een andere watergang krijgen het dichtstbijzijnde profiel (binnen 250 m) van de andere watergang. 
+
+Watergangen zonder profiel krijgen een profielen die zijn aangeleverd als getabelleerd of een leggerprofiel. De locatie van deze profielen is op het midden van het kanaal voor kanalen <= 40 meter en op 10% en 90% van de lengte voor kanalen van > 40m. 
+
+Locaties worden naar vertices van kanalen gesnapped of extra vertices worden aangemaakt om naar toe te snappen.
+*/
+
 -- profielen aanmaken voor het kanalen netwerk
 -- maak nieuwe serials voor id's
 DROP SEQUENCE IF EXISTS channelserial;
@@ -69,7 +77,7 @@ UPDATE deelgebied.tmp_sel_branches_without_structures SET geom = ST_LineMerge(ST
 WHERE ST_NPoints(geom) = 2;
 
 
---Determine the depth=fdla-reference_level
+--Determine the depth = fdla - reference_level
 ALTER TABLE deelgebied.crosssection DROP COLUMN IF EXISTS depth_under_fdl;
 ALTER TABLE deelgebied.crosssection ADD COLUMN depth_under_fdl double precision;
 UPDATE deelgebied.crosssection a SET depth_under_fdl = b.streefpeil_bwn2 - a.bed_level

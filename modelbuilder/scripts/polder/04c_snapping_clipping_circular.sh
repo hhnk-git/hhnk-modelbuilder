@@ -1,3 +1,9 @@
+## 
+# Dit script roept drie losse python scripts aan.
+# fix channels repareert mogelijke fouten in de geometrie van watergangen
+# clip channel by culvert knipt de duikers uit de watergangen
+# clip circular knipt watergangen met het start en eindpunt op elkaar in tweeen (mag niet in 3Di)
+##
 #!/bin/bash
 pwd
 python3 /code/modelbuilder/tools/threedi-base/manage.py 02_fix_channels /code/modelbuilder/tools/threedi-base/config.ini
