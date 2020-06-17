@@ -41,7 +41,7 @@ FROM (
 	select a.code, count(b.*) 
 	from checks.fixeddrainagelevelarea a, checks.pumpstation b 
 	where channel_type_id = 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.code
 	) as b
@@ -53,7 +53,7 @@ FROM (
 	select a.code, count(b.*) 
 	from checks.fixeddrainagelevelarea a, checks.pumpstation b 
 	where channel_type_id != 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.code
 	) as b
@@ -65,7 +65,7 @@ FROM (
 	select a.code, count(b.*) 
 	from checks.fixeddrainagelevelarea a, checks.culvert b 
 	where channel_type_id = 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.code
 	) as b
@@ -78,7 +78,7 @@ FROM (
 	select a.code, count(b.*) 
 	from checks.fixeddrainagelevelarea a, checks.culvert b 
 	where channel_type_id != 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.code
 	) as b
@@ -90,7 +90,7 @@ FROM (
 	select a.code, count(b.*) 
 	from checks.fixeddrainagelevelarea a, checks.weirs b 
 	where channel_type_id = 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.code
 	) as b
@@ -102,7 +102,7 @@ FROM (
 	select a.code, count(b.*) 
 	from checks.fixeddrainagelevelarea a, checks.weirs b 
 	where channel_type_id != 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.code
 	) as b

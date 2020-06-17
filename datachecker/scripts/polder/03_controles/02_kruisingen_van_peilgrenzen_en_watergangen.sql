@@ -330,7 +330,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS(
 		FROM checks.culvert
 		WHERE channel_code IS NOT NULL 
 		AND op_peilgrens = 1
-		AND opmerking NOT LIKE '%geen watergang%'-- opmerking bij duiker niet belangrijk omdat we alle duikers modelleren, evt. zetten we de duiker BOB omhoog.
+		AND on_channel
             UNION ALL
 		SELECT channel_code::integer, geom::geometry(Point,28992), NULL::geometry(Linestring,28992) as linegeom
 		FROM checks.fixed_dam
