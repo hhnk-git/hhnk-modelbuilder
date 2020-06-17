@@ -74,7 +74,7 @@ FROM (
 	select a.polder_id, count(b.*) 
 	from checks.polder a, checks.pumpstation b 
 	where channel_type_id = 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.polder_id
 	) as b
@@ -86,7 +86,7 @@ FROM (
 	select a.polder_id, count(b.*) 
 	from checks.polder a, checks.pumpstation b 
 	where channel_type_id != 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.polder_id
 	) as b
@@ -98,7 +98,7 @@ FROM (
 	select a.polder_id, count(b.*) 
 	from checks.polder a, checks.culvert b 
 	where channel_type_id = 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%' OR b.opmerking LIKE '%sifon in brondata niet exact op watergang%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%' OR b.opmerking LIKE '%sifon in brondata niet exact op watergang%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.polder_id
 	) as b
@@ -111,7 +111,7 @@ FROM (
 	select a.polder_id, count(b.*) 
 	from checks.polder a, checks.culvert b 
 	where channel_type_id != 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%' OR b.opmerking LIKE '%sifon in brondata niet exact op watergang%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%' OR b.opmerking LIKE '%sifon in brondata niet exact op watergang%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.polder_id
 	) as b
@@ -123,7 +123,7 @@ FROM (
 	select a.polder_id, count(b.*) 
 	from checks.polder a, checks.weirs b 
 	where channel_type_id = 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.polder_id
 	) as b
@@ -135,7 +135,7 @@ FROM (
 	select a.polder_id, count(b.*) 
 	from checks.polder a, checks.weirs b 
 	where channel_type_id != 1 and
-		(b.opmerking like '%geen watergang%' OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
+		(NOT b.on_channel OR b.opmerking LIKE '%meerdere%' OR b.opmerking LIKE '%niet op peilgrens%') and 
 		ST_Intersects(a.geom,b.geom)
 	GROUP BY a.polder_id
 	) as b
