@@ -1,3 +1,0 @@
-16914dbbc6b9d5298c9ec0b795e3146b951e166a
-
-docker-machine create default --virtualbox-no-vtx-check
