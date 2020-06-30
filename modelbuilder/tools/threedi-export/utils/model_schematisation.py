@@ -3,7 +3,7 @@
 
 import logging
 
-from sqlalchemy import Boolean, Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, Float, ForeignKey, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from geoalchemy2.types import Geometry
@@ -853,4 +853,48 @@ class SimpleInfiltration(Base):
     max_infiltration_capacity_file = Column(String(255), nullable=False, default="")
     display_name = Column(String(255), nullable=False, default="")
     
-# TODO: add, floodfill, v2 pumpeddrainagearea
+# TODO: add, floodfill, v2 pumpeddrainagearea control
+
+class ControlGroup(Base):
+    __tablename__ = "v2_control_group"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False, default="")
+    description = Column(Text, nullable=False, default="")
+
+class ControlMeasureGroup(Base):
+    __tablename__ = "v2_control_measure_group"
+    
+    id = Column(Integer, primary_key=True)
+
+class ControlMeasureMap(Base):
+    __tablename__ = "v2_control_measure_map"
+    
+    id = Column(Integer, primary_key=True)
+    measure_group_id = Column(Integer, ForeignKey(ControlMeasureGroup.__tablename__ + ".id"), nullable=False)
+    object_type = Column(String(100), nullable=False, default="")
+    object_id = Column(Integer)
+    weight = Column(Float)
+
+class Control(Base):
+    __tablename__ = "v2_control"
+    
+    id = Column(Integer, primary_key=True)
+    control_group_id = Column(Integer, ForeignKey(ControlGroup.__tablename__ + ".id"), nullable=False)
+    control_type = Column(String(15), nullable=False, default="")
+    control_id = Column(Integer)
+    measure_group_id = Column(Integer, ForeignKey(ControlMeasureGroup.__tablename__ + ".id"), nullable=False)
+    start = Column(String(50))
+    end = Column(String(50))
+    measure_frequency = Column(Integer)
+    
+class ControlTable(Base):
+    __tablename__ = "v2_control_table"
+    
+    id = Column(Integer, primary_key = True)
+    action_type = Column(String(50), nullable = False)
+    measure_variable = Column(String(50), nullable = False)
+    target_type = Column(String(100), nullable = False)
+    target_id = Column(Integer)
+    measure_operator = Column(String(2), nullable = False)
+    action_table = Column(Text)
