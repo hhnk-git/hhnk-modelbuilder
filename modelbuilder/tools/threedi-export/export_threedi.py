@@ -31,6 +31,11 @@ from utils.model_schematisation import (
     Interflow,
     AggregationSettings,
     SimpleInfiltration,
+    ControlGroup,
+    ControlMeasureGroup,
+    ControlMeasureMap,
+    Control,
+    ControlTable,
 )
 from sqlalchemy.orm import load_only
 from utils.constants import Constants
@@ -103,6 +108,12 @@ def export_threedi(**kwargs):
     interflows = []
     aggregation_settings = []
     simple_infiltrations = []
+    
+    control_groups = []
+    control_measure_groups = []
+    control_measure_maps = []
+    controls = []
+    control_tables = []
 
     sqlite_template = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "spatialite_template.sqlite"
@@ -300,6 +311,38 @@ def export_threedi(**kwargs):
         fetch=True,
     ):
         add_simple_infiltration(simple_infiltrations, postgis_simple_infiltration)
+        
+    for postgis_control_group in execute_sql_statement(
+        "select id, name, description FROM v2_control_group",
+        fetch=True,
+    ):
+        add_control_group(control_groups, postgis_control_group)
+
+    for postgis_control_measure_group in execute_sql_statement(
+        "select id FROM v2_control_measure_group",
+        fetch=True,
+    ):
+        add_control_measure_group(control_measure_groups, postgis_control_measure_group)
+        
+    for postgis_control_measure_map in execute_sql_statement(
+        "select id, measure_group_id, object_type, object_id, weight FROM v2_control_measure_map",
+        fetch=True,
+    ):
+        add_control_measure_map(control_measure_maps, postgis_control_measure_map)
+
+    for postgis_control in execute_sql_statement(
+        "select id, control_group_id, control_type, control_id, measure_group_id, \"start\", \"end\", measure_frequency FROM v2_control",
+        fetch=True,
+    ):
+        add_control(controls, postgis_control)
+
+    for postgis_control_table in execute_sql_statement(
+        "select id, action_type, measure_variable, target_type, target_id, measure_operator, action_table FROM v2_control_table",
+        fetch=True,
+    ):
+        add_control_table(control_tables, postgis_control_table)
+
+
 
     export_to_db(
         session,
@@ -333,6 +376,11 @@ def export_threedi(**kwargs):
         interflows,
         aggregation_settings,
         simple_infiltrations,
+        control_groups,
+        control_measure_groups,
+        control_measure_maps,
+        controls,
+        control_tables,
     )
 
 
@@ -368,6 +416,11 @@ def export_to_db(
     interflows,
     aggregation_settings,
     simple_infiltrations,
+    control_groups,
+    control_measure_groups,
+    control_measure_maps,
+    controls,
+    control_tables,
 ):
     commit_counts = {}
     connection_node_list = []
@@ -1046,7 +1099,80 @@ def export_to_db(
     commit_counts["simple_infiltration_settings"] = len(simple_infiltrations_list)
     session.bulk_save_objects(simple_infiltrations_list)
     session.commit()
-
+    
+    control_groups_list = []
+    for control_group in control_groups:
+        control_groups_list.append(
+            ControlGroup(
+                id=control_group["id"],
+                name=control_group["name"],
+                description=control_group["description"],
+            )
+        )
+    commit_counts["control_group"] = len(control_groups_list)
+    session.bulk_save_objects(control_groups_list)
+    session.commit()
+    
+    control_measure_groups_list = []
+    for control_measure_group in control_measure_groups:
+        control_measure_groups_list.append(
+            ControlMeasureGroup(
+                id=control_measure_group["id"],
+            )
+        )
+    commit_counts["control_measure_group"] = len(control_measure_groups_list)
+    session.bulk_save_objects(control_measure_groups_list)
+    session.commit()
+    
+    control_measure_maps_list = []
+    for control_measure_map in control_measure_maps:
+        control_measure_maps_list.append(
+            ControlMeasureMap(
+                id=control_measure_map["id"],
+                measure_group_id=control_measure_map["measure_group_id"],
+                object_type=control_measure_map["object_type"],
+                object_id=control_measure_map["object_id"],
+                weight=control_measure_map["weight"],
+            )
+        )
+    commit_counts["control_measure_map"] = len(control_measure_maps_list)
+    session.bulk_save_objects(control_measure_maps_list)
+    session.commit()
+    
+    controls_list = []
+    for control in controls:
+        controls_list.append(
+            Control(
+                id=control["id"],
+                control_group_id=control["control_group_id"],
+                control_type=control["control_type"],
+                control_id=control["control_id"],
+                measure_group_id=control["measure_group_id"],
+                start=control["start"],
+                end=control["end"],
+                measure_frequency=control["measure_frequency"],
+            )
+        )
+    commit_counts["control"] = len(controls_list)
+    session.bulk_save_objects(controls_list)
+    session.commit()
+    
+    control_tables_list = []
+    for control_table in control_tables:
+        control_tables_list.append(
+            ControlTable(
+                id=control_table["id"],
+                action_type=control_table["action_type"],
+                measure_variable=control_table["measure_variable"],
+                target_type=control_table["target_type"],
+                target_id=control_table["target_id"],
+                measure_operator=control_table["measure_operator"],
+                action_table=control_table["action_table"],
+            )
+        )
+    commit_counts["control_table"] = len(control_tables_list)
+    session.bulk_save_objects(control_tables_list)
+    session.commit()
 
 def add_connection_node(connection_nodes, postgis_connection_node):
     """Add hydx.connection_node into threedi.connection_node and threedi.manhole"""
@@ -1571,6 +1697,61 @@ def add_simple_infiltration(simple_infiltrations, postgis_simple_infiltration):
     }
     simple_infiltrations.append(simple_infiltration)
     return simple_infiltrations
+
+def add_control_group(control_groups, postgis_control_group):
+    control_group = {
+        "id": postgis_control_group[0],
+        "name": postgis_control_group[1],
+        "description": postgis_control_group[2],
+    }
+    control_groups.append(control_group)
+    return control_groups
+
+def add_control_measure_group(control_measure_groups, postgis_control_measure_group):
+    control_measure_group = {
+        "id": postgis_control_measure_group[0],
+    }
+    control_measure_groups.append(control_measure_group)
+    return control_measure_groups
+
+def add_control_measure_map(control_measure_maps, postgis_control_measure_map):
+    control_measure_map = {
+        "id": postgis_control_measure_map[0],
+        "measure_group_id": postgis_control_measure_map[1],
+        "object_type": postgis_control_measure_map[2],
+        "object_id": postgis_control_measure_map[3],
+        "weight": postgis_control_measure_map[4],
+    }
+    control_measure_maps.append(control_measure_map)
+    return control_measure_maps
+
+def add_control(controls, postgis_control):
+    control = {
+        "id": postgis_control[0],
+        "control_group_id": postgis_control[1],
+        "control_type": postgis_control[2],
+        "control_id": postgis_control[3],
+        "measure_group_id": postgis_control[4],
+        "start": postgis_control[5],
+        "end": postgis_control[6],
+        "measure_frequency": postgis_control[7],
+    }
+    controls.append(control)
+    return controls
+    
+def add_control_table(control_tables, postgis_control_table):
+    control_table = {
+        "id": postgis_control_table[0],
+        "action_type": postgis_control_table[1],
+        "measure_variable": postgis_control_table[2],
+        "target_type": postgis_control_table[3],
+        "target_id": postgis_control_table[4],
+        "measure_operator": postgis_control_table[5],
+        "action_table": postgis_control_table[6],
+
+    }
+    control_tables.append(control_table)
+    return control_tables
 
 def execute_sql_statement(sql_statement, fetch=True):
         """
