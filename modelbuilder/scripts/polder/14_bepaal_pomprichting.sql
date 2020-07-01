@@ -31,22 +31,5 @@ lower_stop_level = least(b.ini_wl_start,b.ini_wl_end)-0.03
 FROM (SELECT * FROM tmp.pump_conn_node_level) b
 WHERE a.id = b.pumpstation_id;
 
-DROP TABLE IF EXISTS tmp.connection_node_fdla;
-CREATE TABLE tmp.connection_node_fdla AS(
-	SELECT 
-		a.id as connection_node_id, 
-		b.code as fdla_code, 
-		b.streefpeil_bwn2
-	FROM 
-		v2_connection_nodes a
-	LEFT JOIN
-		deelgebied.fixeddrainagelevelarea b
-	ON 
-		(		
-				a.id IN (SELECT connection_node_start_id 	FROM v2_pumpstation)
-			OR 	a.id IN (SELECT connection_node_end_id 		FROM v2_pumpstation)
-		)
-		AND ST_Intersects(a.the_geom,b.geom)
-);
 
 
