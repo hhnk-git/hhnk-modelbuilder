@@ -4,6 +4,24 @@ Gemalen op de poldergrens krijgen geen connection end node zodat ze als randvoor
 
 
 -- koppeling tussen gemalen en peil
+DROP TABLE IF EXISTS tmp.connection_node_fdla;
+CREATE TABLE tmp.connection_node_fdla AS(
+	SELECT 
+		a.id as connection_node_id, 
+		b.code as fdla_code, 
+		b.streefpeil_bwn2
+	FROM 
+		v2_connection_nodes a
+	LEFT JOIN
+		deelgebied.fixeddrainagelevelarea b
+	ON 
+		(		
+				a.id IN (SELECT connection_node_start_id 	FROM v2_pumpstation)
+			OR 	a.id IN (SELECT connection_node_end_id 		FROM v2_pumpstation)
+		)
+		AND ST_Intersects(a.the_geom,b.geom)
+);
+
 DROP TABLE IF EXISTS tmp.pumpstation_peil;
 CREATE TABLE tmp.pumpstation_peil AS(
 	SELECT 
