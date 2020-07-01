@@ -201,6 +201,33 @@ delete from deelgebied.grid where id not in (select a.id from deelgebied.grid a,
 -- KANAAL TYPES
 -- $$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+-- selecteer primaire afvoerwatergangen
+DROP TABLE IF EXISTS tmp.channel_type_linemerge; 
+CREATE TABLE tmp.channel_type_linemerge AS
+SELECT (ST_dump(
+	ST_Buffer(
+	ST_UNION(
+	a.geom
+	)
+	,0.1)
+	)).geom as bufgeom,
+	b.polder_id
+FROM deelgebied.channel as a, deelgebied.polder as b
+WHERE channel_type_id = 1 AND ST_Intersects(a.geom,b.geom)
+GROUP BY b.polder_id
+;
+CREATE INDEX tmp_channel_type_linemerge_bufgeom ON tmp.channel_type_linemerge USING gist(bufgeom);
+
+DROP TABLE IF EXISTS tmp.channel_afvoer;
+CREATE TABLE tmp.channel_afvoer AS
+SELECT DISTINCT a.polder_id, ST_Simplify(a.bufgeom,0.1) as bufgeom
+FROM tmp.channel_type_linemerge as a, deelgebied.afvoerkunstwerken as b
+WHERE ST_Intersects(a.bufgeom,b.geom)
+;
+CREATE INDEX tmp_channel_afvoer_bufgeom ON tmp.channel_afvoer USING gist(bufgeom);
+
+
+
 -- channel type             zoom_category
 -- embedded (100)           2
 -- isolated (101)           3
