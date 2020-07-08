@@ -15,7 +15,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS(
 		SELECT channel_code::integer, NULL, geom::geometry(Linestring,28992) as linegeom
 		FROM checks.culvert
 		WHERE channel_code IS NOT NULL 
-		AND op_peilgrens = 1
+		AND op_peilgrens
 		AND on_channel
             UNION ALL
 		SELECT channel_code::integer, geom::geometry(Point,28992), NULL::geometry(Linestring,28992) as linegeom

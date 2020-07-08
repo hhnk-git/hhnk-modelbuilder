@@ -62,22 +62,74 @@ UPDATE checks.culvert a SET
 		WHEN array_length(fixeddrainagelevelarea_array_2,1) > 2 THEN (array_remove(fixeddrainagelevelarea_array_2,fixeddrainagelevelarea_array_1[1]))[1]
 	END;
 
-    
--- 1.2) Welke duikers/sifon's kruisen de bufgeom van een peilgrens EN beginnen en eindigen niet in hetzelfde peilgebied. Deze krijgen op_peilgrens = 1.
+--Defining characteristics of culverts
 ALTER TABLE checks.culvert DROP COLUMN IF EXISTS op_peilgrens;
-ALTER TABLE checks.culvert ADD COLUMN op_peilgrens integer;
+ALTER TABLE checks.culvert ADD COLUMN op_peilgrens BOOLEAN;
+
+ALTER TABLE checks.culvert DROP COLUMN IF EXISTS hdb_open;
+ALTER TABLE checks.culvert ADD COLUMN hdb_open BOOLEAN;
+
+ALTER TABLE checks.culvert DROP COLUMN IF EXISTS closeable;
+ALTER TABLE checks.culvert ADD COLUMN closeable BOOLEAN;
+
+ALTER TABLE checks.culvert DROP COLUMN IF EXISTS inlet;
+ALTER TABLE checks.culvert ADD COLUMN inlet BOOLEAN;
+
+--Duikers/sifon's kruisen de bufgeom van een peilgrens EN beginnen en eindigen niet in hetzelfde peilgebied. Deze krijgen op_peilgrens.
 UPDATE checks.culvert a 
-    SET op_peilgrens = 1 
+    SET op_peilgrens = True 
     FROM tmp.peilgrenzen as b 
 	WHERE a.fixeddrainagelevelarea_array_1 <> a.fixeddrainagelevelarea_array_2
     AND ST_Intersects(a.geom,b.geom);
+UPDATE checks.culvert SET op_peilgrens = False where op_peilgrens is NULL;
+
+-- Closable geeft aan of de duikers afsluitbaar zijn, dit is afhankelijk van 'type'
+UPDATE checks.culvert SET 
+    closeable = 
+    CASE 
+        WHEN type IN (3,4,7,8) THEN True
+        WHEN type IN (1,2,5,6) THEN False
+        ELSE NULL
+    END;
+
+-- hdb_open geeft aan of de duikers open zijn, volgens de HDB
+UPDATE checks.culvert a
+	SET hdb_open = True 
+    FROM hdb.duikers_op_peilgrens as b
+	WHERE a.code = b.code
+	AND a.code IN (
+		SELECT code 
+		FROM hdb.duikers_op_peilgrens
+		WHERE modelleren_als LIKE '%open%');
+UPDATE checks.culvert SET hdb_open = False where hdb_open is NULL;
+
+-- inlet geeft aan of de duiker een inlaat is of niet.
+UPDATE checks.culvert SET 
+    inlet = 
+    CASE 
+        WHEN type in (1,3,5,7) THEN TRUE
+        WHEN type in (2,4,6,8) THEN FALSE
+        ELSE NULL
+    END;
+    
+-- pomp binnen 10 cm van duiker --> checks.culvert.pump_attached
+-- indpeilregulpeilscheidend --> level_separator_indicator
+
+-- 1.2) Welke duikers/sifon's kruisen de bufgeom van een peilgrens EN beginnen en eindigen niet in hetzelfde peilgebied. Deze krijgen op_peilgrens.
+/*
+UPDATE checks.culvert a 
+    SET op_peilgrens =
+    FROM tmp.peilgrenzen as b 
+	WHERE a.fixeddrainagelevelarea_array_1 <> a.fixeddrainagelevelarea_array_2
+    AND ST_Intersects(a.geom,b.geom);
+*/    
 -- sifon's gaan bijna altijd van zelfde peilgebied naar andere peilgebied. Als ze dat niet doen, dan komen ze hier terug met 'op_peilgrens=1'
 
 -- 1.3) Als er een stuw op die duiker ligt, kunnen we het peil handhaven met de stuw. De duiker ligt dus eigenlijk niet op de peilgrens. Als we verderop de channel_nowayout gaan bepallen wordt (met onderstaande code) deze culvert niet als blokerend segment gezien en weggegooid
 UPDATE checks.culvert a 
     SET op_peilgrens = NULL
     FROM checks.weirs as b
-    WHERE op_peilgrens = 1 AND b.opmerking IS NULL AND ST_DWithin(a.geom,b.geom,0.1);
+    WHERE op_peilgrens AND b.opmerking IS NULL AND ST_DWithin(a.geom,b.geom,0.1);
         
 -- 1.4) zet de polders om in lijnen als poldergrenzen
 DROP TABLE IF EXISTS tmp.poldergrenzen;
@@ -107,7 +159,7 @@ UPDATE checks.culvert
     SET     opmerking = concat_ws(',',opmerking,'niet afsluitbaar op peilgrens'),
 			discharge_coefficient_positive = 0.0,
 			discharge_coefficient_negative = 0.0
-    WHERE op_peilgrens = 1
+    WHERE op_peilgrens
 		AND (NOT level_seperator_indicator OR level_seperator_indicator IS NULL)
 		AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
 		AND type IN (1,2,5,6,9999)	--Niet afsluitbaar
@@ -122,7 +174,7 @@ UPDATE checks.culvert
 -- Duiker/sifon kruist peilgrens, is niet afsluitbaar en heeft geen stuw of gemaal aangesloten. Volgens HDB toch open modelleren: zet BOB op max streefpeil
 UPDATE checks.culvert
     SET opmerking = concat_ws(',',opmerking,'niet afsluitbaar (hdb:open) op peilgrens') 
-	WHERE op_peilgrens = 1
+	WHERE op_peilgrens
 		AND (NOT level_seperator_indicator OR level_seperator_indicator IS NULL)
 		AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
 		AND type IN (1,2,5,6,9999)	--Niet afsluitbaar
@@ -143,7 +195,7 @@ UPDATE checks.culvert a
 		ON b.fixeddrainagelevelarea_id_2 = d.id
 		) e
 	WHERE a.id = e.id
-	AND op_peilgrens = 1
+	AND op_peilgrens
 	AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
 	AND a.code IN (
 		SELECT code 
@@ -154,7 +206,7 @@ UPDATE checks.culvert a
 -- Duiker/sifon kruist peilgrens, is niet afsluitbaar maar ligt op hoogte: zet BOB op max(streefpeil_beneden,streefpeil_boven,bob)		
 UPDATE checks.culvert
     SET opmerking = concat_ws(',',opmerking,'duiker op overstort') 
-	WHERE op_peilgrens = 1
+	WHERE op_peilgrens
 		AND level_seperator_indicator
 		AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
 		AND type IN (1,2,5,6,9999)	--Niet afsluitbaar
@@ -180,7 +232,7 @@ UPDATE checks.culvert
 	opmerking = concat_ws(',',opmerking,'afsluitbare inlaat op peilgrens'),
 	discharge_coefficient_positive = 0.0,
 	discharge_coefficient_negative = 0.0
-	WHERE op_peilgrens = 1
+	WHERE op_peilgrens
 	AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
     AND type IN (3,7); -- afsluitbare inlaat duikers en afsluitbare inlaat sifons (type 3 = duiker, type 7 = syphon)
 	--1118 (01-05-2017)
@@ -190,7 +242,7 @@ UPDATE checks.culvert
     SET opmerking = concat_ws(',',opmerking,'afsluitbare afvoer op peilgrens'),
 	discharge_coefficient_positive = 0.0,
 	discharge_coefficient_negative = 0.0
-	WHERE op_peilgrens = 1
+	WHERE op_peilgrens
 	AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
     AND type IN (4,8)
 	AND code NOT IN (SELECT code FROM hdb.duikers_op_peilgrens WHERE modelleren_als LIKE '%open%')
@@ -207,7 +259,7 @@ UPDATE checks.culvert a
 		ON b.fixeddrainagelevelarea_id_1 = c.id
 		LEFT JOIN checks.fixeddrainagelevelarea d
 		ON b.fixeddrainagelevelarea_id_2 = d.id
-			WHERE b.op_peilgrens = 1
+			WHERE b.op_peilgrens
 			AND (b.opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR b.opmerking IS NULL)
 			AND b.type IN (4,8)
 			AND b.code IN (SELECT code FROM hdb.duikers_op_peilgrens WHERE modelleren_als LIKE '%open%')
