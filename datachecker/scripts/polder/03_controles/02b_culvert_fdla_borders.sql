@@ -75,6 +75,14 @@ ALTER TABLE checks.culvert ADD COLUMN closeable BOOLEAN;
 ALTER TABLE checks.culvert DROP COLUMN IF EXISTS inlet;
 ALTER TABLE checks.culvert ADD COLUMN inlet BOOLEAN;
 
+ALTER TABLE checks.culvert DROP COLUMN IF EXISTS attached;
+ALTER TABLE checks.culvert ADD COLUMN attached BOOLEAN;
+
+UPDATE checks.culvert 
+SET attached = opmerking LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']);
+UPDATE checks.culvert SET attached = False where attached is NULL;
+
+
 --Duikers/sifon's kruisen de bufgeom van een peilgrens EN beginnen en eindigen niet in hetzelfde peilgebied. Deze krijgen op_peilgrens.
 UPDATE checks.culvert a 
     SET op_peilgrens = True 
@@ -112,7 +120,7 @@ UPDATE checks.culvert SET
         ELSE NULL
     END;
     
--- pomp binnen 10 cm van duiker --> checks.culvert.pump_attached
+-- pomp binnen 10 cm van duiker --> checks.culvert.attached
 -- indpeilregulpeilscheidend --> level_separator_indicator
 
 -- 1.2) Welke duikers/sifon's kruisen de bufgeom van een peilgrens EN beginnen en eindigen niet in hetzelfde peilgebied. Deze krijgen op_peilgrens.
@@ -161,13 +169,9 @@ UPDATE checks.culvert
 			discharge_coefficient_negative = 0.0
     WHERE op_peilgrens
 		AND (NOT level_seperator_indicator OR level_seperator_indicator IS NULL)
-		AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
-		AND type IN (1,2,5,6,9999)	--Niet afsluitbaar
-		AND code NOT IN (
-			SELECT code 
-			FROM hdb.duikers_op_peilgrens
-			WHERE modelleren_als LIKE '%open%'
-			);
+		AND NOT attached
+		AND NOT closeable	--Niet afsluitbaar
+		AND NOT  hdb_open;
 		--616 (01-05-2017)
 		--1699 (27-06-2017) meer omdat ook type 9999 is toegevoegd
 
@@ -176,13 +180,9 @@ UPDATE checks.culvert
     SET opmerking = concat_ws(',',opmerking,'niet afsluitbaar (hdb:open) op peilgrens') 
 	WHERE op_peilgrens
 		AND (NOT level_seperator_indicator OR level_seperator_indicator IS NULL)
-		AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
-		AND type IN (1,2,5,6,9999)	--Niet afsluitbaar
-		AND code IN (
-			SELECT code 
-			FROM hdb.duikers_op_peilgrens
-			WHERE modelleren_als LIKE '%open%'
-			);	
+		AND NOT attached
+		AND NOT closeable	--Niet afsluitbaar
+		AND hdb_open;
 			
 -- Zet bovenstroomse BOB op maximale streefpeil
 UPDATE checks.culvert a
@@ -196,11 +196,8 @@ UPDATE checks.culvert a
 		) e
 	WHERE a.id = e.id
 	AND op_peilgrens
-	AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
-	AND a.code IN (
-		SELECT code 
-		FROM hdb.duikers_op_peilgrens
-		WHERE modelleren_als LIKE '%open%');
+	AND NOT attached
+	AND hdb_open;
 		
 
 -- Duiker/sifon kruist peilgrens, is niet afsluitbaar maar ligt op hoogte: zet BOB op max(streefpeil_beneden,streefpeil_boven,bob)		
@@ -208,8 +205,8 @@ UPDATE checks.culvert
     SET opmerking = concat_ws(',',opmerking,'duiker op overstort') 
 	WHERE op_peilgrens
 		AND level_seperator_indicator
-		AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
-		AND type IN (1,2,5,6,9999)	--Niet afsluitbaar
+		AND NOT attached
+		AND NOT closeable	--Niet afsluitbaar
 ;					
 		
 UPDATE checks.culvert a	
@@ -233,7 +230,7 @@ UPDATE checks.culvert
 	discharge_coefficient_positive = 0.0,
 	discharge_coefficient_negative = 0.0
 	WHERE op_peilgrens
-	AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
+	AND NOT attached
     AND type IN (3,7); -- afsluitbare inlaat duikers en afsluitbare inlaat sifons (type 3 = duiker, type 7 = syphon)
 	--1118 (01-05-2017)
 	
@@ -243,10 +240,9 @@ UPDATE checks.culvert
 	discharge_coefficient_positive = 0.0,
 	discharge_coefficient_negative = 0.0
 	WHERE op_peilgrens
-	AND (opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR opmerking IS NULL)
+	AND NOT attached
     AND type IN (4,8)
-	AND code NOT IN (SELECT code FROM hdb.duikers_op_peilgrens WHERE modelleren_als LIKE '%open%')
-	; -- afsluitbare duikers (anders dan inlaat duiker), en afsluitbare sifons (anders dan inlaat sifon)
+	AND NOT hdb_open;-- afsluitbare duikers (anders dan inlaat duiker), en afsluitbare sifons (anders dan inlaat sifon)
 
 -- Zet bovenstroomse BOB op maximale streefpeil (indien hdb zegt modelleren_als 'open'
 UPDATE checks.culvert a
@@ -260,8 +256,8 @@ UPDATE checks.culvert a
 		LEFT JOIN checks.fixeddrainagelevelarea d
 		ON b.fixeddrainagelevelarea_id_2 = d.id
 			WHERE b.op_peilgrens
-			AND (b.opmerking NOT LIKE ALL(ARRAY['%pomp op duiker%','%stuw op duiker%']) OR b.opmerking IS NULL)
+			AND NOT b.attached
 			AND b.type IN (4,8)
-			AND b.code IN (SELECT code FROM hdb.duikers_op_peilgrens WHERE modelleren_als LIKE '%open%')
+			AND hdb_open
 		) e
 	WHERE a.id = e.id;
