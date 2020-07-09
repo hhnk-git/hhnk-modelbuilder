@@ -89,8 +89,12 @@ UPDATE checks.culvert a
     FROM tmp.peilgrenzen as b 
 	WHERE a.fixeddrainagelevelarea_array_1 <> a.fixeddrainagelevelarea_array_2
     AND ST_Intersects(a.geom,b.geom);
-UPDATE checks.culvert SET op_peilgrens = False where op_peilgrens is NULL;
-
+    
+UPDATE checks.culvert a 
+    SET op_peilgrens = FALSE
+    FROM checks.weirs as b
+    WHERE op_peilgrens is NULL or ST_DWithin(a.geom,b.geom,0.1);
+    
 -- Closable geeft aan of de duikers afsluitbaar zijn, dit is afhankelijk van 'type'
 UPDATE checks.culvert SET 
     closeable = 
