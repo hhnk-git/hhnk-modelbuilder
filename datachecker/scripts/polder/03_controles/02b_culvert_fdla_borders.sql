@@ -100,7 +100,7 @@ UPDATE checks.culvert SET
     closeable = 
     CASE 
         WHEN type IN (3,4,7,8) THEN True
-        WHEN type IN (1,2,5,6) THEN False
+        WHEN type IN (1,2,5,6, 9999) THEN False
         ELSE NULL
     END;
 
