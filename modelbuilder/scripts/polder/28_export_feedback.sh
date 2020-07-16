@@ -1,6 +1,7 @@
 #!/bin/bash
 # De feedbacktabel uit stap 25 wordt geëxporteerd naar een shapefile.  
 # De misfits uit stap 5 worden geëxporteerd naar een shapefile 
+# De voronoi oppervlakken worden weggeschreven
 # Logfiles worden weggeschreven 
 
 rm -rf /code/data/output/models/feedback/
@@ -9,6 +10,7 @@ ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.feedback" -nln feedback -f "ES
 ogr2ogr -overwrite -sql "SELECT * FROM feedback.misfits WHERE ST_GeometryType(geom) LIKE 'ST_Point'" -nln misfit_points -f "ESRI Shapefile" /code/data/output/models/feedback/misfit_points.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -nlt Point -a_srs EPSG:28992
 ogr2ogr -overwrite -sql "SELECT * FROM feedback.misfits WHERE ST_GeometryType(geom) LIKE 'ST_LineString'" -nln misfit_lines -f "ESRI Shapefile" /code/data/output/models/feedback/misfit_lines.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -nlt LineString -a_srs EPSG:28992
 ogr2ogr -overwrite -sql "SELECT * FROM feedback.channel_surface_from_profiles" -nln channel_surface_from_profiles -f "ESRI Shapefile" /code/data/output/models/feedback/channel_surface_from_profiles.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -nlt Polygon -a_srs EPSG:28992
+ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.voronoi_output" -nln voronoi_output -f "ESRI Shapefile" /code/data/output/models/feedback/voronoi_output.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -nlt MultiPolygon -a_srs EPSG:28992
 #rm -r ./logging/modelbuilder_logfiles/
 #mkdir ./logging/modelbuilder_logfiles/
 #cp ./logging/modelbuilder_logging.txt ./logging/modelbuilder_logfiles/modelbuilder_general.log
