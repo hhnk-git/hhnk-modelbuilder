@@ -46,7 +46,7 @@ UPDATE checks.culvert as a
 SET bed_level_upstream = b.bed_level, 
 	aanname = concat_ws(',',a.aanname,'bed_level_up from channel')
 FROM checks.channel as b
-WHERE ST_Intersects(a.geom,b.bufgeom) 
+WHERE ST_Intersects(b.bufgeom,a.geom) 
 	AND a.bed_level_upstream IS NULL
 	AND (a.opmerking NOT LIKE ALL (ARRAY['%niet afsluitbaar op peilgrens%','%afsluitbare inlaat op peilgrens%','%afsluitbare afvoer op peilgrens%']) OR a.opmerking IS NULL)
 ;
@@ -65,7 +65,7 @@ UPDATE checks.culvert as a
 SET bed_level_downstream = b.bed_level, 
 	aanname = concat_ws(',',a.aanname,'bed_level_down from channel')
 FROM checks.channel as b
-WHERE ST_Intersects(a.geom,b.bufgeom) 
+WHERE ST_Intersects(b.bufgeom, a.geom) 
 	AND a.bed_level_downstream IS NULL
 ;
  -- LET OP bob naar beneden getrokken!  Afweging is dat meestal zal de bed level verkeerd zijn ingevuld

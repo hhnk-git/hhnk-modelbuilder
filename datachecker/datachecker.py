@@ -129,6 +129,8 @@ def datachecker(**kwargs):
                         #execute .sql file
                         logging.debug('Executing .sql file')
                         #result = execute_sql_file_multiple_transactions(file_path)
+                        #if '12_controle_logisch_bereik_en_aannames_culverts' in file_path:
+                        #    return 'skip'
                         result = execute_sql_file_multiple_transactions(file_path)
                     elif file_path.endswith('.sh'):
                         logging.debug('Executing .sh file')
