@@ -18,6 +18,52 @@ Talud Bodemdiepte Drooglegging Bodembreedte Bodemweerstand (Strickler waarde)
 primair 1:2 1 0 3 30
 overig 1:1.5 0.5 0 1 20
 */
+--Add polder-type to channel
+ALTER TABLE checks.channel DROP COLUMN IF EXISTS typering
+;
+
+ALTER TABLE checks.channel ADD COLUMN typering varchar(50)
+;
+
+UPDATE
+    checks.channel as a
+SET typering = b.polder_type
+FROM
+    checks.polder as b
+WHERE
+    ST_Intersects(a.geom,b.geom)
+;
+
+ALTER TABLE checks.pumpstation DROP COLUMN IF EXISTS typering
+;
+
+ALTER TABLE checks.pumpstation ADD COLUMN typering varchar(50)
+;
+
+UPDATE
+    checks.pumpstation as a
+SET typering = b.polder_type
+FROM
+    checks.polder as b
+WHERE
+    ST_Intersects(a.geom,b.geom)
+;
+
+ALTER TABLE checks.crosssection DROP COLUMN IF EXISTS typering
+;
+
+ALTER TABLE checks.crosssection ADD COLUMN typering varchar(50)
+;
+
+UPDATE
+    checks.crosssection as a
+SET typering = b.polder_type
+FROM
+    checks.polder as b
+WHERE
+    ST_Intersects(a.geom,b.geom)
+;
+
 -- talud
 ALTER TABLE checks.channel DROP COLUMN IF EXISTS aanname
 ;
@@ -99,7 +145,8 @@ WHERE
         OR a.bed_level IS NULL
     )
     AND typering <> 'Hellend'
-; --147 sec
+;
+
 UPDATE
     checks.channel as a
 SET bed_level = b.streefpeil_bwn2 - 1
