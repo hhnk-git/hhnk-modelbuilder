@@ -12,9 +12,7 @@ Kopieer relevante data van peilgebied tabel. Moet minimaal bevatten:
 -id
 -geom
 
-Indicatie van duur van deze stap:
-De Purmer in 8 minuten
-Koegras in 5.6 minuten
+Indicatie van duur van deze stap: 5 - 15 minuten
 */
 
 --Cleanup geometries
