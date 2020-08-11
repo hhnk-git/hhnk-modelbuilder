@@ -14,11 +14,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.pumpstation
                 WHERE
                     channel_code IS NOT NULL
-                    AND
-                    (
-                        opmerking   NOT LIKE '%niet op peilgrens%'
-                        OR opmerking IS NULL
-                    )
+                    AND on_fdla_border
                 UNION ALL
                 SELECT
                     channel_code::integer
@@ -28,11 +24,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.weirs
                 WHERE
                     channel_code IS NOT NULL
-                    AND
-                    (
-                        opmerking   NOT LIKE '%niet op peilgrens%'
-                        OR opmerking IS NULL
-                    )
+                    AND on_fdla_border
                 UNION ALL
                 SELECT
                     channel_code::integer
@@ -42,7 +34,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.culvert
                 WHERE
                     channel_code IS NOT NULL
-                    AND op_peilgrens
+                    AND on_fdla_border
                     AND on_channel
                 UNION ALL
                 SELECT
@@ -53,11 +45,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.fixed_dam
                 WHERE
                     channel_code IS NOT NULL
-                    AND
-                    (
-                        opmerking   NOT LIKE '%niet op peilgrens%'
-                        OR opmerking IS NULL
-                    )
+                    AND on_fdla_border
             )
           , all_intersections AS
             (

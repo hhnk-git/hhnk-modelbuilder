@@ -141,7 +141,7 @@ CREATE TABLE tmp.unusable_culvert_endpoints AS
             NOT on_channel
             AND
             (
-                op_peilgrens
+                on_fdla_border
                 OR type_art = 2
             )
             AND code NOT IN
@@ -161,7 +161,7 @@ CREATE TABLE tmp.unusable_culvert_endpoints AS
             NOT on_channel
             AND
             (
-                op_peilgrens
+                on_fdla_border
                 OR type_art = 2
             )
             AND code NOT IN
