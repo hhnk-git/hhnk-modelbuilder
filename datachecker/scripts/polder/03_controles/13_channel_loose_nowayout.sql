@@ -29,7 +29,7 @@ USING gist
     (
         geom
     )
-; --160sec
+;
 -- 1.2) We bepalen de lengte van losliggende kanalen door eerst te de linemerge lijnen die volledig binnen channel_loose liggen te joinen in een tabel en vervolgens de lengte hiervan op te tellen.
 DROP TABLE IF EXISTS tmp.channel_loose_length
 ;
@@ -69,7 +69,7 @@ ALTER TABLE checks.channel_loose ADD COLUMN pointgeom geometry(point,28992)
 UPDATE
     checks.channel_loose a
 SET lengte = ST_Area(geom)/0.2
-;-- b.lengte FROM (SELECT * FROM tmp.channel_loose_length) b WHERE a.id = b.id;
+;
 UPDATE
     checks.channel_loose
 SET pointgeom = ST_PointOnSurface(geom)
@@ -92,8 +92,7 @@ FROM
 USING checks.afvoerkunstwerken as b
 WHERE
     ST_Intersects(a.geom,b.geom)
-; --1sec
--- 1.4) extra info (oa channel_type_id) voor qgis styling (daarom in een tmp tabel)
+;
 DROP TABLE IF EXISTS checks.channel_loose_type
 ;
 
@@ -142,8 +141,8 @@ CREATE TABLE tmp.unusable_culvert_endpoints AS
             NOT on_channel
             AND
             (
-                op_peilgrens = 1
-                OR type_art  = 2
+                on_fdla_border
+                OR type_art = 2
             )
             AND code NOT IN
             (
@@ -162,8 +161,8 @@ CREATE TABLE tmp.unusable_culvert_endpoints AS
             NOT on_channel
             AND
             (
-                op_peilgrens = 1
-                OR type_art  = 2
+                on_fdla_border
+                OR type_art = 2
             )
             AND code NOT IN
             (
@@ -405,7 +404,7 @@ ALTER TABLE checks.channel_nowayout ADD COLUMN pointgeom geometry(point,28992)
 UPDATE
     checks.channel_nowayout a
 SET lengte = ST_Area(geom)/0.2
-; --b.lengte FROM (SELECT * FROM tmp.channel_nowayout_length) b WHERE a.id = b.id;
+;
 UPDATE
     checks.channel_nowayout
 SET pointgeom = ST_PointOnSurface(geom)
@@ -434,7 +433,6 @@ WHERE
     ST_contains(b.geom,a.geom)
 ;
 
--- WE: DIT ZOU WAT MIJ BETREFT EEN NIEUW EINDPRODUCT KUNNEN ZIJN: DE ORIGINELE CHANNELS MET AL HN EIGENSCHAPPEN ALS LOOST IPV DE VLAKKEN. DIT VRAAGT ALLEEN OM AANPASSING IN HET SCRIPT WAAR DE STATISTIEKEN PER POLDER EN PEILGEBIED WORDEN BEPAALD. DIT WORDT HIERDOOR EFFICIENTER
 -- tabellen weggooien
 DROP TABLE IF EXISTS tmp.channel_peilgrens_afsluitbare_duikersifon
 ;
@@ -472,17 +470,6 @@ DROP TABLE IF EXISTS tmp.channel_nowayout_length
 DROP TABLE IF EXISTS tmp.unusable_culvert_endpoints
 ;
 
-/* mid maart:
-1 = 113 niet afsluitbare inlaat duikers
-2 = 13170 niet afsluitbare duikers (anders dan inlaat duiker)
-3 = 1479 afsluitbare inlaat duikers
-3 = 1479 afsluitbare inlaat duikers
-4 = 14590 afsluitbare duikers
-5 = 0 niet afsluitbare inlaat sifons = logisch
-6 = 0 niet afsluitbare sifons (anders dan inlaat sifon) = logisch
-7 = 4 afsluitbare inlaat sifons
-8 = 189 afsluitbare sifons)
-*/
 -- schaduwtabel maken
 DROP TABLE IF EXISTS tmp.checks_channel
 ;

@@ -160,7 +160,7 @@ WHERE
         FROM
             tmp.shortlist
     )
-    AND op_peilgrens IS NULL
+    AND on_fdla_border IS NULL
 ; -- 9 sec
 DROP TABLE IF EXISTS tmp.shortlist
 ;

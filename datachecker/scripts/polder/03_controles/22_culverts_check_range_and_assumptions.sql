@@ -69,7 +69,7 @@ SET bed_level_upstream = b.bed_level
 FROM
     checks.channel as b
 WHERE
-    ST_Intersects(a.geom,b.bufgeom)
+    ST_Contains(b.bufgeom,a.geom)
     AND a.bed_level_upstream IS NULL
     AND
     (
@@ -111,7 +111,7 @@ SET bed_level_downstream = b.bed_level
 FROM
     checks.channel as b
 WHERE
-    ST_Intersects(a.geom,b.bufgeom)
+    ST_Contains(b.bufgeom, a.geom)
     AND a.bed_level_downstream IS NULL
 ;
 
