@@ -183,9 +183,15 @@ UPDATE
     checks.culvert
 SET closeable =
     CASE
-        WHEN type IN (3, 4, 7, 8)
+        WHEN type IN (3
+                    , 4
+                    , 7
+                    , 8)
             THEN True
-        WHEN type IN (1, 2, 5, 6
+        WHEN type IN (1
+                    , 2
+                    , 5
+                    , 6
                     , 9999)
             THEN False
             ELSE NULL
@@ -223,13 +229,20 @@ UPDATE
     checks.culvert
 SET inlet =
     CASE
-        WHEN type in (1, 3, 5, 7)
+        WHEN type in (1
+                    , 3
+                    , 5
+                    , 7)
             THEN TRUE
-        WHEN type in (2, 4, 6, 8)
+        WHEN type in (2
+                    , 4
+                    , 6
+                    , 8)
             THEN FALSE
             ELSE NULL
     END
 ;
+
 -- sifon's gaan bijna altijd van zelfde peilgebied naar andere peilgebied. Als ze dat niet doen, dan komen ze hier terug met 'on_fdla_border'
 -- 1.3) Als er een stuw op die duiker ligt, kunnen we het peil handhaven met de stuw. De duiker ligt dus eigenlijk niet op de peilgrens. Als we verderop de channel_nowayout gaan bepallen wordt (met onderstaande code) deze culvert niet als blokerend segment gezien en weggegooid
 UPDATE
@@ -279,6 +292,7 @@ FROM
 WHERE
     ST_DWithin(a.geom,b.geom,0.1)
 ;
+
 -- 1.6) Als er een stuw op die duiker ligt, kunnen we het peil handhaven met de stuw. De duiker ligt dus eigenlijk niet op de poldergrens.
 UPDATE
     checks.culvert a
@@ -308,6 +322,7 @@ WHERE
     AND NOT closeable
     AND NOT hdb_open
 ;
+
 -- Duiker/sifon kruist peilgrens, is niet afsluitbaar en heeft geen stuw of gemaal aangesloten. Volgens HDB toch open modelleren: zet BOB op max streefpeil
 UPDATE
     checks.culvert
@@ -384,8 +399,7 @@ FROM
     )
     e
 WHERE
-    a.id = e.id
-
+    a.id             = e.id
     AND opmerking LIKE '%duiker op overstort%'
 ;
 
@@ -398,8 +412,10 @@ SET opmerking                      = concat_ws(',',opmerking,'afsluitbare inlaat
 WHERE
     on_fdla_border
     AND NOT attached
-    AND type IN (3, 7)
+    AND type IN (3
+               , 7)
 ;
+
 -- 1.7c) Duiker/sifon kruist peilgrens (zonder aangesloten stuw of gemaal), is afsluitbaar en heeft een afvoerfunctie (dwz afvoerfunctie in DAMO (type 4 of 8)): zet dicht door discharge_coefficient op 0 te zetten
 UPDATE
     checks.culvert
@@ -409,7 +425,8 @@ SET opmerking                      = concat_ws(',',opmerking,'afsluitbare afvoer
 WHERE
     on_fdla_border
     AND NOT attached
-    AND type IN (4, 8)
+    AND type IN (4
+               , 8)
     AND NOT hdb_open
 ;-- afsluitbare duikers (anders dan inlaat duiker), en afsluitbare sifons (anders dan inlaat sifon)
 -- Zet bovenstroomse BOB op maximale streefpeil (indien hdb zegt modelleren_als 'open'
@@ -435,7 +452,8 @@ FROM
         WHERE
             b.on_fdla_border
             AND NOT b.attached
-            AND b.type IN (4, 8)
+            AND b.type IN (4
+                         , 8)
             AND hdb_open
     )
     e
