@@ -14,11 +14,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.pumpstation
                 WHERE
                     channel_code IS NOT NULL
-                    AND
-                    (
-                        opmerking   NOT LIKE '%niet op peilgrens%'
-                        OR opmerking IS NULL
-                    )
+                    AND on_fdla_border
                 UNION ALL
                 SELECT
                     channel_code::integer
@@ -28,11 +24,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.weirs
                 WHERE
                     channel_code IS NOT NULL
-                    AND
-                    (
-                        opmerking   NOT LIKE '%niet op peilgrens%'
-                        OR opmerking IS NULL
-                    )
+                    AND on_fdla_border
                 UNION ALL
                 SELECT
                     channel_code::integer
@@ -42,7 +34,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.culvert
                 WHERE
                     channel_code IS NOT NULL
-                    AND op_peilgrens       = 1
+                    AND on_fdla_border
                     AND on_channel
                 UNION ALL
                 SELECT
@@ -53,11 +45,7 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     checks.fixed_dam
                 WHERE
                     channel_code IS NOT NULL
-                    AND
-                    (
-                        opmerking   NOT LIKE '%niet op peilgrens%'
-                        OR opmerking IS NULL
-                    )
+                    AND on_fdla_border
             )
           , all_intersections AS
             (
@@ -109,11 +97,12 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
             channel_id NOT IN
             (
                 SELECT
-                    channel_code
+                    channel_code --Hier een geom toevoegen van de correct_crossing
                 FROM
                     correct_crossing_at_intersection
             )
             AND NOT ST_DWithin(a.pointgeom, b.geom,5)
+            -- AND NOT ST_DWithin(all_intersection.geom, correct.geom, 5) aanleiding: KGM-JH-113 geen KZK maar wel unusable pompje
     )
 ;
 
@@ -148,7 +137,7 @@ WHERE
     AND ST_DWithin(a.pointgeom,b.geom,5)
 ;
 
-
+-- er zijn 7.916 (vd 48.450) duikers die beginnen en eindigen in hetzelfde peilgebied en wel een opmerking hebben
 DROP TABLE IF EXISTS tmp.culvert_fdla_id
 ;
 

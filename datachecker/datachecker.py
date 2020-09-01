@@ -61,13 +61,10 @@ def execute_sql_file_multiple_transactions(file_path):
     formatted_content = sqlparse.format(sqlfile_content,strip_comments=True, strip_whitespace=True,encoding='utf-8')
     splitted_content = sqlparse.split(formatted_content)
     parsed_content = sqlparse.parse(formatted_content)
-    #splitted_content = sqlparse.parse(sqlparse.split(sqlparse.format(sqlfile_content,strip_comments=True,encoding='utf-8'))
     
     try:
         #voer queries 1-voor-1 uit en commit
         for query in parsed_content:
-            # print(str(query))
-            #print query.tokens
             try:
                 db_cur.execute(str(query))
                 db_conn.commit()
@@ -114,9 +111,6 @@ def datachecker(**kwargs):
         logging.info("Starting datachecker")
         create_database(config['db']['database'])
         
-        #execute_sql_file_multiple_transactions('./scripts/polder/01_lizard_db_vullen/01_work_db_opzetten.sql')
-        #execute_bash_file("./scripts/polder/01_lizard_db_vullen/02_data_inladen.sh")
-        
         script = 0
         try:
             for root, subdirs, files in sorted(os.walk(walk_dir)):
@@ -128,7 +122,6 @@ def datachecker(**kwargs):
                     if file_path.endswith('.sql'):
                         #execute .sql file
                         logging.debug('Executing .sql file')
-                        #result = execute_sql_file_multiple_transactions(file_path)
                         result = execute_sql_file_multiple_transactions(file_path)
                     elif file_path.endswith('.sh'):
                         logging.debug('Executing .sh file')
