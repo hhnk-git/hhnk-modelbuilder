@@ -152,7 +152,15 @@ def modelbuilder(**kwargs):
         logging.info("Stopping modelbuilder")
     
     else:
-        result = execute_file(file_path, polder_id, polder_name)
+        
+        execute_file(file_path, polder_id, polder_name)
+        
+        # running everything until script
+        # end = int(os.path.basename(file_path).split("_")[0])
+        # files =  os.listdir(walk_dir)
+        # for file in files[:end]:
+        #     path = os.path.join(walk_dir, file)
+        #     execute_file(path, polder_id, polder_name)
 
 
 def main():
