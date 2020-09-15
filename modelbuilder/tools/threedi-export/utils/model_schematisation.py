@@ -67,6 +67,7 @@ class GlobalSetting(Base):
     epsg_code = Column(Integer)
     timestep_plus = Column(Boolean)
     max_angle_1d_advection = Column(Float)
+    maximum_sim_time_step = Column(Float)
     minimum_sim_time_step = Column(Float)
     frict_avg = Column(Integer)
     wind_shielding_file = Column(String(255), nullable = True)
