@@ -39,6 +39,8 @@ services:
       - ./modelbuilder:/code/modelbuilder
       - ./data:/code/data
       - ./tools:/code/tools
+      - ./web:/code/web
+
 
     # "crontab" configuration
     labels:
