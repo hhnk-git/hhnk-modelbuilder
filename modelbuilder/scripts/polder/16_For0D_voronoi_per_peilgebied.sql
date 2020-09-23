@@ -656,7 +656,7 @@ IF EXISTS serial;
                  , 'gesloten verharding'
                  , NULL
                  , 'uitgestrekt'
-                 , -1
+                 , 0
                  , 0
                  , 0
                  , opppernode

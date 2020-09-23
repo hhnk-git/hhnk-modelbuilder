@@ -68,6 +68,7 @@ class GlobalSetting(Base):
     timestep_plus = Column(Boolean)
     max_angle_1d_advection = Column(Float)
     minimum_sim_time_step = Column(Float)
+    maximum_sim_time_step = Column(Float)
     frict_avg = Column(Integer)
     wind_shielding_file = Column(String(255), nullable = True)
     
@@ -101,7 +102,7 @@ class CrossSectionDefinition(Base):
 
     id = Column(Integer, primary_key=True)
     width = Column(Float)
-    height = Column(Float)
+    height = Column(Float, nullable=True)
     shape = Column(Integer)  # PROFILE_SHAPES
     code = Column(String(100), default="", nullable=False)
 
