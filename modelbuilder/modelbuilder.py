@@ -150,6 +150,7 @@ def modelbuilder(**kwargs):
         except psycopg2.Error as e:
             logging.error(e)
         logging.info("Stopping modelbuilder")
+        os.remove("/code/modelbuilder/modelbuilder_running.txt")
     
     else:
         result = execute_file(file_path, polder_id, polder_name)

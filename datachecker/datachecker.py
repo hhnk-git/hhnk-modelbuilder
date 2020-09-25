@@ -132,6 +132,7 @@ def datachecker(**kwargs):
         except psycopg2.Error as e:
             logging.error(e)
         logging.info("Stopping datachecker")
+        os.remove("/code/datachecker/datachecker_running.txt")
     
     else:
         result = execute_sql_file_multiple_transactions(kwargs.get('file'))

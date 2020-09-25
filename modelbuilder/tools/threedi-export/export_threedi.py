@@ -149,12 +149,17 @@ def export_threedi(**kwargs):
     for postgis_cross_section_definition in execute_sql_statement(
         "select id,shape,width,height,code from v2_cross_section_definition", fetch=True
     ):
+        #Prevent height from being None
+        if postgis_cross_section_definition[3] is None:
+            height = "NULL"
+        else:
+            height = "'" + postgis_cross_section_definition[3] + "'"
         session.execute(
-            "INSERT INTO v2_cross_section_definition(id,shape,width,height,code) VALUES({},'{}', '{}', '{}', '{}')".format(
+            "INSERT INTO v2_cross_section_definition(id,shape,width,height,code) VALUES({},'{}', '{}', {}, '{}')".format(
                 postgis_cross_section_definition[0],
                 postgis_cross_section_definition[1],
                 postgis_cross_section_definition[2],
-                postgis_cross_section_definition[3],
+                height,
                 postgis_cross_section_definition[4],
             )
         )
@@ -254,7 +259,7 @@ def export_threedi(**kwargs):
         add_numerical_settings(numerical_settings, postgis_numerical_setting)
 
     for postgis_global_setting in execute_sql_statement(
-        "select id,use_2d_flow,use_1d_flow,manhole_storage_area,name,sim_time_step,output_time_step,nr_timesteps,start_time,start_date,grid_space,dist_calc_points,kmax,guess_dams,table_step_size,flooding_threshold,advection_1d,advection_2d,dem_file,frict_type,frict_coef,frict_coef_file,water_level_ini_type,initial_waterlevel,initial_waterlevel_file,interception_global,interception_file,dem_obstacle_detection,dem_obstacle_height,embedded_cutoff_threshold,epsg_code,timestep_plus,max_angle_1d_advection,minimum_sim_time_step,frict_avg,wind_shielding_file,control_group_id,numerical_settings_id,use_0d_inflow,table_step_size_1d,table_step_size_volume_2d,use_2d_rain,initial_groundwater_level,initial_groundwater_level_file,initial_groundwater_level_type,groundwater_settings_id,simple_infiltration_settings_id,interflow_settings_id FROM v2_global_settings",
+        "select id,use_2d_flow,use_1d_flow,manhole_storage_area,name,sim_time_step,output_time_step,nr_timesteps,start_time,start_date,grid_space,dist_calc_points,kmax,guess_dams,table_step_size,flooding_threshold,advection_1d,advection_2d,dem_file,frict_type,frict_coef,frict_coef_file,water_level_ini_type,initial_waterlevel,initial_waterlevel_file,interception_global,interception_file,dem_obstacle_detection,dem_obstacle_height,embedded_cutoff_threshold,epsg_code,timestep_plus,max_angle_1d_advection,minimum_sim_time_step,maximum_sim_time_step,frict_avg,wind_shielding_file,control_group_id,numerical_settings_id,use_0d_inflow,table_step_size_1d,table_step_size_volume_2d,use_2d_rain,initial_groundwater_level,initial_groundwater_level_file,initial_groundwater_level_type,groundwater_settings_id,simple_infiltration_settings_id,interflow_settings_id FROM v2_global_settings",
         fetch=True,
     ):
         add_global_settings(global_settings, postgis_global_setting)
@@ -882,6 +887,7 @@ def export_to_db(
                 timestep_plus=global_setting["timestep_plus"],
                 max_angle_1d_advection=global_setting["max_angle_1d_advection"],
                 minimum_sim_time_step=global_setting["minimum_sim_time_step"],
+                maximum_sim_time_step=global_setting["maximum_sim_time_step"],
                 frict_avg=global_setting["frict_avg"],
                 wind_shielding_file=global_setting["wind_shielding_file"],
                 control_group_id=global_setting["control_group_id"],
@@ -1548,20 +1554,21 @@ def add_global_settings(global_settings, postgis_global_setting):
         "timestep_plus": postgis_global_setting[31],
         "max_angle_1d_advection": postgis_global_setting[32],
         "minimum_sim_time_step": postgis_global_setting[33],
-        "frict_avg": postgis_global_setting[34],
-        "wind_shielding_file": postgis_global_setting[35],
-        "control_group_id": postgis_global_setting[36],
-        "numerical_settings_id": postgis_global_setting[37],
-        "use_0d_inflow": postgis_global_setting[38],
-        "table_step_size_1d": postgis_global_setting[39],
-        "table_step_size_volume_2d": postgis_global_setting[40],
-        "use_2d_rain": postgis_global_setting[41],
-        "initial_groundwater_level": postgis_global_setting[42],
-        "initial_groundwater_level_file": postgis_global_setting[43],
-        "initial_groundwater_level_type": postgis_global_setting[44],
-        "groundwater_settings_id": postgis_global_setting[45],
-        "simple_infiltration_settings_id": postgis_global_setting[46],
-        "interflow_settings_id": postgis_global_setting[47],
+        "maximum_sim_time_step": postgis_global_setting[34],
+        "frict_avg": postgis_global_setting[35],
+        "wind_shielding_file": postgis_global_setting[36],
+        "control_group_id": postgis_global_setting[37],
+        "numerical_settings_id": postgis_global_setting[38],
+        "use_0d_inflow": postgis_global_setting[39],
+        "table_step_size_1d": postgis_global_setting[40],
+        "table_step_size_volume_2d": postgis_global_setting[41],
+        "use_2d_rain": postgis_global_setting[42],
+        "initial_groundwater_level": postgis_global_setting[43],
+        "initial_groundwater_level_file": postgis_global_setting[44],
+        "initial_groundwater_level_type": postgis_global_setting[45],
+        "groundwater_settings_id": postgis_global_setting[46],
+        "simple_infiltration_settings_id": postgis_global_setting[47],
+        "interflow_settings_id": postgis_global_setting[48],
     }
     global_settings.append(global_setting)
     return global_settings
