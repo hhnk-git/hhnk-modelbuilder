@@ -107,8 +107,8 @@ WHERE
 ;
 
 -- channel nowayout op basis van losse channels
-DROP TABLE IF EXISTS tmp.wrong_channels
-;
+--DROP TABLE IF EXISTS tmp.wrong_channels
+--;
 
 CREATE TABLE tmp.wrong_channels AS
 SELECT

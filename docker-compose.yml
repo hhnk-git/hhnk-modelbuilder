@@ -16,11 +16,19 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
 
+  # The hhnk docker is used for both the flask app (small webinterface to
+  # have something to click in) and for the actual scripts.
   hhnk:
     build: .
     depends_on:
       - db
       - adminer
+    ports:
+      - 5000:5000
+    # "command" is what is run if you do "docker-compose up". You can
+    # still use this same docker for "docker-compose run hhnk python ...".
+    command: python web/webinterface.py
+
     # Automatically pick up changes in the sql/ directory without needing to
     # re-build the entire docker. The "deploy" docker doesn't do this, so
     # there only the files present during docker generation are
@@ -31,3 +39,19 @@ services:
       - ./modelbuilder:/code/modelbuilder
       - ./data:/code/data
       - ./tools:/code/tools
+      - ./web:/code/web
+
+
+    # "crontab" configuration
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.modelron.schedule: "@every 10s"
+      ofelia.job-exec.modelcron.command: "python modelbuilder/modelbuilder.py --help >> /code/data/output.log"
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - hhnk
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
