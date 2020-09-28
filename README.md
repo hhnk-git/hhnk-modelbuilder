@@ -12,9 +12,13 @@ On command line (cmd on Windows) browse to the repository location
 
 `docker-compose build` builds the image as defined by the `Dockerfile`
 
-`docker-compose run hhnk bash` runs the hhnk image in the container and brings you to the command line from which you can start the datachecker or the modelbuilder. You can replace `bash` with any command to execute that command directly.
+`docker-compose up -d` starts the containers in daemon mode. Webinterface is now available through http://localhost:5000. The polder id field for the model builder corresponds with the polder_id field in the poldercluster layer in the HDB. The polder name is used for filenames.
 
 Make sure you have your input data ready within the `data` folder (see section below) before running the datachecker or modelbuilder.
+
+## Command line usage
+
+`docker-compose run hhnk bash` runs the hhnk image in the container and brings you to the command line from which you can start the datachecker or the modelbuilder. You can replace `bash` with any command to execute that command directly.
 
 To run the datachecker either run `python3 /code/datachecker/datachecker.py` from within the container, or run the image directly with the datachecker command: `docker-compose run hhnk python3 /code/datachecker/datachecker.py`
 
