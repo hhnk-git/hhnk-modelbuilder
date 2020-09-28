@@ -137,19 +137,31 @@ IF EXISTS channelserial;
             ;
             
             --Determine the depth = fdla - reference_level
+            ALTER TABLE deelgebied.crosssection DROP COLUMN IF EXISTS streefpeil
+            ;
+            
+            ALTER TABLE deelgebied.crosssection ADD COLUMN streefpeil double precision
+            ;
+            
+            UPDATE
+                   deelgebied.crosssection a
+            SET    streefpeil = b.streefpeil_bwn2
+            FROM
+                   deelgebied.fixeddrainagelevelarea b
+            WHERE
+                   ST_Intersects(b.geom,a.geom)
+            ;
+            
             ALTER TABLE deelgebied.crosssection DROP COLUMN IF EXISTS depth_under_fdl
             ;
             
             ALTER TABLE deelgebied.crosssection ADD COLUMN depth_under_fdl double precision
             ;
             
+            
             UPDATE
-                   deelgebied.crosssection a
-            SET    depth_under_fdl = b.streefpeil_bwn2 - a.bed_level
-            FROM
-                   deelgebied.fixeddrainagelevelarea b
-            WHERE
-                   ST_Contains(b.geom,a.geom)
+                   deelgebied.crosssection 
+            SET    depth_under_fdl = streefpeil - bed_level
             ;
             
             -- koppel de profielen aan een gelinemerge reach obv type (prim, sec, ter)

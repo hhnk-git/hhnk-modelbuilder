@@ -35,7 +35,8 @@ SET crest_level = round(crest_level::numeric,2)
 UPDATE
     v2_pumpstation
 SET start_level = round(start_level::numeric,2)
-  , end_level   = round(end_level::numeric,2)
+  , lower_stop_level   = round(lower_stop_level::numeric,2)
+  , upper_stop_level   = round(upper_stop_level::numeric,2)
   , capacity    = round(capacity::numeric,2)
 ;
 

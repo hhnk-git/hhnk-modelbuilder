@@ -501,7 +501,6 @@ if exists serial;
     WHERE
            ST_Intersects(b.geom,a.geom)
            and a.isusable = 1
-           --LIMIT 0 -- gebruiken we niet maar moet wel in de DB staan
     ;
     
     --Knip crossprofiles uit
