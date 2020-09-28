@@ -342,12 +342,7 @@ if exists serial;
          , deelgebied.polder as b
     where
            ST_Intersects(a.geom,b.geom)
-           and
-           (
-                  a.opmerking is null
-                  or a.opmerking    =''
-                  or a.opmerking like '%afvoer%'
-           ) --opmerkingen verwerken in isusable
+           and a.isusable = 1
     ;
     
     CREATE INDEX deelgebied_weirs_geom

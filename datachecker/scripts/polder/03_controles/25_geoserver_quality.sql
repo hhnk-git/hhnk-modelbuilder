@@ -75,8 +75,9 @@ UPDATE
     checks.fixed_dam
 SET isusable = 0
 WHERE
-    opmerking IS NOT NULL
-    OR NOT on_channel
+    NOT on_channel
+    OR multiple_channels
+    OR NOT on_fdla_border
 ;
 
 --pumpstation
