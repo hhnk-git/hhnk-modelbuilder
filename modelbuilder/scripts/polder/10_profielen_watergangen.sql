@@ -137,6 +137,15 @@ IF EXISTS channelserial;
             ;
             
             --Determine the depth = fdla - reference_level
+            DROP TABLE IF EXISTS tmp.streefpeil;
+            CREATE TABLE tmp.streefpeil AS(
+                SELECT a.id, b.streefpeil_bwn2
+                FROM deelgebied.crosssection a
+                LEFT JOIN deelgebied.fixeddrainagelevelarea b
+                ON ST_Intersects(a.geom,b.geom)
+                )
+            ;
+            
             ALTER TABLE deelgebied.crosssection DROP COLUMN IF EXISTS streefpeil
             ;
             
@@ -147,9 +156,9 @@ IF EXISTS channelserial;
                    deelgebied.crosssection a
             SET    streefpeil = b.streefpeil_bwn2
             FROM
-                   deelgebied.fixeddrainagelevelarea b
+                   tmp.streefpeil b
             WHERE
-                   ST_Intersects(b.geom,a.geom)
+                   a.id = b.id
             ;
             
             ALTER TABLE deelgebied.crosssection DROP COLUMN IF EXISTS depth_under_fdl

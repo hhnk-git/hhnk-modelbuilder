@@ -21,6 +21,9 @@ def index():
         form_disabled = ''
     
     return """
+    <head>
+        <title>Datachecker/Modelbuilder</title>
+    </head>
     <h2>Datachecker</h2>
     Status: {}<br><br>
         <form action = "/datachecker/start/" method = "get">
