@@ -344,10 +344,11 @@ if exists serial;
            ST_Intersects(a.geom,b.geom)
            and
            (
+                  a.isusable
                   a.opmerking is null
                   or a.opmerking    =''
                   or a.opmerking like '%afvoer%'
-           ) --opmerkingen verwerken in isusable
+           )
     ;
     
     CREATE INDEX deelgebied_weirs_geom
