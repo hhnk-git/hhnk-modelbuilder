@@ -40,6 +40,6 @@ gdal_translate -co "COMPRESS=DEFLATE" /code/data/rasters/tmp/vulraster_glg_ongec
 gdal_translate -co "COMPRESS=DEFLATE" /code/data/rasters/tmp/vulraster_friction_ext.tif /code/data/rasters/friction_$2.tif
 gdal_translate -co "COMPRESS=DEFLATE" /code/data/rasters/tmp/vulraster_infiltration_ext.tif /code/data/rasters/infiltration_$2.tif
 echo INFO verwijder tijdelijke bestanden
-rm /code/data/rasters/tmp -r
+rm /code/data/rasters/tmp -rf
 cp -r /code/data/rasters/ /code/data/output/models/rasters
 echo Klaar tmp_data
