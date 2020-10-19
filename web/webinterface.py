@@ -40,15 +40,15 @@ def index():
         </form>
     <br>    
     <h2>Instructies</h2>
-    <ul>
-    <li>Zet de invoerdata (DAMO.gdb en HDB.gdb) klaar in de invoermap.</li>
-    <li>Klik op "Start Datachecker"</li>
-    <li>Zolang de Datachecker draait kan je de Modelbuilder nog niet gebruiken. Ververs de pagina om te zien of de datachecker klaar is.</li>
-    <li>Zodra de Datachecker klaar is wordt de output weggeschereven naar de uitvoermap.</li>
-    <li>Voer de polder id en poldernaam in. De id verwijst naar de polder_id in de laag polderclusters in de HDB. Deze polder wordt uit de datachecker data geknipt en gebruikt om het model op te bouwen. De poldernaam wordt gebruikt voor oa naamgeving van bestanden.</li>
-    <li>Zodra de Modelbuilder klaar is (ververs de pagina voor een statusupdate) is het model en feedback weggeschreven naar de uitvoermap.</li>
-    <li>Zolang de datachecker draait staat er een bestand 'datachecker_running.txt' in de datachecker map. Mocht de datachecker veel langer dan normaal draaien kan het zijn dat hij ergens in het proces vast is gelopen. Het verwijderen van dit bestand geeft de datachecker weer vrij. Voor de modelbuilder is er eenzelfde bestand in de modelbuilder map.</li>
-    </ul>
+        <ul>
+            <li>Zet de invoerdata (DAMO.gdb en HDB.gdb) klaar in de invoermap.</li>
+            <li>Klik op "Start Datachecker"</li>
+            <li>Zolang de Datachecker draait kan je de Modelbuilder nog niet gebruiken. Ververs de pagina om te zien of de datachecker klaar is.</li>
+            <li>Zodra de Datachecker klaar is wordt de output weggeschereven naar de uitvoermap.</li>
+            <li>Voer de polder id en poldernaam in. De id verwijst naar de polder_id in de laag polderclusters in de HDB. Deze polder wordt uit de datachecker data geknipt en gebruikt om het model op te bouwen. De poldernaam wordt gebruikt voor oa naamgeving van bestanden.</li>
+            <li>Zodra de Modelbuilder klaar is (ververs de pagina voor een statusupdate) is het model en feedback weggeschreven naar de uitvoermap.</li>
+            <li>Zolang de datachecker draait staat er een bestand 'datachecker_running.txt' in de datachecker map. Mocht de datachecker veel langer dan normaal draaien kan het zijn dat hij ergens in het proces vast is gelopen. Het verwijderen van dit bestand geeft de datachecker weer vrij. Voor de modelbuilder is er eenzelfde bestand in de modelbuilder map.</li>
+        </ul>
     """.format(datachecker_status,form_disabled,modelbuilder_status,form_disabled)
 
 
