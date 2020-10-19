@@ -1,4 +1,4 @@
-# hhnk-modelbuilder-temp
+# hhnk-modelbuilder
 
 Temporary repository for the further development of the modelbuilder (and
 datachecker as a preprocessing step). Will be transferred to a permanent
