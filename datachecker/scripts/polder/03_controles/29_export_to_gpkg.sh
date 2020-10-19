@@ -28,3 +28,4 @@ ogr2ogr -overwrite -sql "SELECT geom, levee_ring_id, levee_id, maximum_water_lev
 ogr2ogr -overwrite -sql "SELECT * FROM checks.control_table" -nln control_table -f "GPKG" /code/tmp/datachecker_output.gpkg PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -nlt Point
 echo "Copy Geopackage to output folder"
 cp /code/tmp/datachecker_output.gpkg /code/data/output/datachecker_output.gpkg
+rm /code/tmp -rf
