@@ -12,7 +12,7 @@ services:
     image: postgis/postgis
     restart: always
     ports:
-      - 5555:5432
+      - 55550:5432
     environment:
       POSTGRES_PASSWORD: postgres
 
