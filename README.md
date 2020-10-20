@@ -89,3 +89,17 @@ In the `requirements.txt` file the python packages (including version number) th
 
 ## Known issues
 Pulling from GitHub on Windows sometimes the line endings of the .sh files, causing the datachecker/modelbuilder to crash. Line-endings of .sh files should always be Unix (LF). Using Notepad++ this can be changed (right-bottom toolbar). This should be fixed now with the use of .gitattribute. When creating a new .sh file, make sure to select the Unix (LF) line ending.
+
+During docker build the fixed data folder is copied which lead to an 'no space left on device error:
+
+	Step 10/18 : COPY . .
+	ERROR: Service 'hhnk' failed to build: Error processing tar file(exit status 1): write /code/data/fixed_dpace left on device
+
+This is due to limited space on the HHNK test server. The fixed data is actually on the network directory. Place the DEM folder to a temporary location and place is back after the docker is build.
+
+During starting the web service a folder is accessed. This gives an permission denieud error:
+
+	ERROR: for hhnk  Cannot start service hhnk: error while creating mount source path '[...]/hhnk-modelbuilder-master/tools: permission denied
+
+The folder is created, but perhaps not quickly enough. Retry the docker-compose up -d command.
+
