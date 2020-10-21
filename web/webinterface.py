@@ -52,7 +52,7 @@ def index():
             <li>Voer na het draaien van de datachecker de polder id en poldernaam in. De id verwijst naar de polder_id in de laag polderclusters in de HDB. Zie voor de standaard lijst hieronder. Deze polder wordt uit de datachecker data geknipt en gebruikt om het model op te bouwen. De gegevens voor het model moeten dus in de datachecker zitten! De poldernaam wordt gebruikt voor oa naamgeving van bestanden.</li>
             <li>Zodra de Modelbuilder klaar is (ververs de pagina voor een statusupdate) wordt het model en feedback weggeschreven naar de uitvoermap (data/output).</li>
             <li>Zolang de datachecker draait staat er een bestand 'datachecker_running.txt' in de datachecker map. Mocht de datachecker veel langer dan normaal draaien kan het zijn dat hij ergens in het proces vast is gelopen. Het verwijderen van dit bestand geeft de datachecker weer vrij. Voor de modelbuilder is er eenzelfde bestand in de modelbuilder map.</li>
-            <li>In de datachecker en modelbuilder mappen staan tevens logbestanden.</li>
+            <li>De logging is in te zien door bovenstaand op 'view logfile' te klikken. Hier kan je onder andere zien waar in het proces de datachecker is. In de datachecker en modelbuilder mappen staan tevens de logbestanden.</li>
         </ul>  
     <h2>Overzicht gebieden</h2>
         <pre>
@@ -145,19 +145,16 @@ def modelbuilder_start():
 def stream_datachecker():
     def generate():
         with open('/code/datachecker/datachecker.log') as f:
-            while True:
-                yield f.read()
-                sleep(1)
+            yield f.read()
 
     return app.response_class(generate(), mimetype='text/plain')
+
     
 @app.route('/modelbuilder/log')
 def stream_modelbuilder():
     def generate():
         with open('/code/modelbuilder/modelbuilder.log') as f:
-            while True:
-                yield f.read()
-                sleep(1)
+            yield f.read()
 
     return app.response_class(generate(), mimetype='text/plain')
 

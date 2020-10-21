@@ -124,7 +124,20 @@ def create_database(db_name):
     cur.execute(sql.SQL("CREATE DATABASE {}").format(
         sql.Identifier(db_name))
     )
+
+def check_polder_contains_data(polder_id):
+    try:
+        db_conn = psycopg2.connect(host=config['db']['hostname'], dbname=config['db']['database'], user=config['db']['username'], password=config['db']['password'])
+        db_cur = db_conn.cursor()
+    except psycopg2.OperationalError as e:
+        logging.error("Could not connect to database with error: {}".format(e))
+        raise
     
+    db_cur.execute("SELECT COUNT(*) FROM checks.channel a, checks.polder b WHERE ST_Contains(b.geom,a.geom) AND b.polder_id = {}".format(polder_id))
+    channel_count = int(db_cur.fetchone()[0])
+    logging.info("Amount of channels contained in selected polder: {}".format(channel_count))
+    
+    return channel_count > 0
 
 def modelbuilder(**kwargs):
     polder_id = kwargs.get('polder_id')
@@ -133,22 +146,22 @@ def modelbuilder(**kwargs):
     
     if(kwargs.get('file') is None):
         logging.info("Starting modelbuilder")
-        #create_database(config['db']['database'])
         
-        #execute_sql_file_multiple_transactions('./scripts/polder/01_lizard_db_vullen/01_work_db_opzetten.sql')
-        #execute_bash_file("./scripts/polder/01_lizard_db_vullen/02_data_inladen.sh")
-        
-        script = 0
-        try:
-            for root, subdirs, files in sorted(os.walk(walk_dir)):
-                for f in sorted(files):
-                    script += 1
-                    file_path = root+'/'+f
-                    logging.debug('Opening file: {}'.format(file_path))
-                    result = ""
-                    execute_file(file_path, polder_id, polder_name)
-        except psycopg2.Error as e:
-            logging.error(e)
+        #check if there are any channels in the polder. If not, the filled in polder_id is most probably wrong
+        if check_polder_contains_data(polder_id):
+            script = 0
+            try:
+                for root, subdirs, files in sorted(os.walk(walk_dir)):
+                    for f in sorted(files):
+                        script += 1
+                        file_path = root+'/'+f
+                        logging.debug('Opening file: {}'.format(file_path))
+                        result = ""
+                        execute_file(file_path, polder_id, polder_name)
+            except psycopg2.Error as e:
+                logging.error(e)
+        else:
+            logging.info("No channels found in polder, stopping the modelbuilder")
         logging.info("Stopping modelbuilder")
         os.remove("/code/modelbuilder/modelbuilder_running.txt")
     
