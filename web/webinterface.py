@@ -1,4 +1,5 @@
 import os.path
+from time import sleep
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -25,13 +26,15 @@ def index():
         <title>Datachecker/Modelbuilder</title>
     </head>
     <h2>Datachecker</h2>
-    Status: {}<br><br>
+    Status: {}<br>
+        <a href="/datachecker/log" target="_blank">View logfile</a><br><br>
         <form action = "/datachecker/start/" method = "get">
             <input type = "submit" value = "Start Datachecker" {}/></p>
         </form><br>
         
     <h2>Modelbuilder</h2>
-    Status: {}<br><br>
+    Status: {}<br>
+        <a href="/modelbuilder/log" target="_blank">View logfile</a><br><br>
     
         <form action = "/modelbuilder/start/" method = "post">
             polder id: <input type = "number" name = "polder_id" value = "id"/></p>
@@ -137,7 +140,27 @@ def modelbuilder_start():
             <meta http-equiv='refresh' content='5; URL=/'>
             </head>
         Modelbuilder gestart, je wordt terugverwezen naar de vorige pagina binnen enkele seconde"""
-        
+
+@app.route('/datachecker/log')
+def stream_datachecker():
+    def generate():
+        with open('/code/datachecker/datachecker.log') as f:
+            while True:
+                yield f.read()
+                sleep(1)
+
+    return app.response_class(generate(), mimetype='text/plain')
+    
+@app.route('/modelbuilder/log')
+def stream_modelbuilder():
+    def generate():
+        with open('/code/modelbuilder/modelbuilder.log') as f:
+            while True:
+                yield f.read()
+                sleep(1)
+
+    return app.response_class(generate(), mimetype='text/plain')
+
 if __name__ == "__main__":
     # Starts on port 5000 by default.
     app.run(debug=True,host='0.0.0.0')
