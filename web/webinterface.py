@@ -17,13 +17,16 @@ def index():
         modelbuilder_status = "not running"
     
     if datachecker_status == 'running' or modelbuilder_status == 'running':
+        refresh = """<meta http-equiv="refresh" content="10" />"""
         form_disabled = 'disabled'
     else:
+        refresh = ''
         form_disabled = ''
     
     return """
     <head>
         <title>Datachecker/Modelbuilder</title>
+        {}
     </head>
     <h2>Datachecker</h2>
     Status: {}<br>
@@ -37,8 +40,8 @@ def index():
         <a href="/modelbuilder/log" target="_blank">View logfile</a><br><br>
     
         <form action = "/modelbuilder/start/" method = "post">
-            polder id: <input type = "number" name = "polder_id" value = "id"/></p>
-            naam: <input type = "text" name = "polder_name" value = ""/></p>
+            polder id: <input type = "number" name = "polder_id" value = "id" {} /></p>
+            naam: <input type = "text" name = "polder_name" value = "" {} /></p>
             <input type = "submit" value = "Start modelbuilder" {} /></p>
         </form>
     <br>    
@@ -112,7 +115,7 @@ def index():
             56	Beetskoog			"5010","5020","5030","5040","5050","5080"
             57	Texel-Zuid			"8010","8020","8030","8071"
         <pre>
-    """.format(datachecker_status,form_disabled,modelbuilder_status,form_disabled)
+    """.format(refresh,datachecker_status,form_disabled,modelbuilder_status,form_disabled,form_disabled,form_disabled)
 
 
 @app.route("/datachecker/start/", methods=['GET', 'POST'])
