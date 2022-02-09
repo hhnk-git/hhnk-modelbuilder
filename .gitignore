@@ -4,3 +4,4 @@ __pycache__/
 *.py[cod]
 *.log
 modelbuilder/tools/threedi-base/deploy/
+datachecker/datachecker_running.txt

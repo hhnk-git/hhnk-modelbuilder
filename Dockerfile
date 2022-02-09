@@ -16,7 +16,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . .
 
 # raster tools for line-up
-RUN pip3 install --upgrade setuptools wheel && pip3 install pip==10.0.1 pipenv==2018.5.18
+RUN pip3 install --upgrade setuptools==58.0.2 --no-cache-dir wheel && pip3 install pip==10.0.1 pipenv==2018.5.18
 RUN git clone https://github.com/nens/raster-tools.git
 WORKDIR /code/raster-tools
 RUN git checkout emiel-hhnk
