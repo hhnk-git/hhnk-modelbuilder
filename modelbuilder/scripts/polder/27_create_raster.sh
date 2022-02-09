@@ -25,7 +25,7 @@ echo INFO plak de waarden voor bodemberging hier in
 gdalwarp /code/data/fixed_data/other/bodemberging_verhard_hhnk.tif /code/data/fixed_data/other/bodemberging_hhnk_ghg_m.tif /code/tmp/rasters/tmp/vulraster_ghg_ongec.tif
 gdalwarp /code/data/fixed_data/other/bodemberging_verhard_hhnk.tif /code/data/fixed_data/other/bodemberging_hhnk_ggg_m.tif /code/tmp/rasters/tmp/vulraster_ggg_ongec.tif
 gdalwarp /code/data/fixed_data/other/bodemberging_verhard_hhnk.tif /code/data/fixed_data/other/bodemberging_hhnk_glg_m.tif /code/tmp/rasters/tmp/vulraster_glg_ongec.tif
-gdalwarp /code/data/fixed_data/other/friction_hhnk.tif /code/tmp/rasters/tmp/vulraster_friction.tif
+gdalwarp /code/data/fixed_data/other/friction_hhnk_2021.tif /code/tmp/rasters/tmp/vulraster_friction.tif
 gdalwarp /code/data/fixed_data/other/infiltratie_hhnk.tif /code/tmp/rasters/tmp/vulraster_infiltration.tif
 echo INFO pas extent toe op gevulde rasters
 gdal_calc.py --co="COMPRESS=DEFLATE" --NoDataValue -9999 -A /code/tmp/rasters/tmp/enenraster_ongec.tif -B /code/tmp/rasters/tmp/vulraster_ghg_ongec.tif --outfile /code/tmp/rasters/tmp/vulraster_ghg_ongec_ext.tif --calc="A*B"  
