@@ -6,7 +6,7 @@
 
 PS=$(python /code/modelbuilder/pixelsize.py "/code/tmp/rasters/tmp/channelsurface.tif")
 echo $PS
-gdalwarp -cutline /code/tmp/rasters/tmp/polder.shp -tr $PS $PS -tap -crop_to_cutline -srcnodata -9999 -dstnodata -9999 -co "COMPRESS=DEFLATE" /code/data/fixed_data/DEM/dem.vrt /code/tmp/rasters/tmp/raw_dem_clipped.tif
+gdalwarp -cutline /code/tmp/rasters/tmp/polder.shp -tr $PS $PS -tap -crop_to_cutline -srcnodata -9999 -dstnodata -9999 -co "COMPRESS=DEFLATE" /code/data/fixed_data/DEM/DEM_AHN4_int.vrt /code/tmp/rasters/tmp/raw_dem_clipped.tif
 echo INFO smeer watergangen dicht
 gdalwarp -ot Float32 -dstnodata -9999 -tr $PS $PS -tap /code/tmp/rasters/tmp/raw_dem_clipped.tif /code/tmp/rasters/tmp/channelsurface.tif /code/tmp/rasters/tmp/temp.tif
 echo INFO pas compressie toe op DEM
