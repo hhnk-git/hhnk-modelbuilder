@@ -4,6 +4,12 @@ ogr2ogr -f "PostgreSQL" PG:"host=db user=postgres dbname=datachecker password=po
 echo "Loading connection CODE/HydrObject"
 ogr2ogr -f "PostgreSQL" PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -lco "GEOMETRY_NAME=wkb_geometry" -lco "SCHEMA=fixed_data" -lco "OVERWRITE=YES" -progress /code/data/fixed_data/hydroobjectid/CODE_HydroObject_OBJECTID.dbf
 echo "Loading DAMO data"
-ogr2ogr -f "PostgreSQL" PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -nlt CONVERT_TO_LINEAR -lco "GEOMETRY_NAME=wkb_geometry" -lco "SCHEMA=damo_ruw" -lco "FID=objectid" -lco "OVERWRITE=YES" -progress /code/data/input/DAMO.gdb --config PG_USE_COPY YES -skipfailures -gt 1000
+ogr2ogr -f "PostgreSQL" PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -nlt CONVERT_TO_LINEAR -lco "GEOMETRY_NAME=wkb_geometry" -lco "SCHEMA=damo_ruw" -lco "FID=objectid" -lco "OVERWRITE=YES" -progress /code/data/input/DAMO.gdb --config PG_USE_COPY YES -gt 1000 -skipfailures #DEBUG: -skipfailures uitzetten
 echo "Loading HDB data"
 ogr2ogr -f "PostgreSQL" PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -nlt CONVERT_TO_LINEAR -lco "GEOMETRY_NAME=wkb_geometry" -lco "SCHEMA=hdb" -lco "FID=objectid" -lco "OVERWRITE=YES" -progress /code/data/input/HDB.gdb
+#DEBUGGING:
+# ogr2ogr -overwrite -f "GPKG" /code/tmp/debugging.gpkg PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -nlt MultiPolygon -sql "SELECT * FROM damo_ruw.peilafwijkinggebied" -nln peilafwijking
+# ogr2ogr -overwrite -f "GPKG" /code/tmp/debugging.gpkg PG:"host=db user=postgres dbname=datachecker password=postgres port=5432" -nlt None -sql "SELECT * FROM damo_ruw.streefpeil" -nln streefpeil
+# echo "Copy Geopackage debugging to output folder"
+# cp /code/tmp/debugging.gpkg /code/data/output/datachecker_debugging.gpkg
+# rm /code/tmp -rf
