@@ -11,13 +11,13 @@ CREATE TABLE tmp.peilgebiedpraktijk AS
           , code
           , naam
           , opmerking
-          , ws_bron
-          , ws_inwinningswijze
-          , ws_inwinningsdatum
-          , ws_peilbesluitplichtig
-          , created_user
+          , NULL AS ws_bron
+          , NULL AS ws_inwinningswijze
+          , NULL AS ws_inwinningsdatum
+          , NULL AS ws_peilbesluitplichtig
+          , NULL AS created_user
           , created_date
-          , last_edited_user
+          , NULL AS last_edited_user
           , last_edited_date
           , ws_oppervlakte
           , shape_length
@@ -42,11 +42,11 @@ CREATE TABLE tmp.peilafwijkinggebied AS
           , naam
           , opmerking
           , ws_bron
-          , ws_inwinningswijze
-          , ws_inwinningsdatum
-          , created_user
+          , NULL AS ws_inwinningswijze
+          , NULL AS ws_inwinningsdatum
+          , NULL AS created_user
           , created_date
-          , last_edited_user
+          , NULL AS last_edited_user
           , last_edited_date
           , ws_oppervlakte
           , shape_length

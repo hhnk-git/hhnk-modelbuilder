@@ -62,7 +62,7 @@ UPDATE
 SET isusable = 0
 WHERE
     opmerking LIKE ANY(ARRAY['%geen watergang%','%culvert on channel_nowayout%','%culvert on channel_loose%'])
-    --OR NOT on_channel
+    OR NOT on_channel
 ; -- '%niet afsluitbaar op peilgrens%','%pomp op duiker%','%stuw op duiker%']);
 --fixed_dam
 ALTER TABLE checks.fixed_dam DROP COLUMN IF EXISTS isusable

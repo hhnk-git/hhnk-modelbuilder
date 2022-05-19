@@ -244,7 +244,9 @@ class CulvertChannelLines:
                }])
         """
         valids = self.get_valids()
+        print(valids)
         corrected_entries = self._correct_entries(valids)
+        print(corrected_entries)
         self.create_corrected_valids_table(
             corrected_entries
         )
@@ -299,7 +301,6 @@ class CulvertChannelLines:
             self.corrected_valids_table_name, field_names.split(','),
             ['bigint', 'bigint', 'double precision', 'double precision']
         )
-        
         self.db.commit_values(
             self.corrected_valids_table_name, field_names, corrected_entries
         )

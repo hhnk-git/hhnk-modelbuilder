@@ -4,15 +4,10 @@ Maakt een union van peilgebieden met de peilgebiedafwijkingsgebieden aangevuld m
 
 DROP SEQUENCE IF EXISTS serial;
 CREATE SEQUENCE serial START 10000000;
-SELECT
-    setval('serial', (
-        SELECT
-            max(peilafwijkinggebied_id)
-        FROM
-            tmp.peilafwijkinggebied
-    )
-    )
-;
+SELECT * FROM tmp.peilafwijkinggebied;
+
+SELECT setval('serial', (SELECT max(peilafwijkinggebied_id) FROM tmp.peilafwijkinggebied));
+
 
 -- tijdelijke tabel met peilgebieden
 DROP TABLE IF EXISTS tmp.SSC
@@ -75,7 +70,7 @@ SELECT
   , opmerking
   , ws_bron
   , NULL       as ws_inwinningswijze
-  , peil_datum as ws_inwinningsdatum
+  , CAST(peil_datum as text) as ws_inwinningsdatum
   , NULL       as created_user
   , NULL       as created_date
   , NULL       as last_edited_user

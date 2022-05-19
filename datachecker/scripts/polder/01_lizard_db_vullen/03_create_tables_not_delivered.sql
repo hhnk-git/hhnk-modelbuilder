@@ -106,6 +106,7 @@ CREATE TABLE IF NOT EXISTS damo_ruw.gw_pbp
       , prw_prw_id integer
       , iws_hoogte double precision
       , iws_afstand double precision
+	  , pbpsoort integer
       , CONSTRAINT gw_pbp_pkey PRIMARY KEY (objectid)
     )
 ;

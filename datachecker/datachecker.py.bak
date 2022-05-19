@@ -119,7 +119,7 @@ def datachecker(**kwargs):
                     file_path = root+'/'+f
                     logging.debug('Opening file: {}'.format(file_path))
                     result = ""
-                    print(file_path)
+                                            print(file_path)
                     if file_path.endswith('.sql'):
                         #execute .sql file
                         logging.debug('Executing .sql file')
