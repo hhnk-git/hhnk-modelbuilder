@@ -4,7 +4,7 @@
 # Een masker wordt gemaakt van de DEM om data/nodata pixels te onderscheiden. Gebiedsdekkende bodemberging 
 # (ghg, glg, ggg), frictie en infiltratie raster worden op dit masker geprojecteerd en gecomprimeerd. 
 
-PS=$(python /code/modelbuilder/pixelsize.py "/code/tmp/rasters/tmp/channelsurface.tif")
+PS=$(python3 /code/modelbuilder/pixelsize.py "/code/tmp/rasters/tmp/channelsurface.tif")
 echo $PS
 gdalwarp -cutline /code/tmp/rasters/tmp/polder.shp -tr $PS $PS -tap -crop_to_cutline -srcnodata -9999 -dstnodata -9999 -co "COMPRESS=DEFLATE" /code/data/fixed_data/DEM/DEM_AHN4_int.vrt /code/tmp/rasters/tmp/raw_dem_clipped.tif
 echo INFO smeer watergangen dicht

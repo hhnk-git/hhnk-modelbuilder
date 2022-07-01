@@ -29,3 +29,4 @@ ogr2ogr -overwrite -sql "SELECT * FROM checks.control_table" -nln control_table 
 echo "Copy Geopackage to output folder"
 cp /code/tmp/datachecker_output.gpkg /code/data/output/datachecker_output.gpkg
 rm /code/tmp -rf
+
