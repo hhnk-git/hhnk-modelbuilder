@@ -3,12 +3,14 @@
 # dicht te smeren. 
 # Een masker wordt gemaakt van de DEM om data/nodata pixels te onderscheiden. Gebiedsdekkende bodemberging 
 # (ghg, glg, ggg), frictie en infiltratie raster worden op dit masker geprojecteerd en gecomprimeerd. 
+# Rasters staat nu vast op 0.5 meter resolutie. 
 
-PS=$(python3 /code/modelbuilder/pixelsize.py "/code/tmp/rasters/tmp/channelsurface.tif")
-echo $PS
-gdalwarp -cutline /code/tmp/rasters/tmp/polder.shp -tr $PS $PS -tap -crop_to_cutline -srcnodata -9999 -dstnodata -9999 -co "COMPRESS=DEFLATE" /code/data/fixed_data/DEM/DEM_AHN4_int.vrt /code/tmp/rasters/tmp/raw_dem_clipped.tif
+
+#PS=0.5
+echo knip dem uit ahn met resolutie 0.5 m
+gdalwarp -cutline /code/tmp/rasters/tmp/polder.shp -tr 0.5 0.5 -tap -crop_to_cutline -srcnodata -9999 -dstnodata -9999 -co "COMPRESS=DEFLATE" /code/data/fixed_data/DEM/DEM_AHN4_int.vrt /code/tmp/rasters/tmp/raw_dem_clipped.tif
 echo INFO smeer watergangen dicht
-gdalwarp -ot Float32 -dstnodata -9999 -tr $PS $PS -tap /code/tmp/rasters/tmp/raw_dem_clipped.tif /code/tmp/rasters/tmp/channelsurface.tif /code/tmp/rasters/tmp/temp.tif
+gdalwarp -ot Float32 -dstnodata -9999 -tr 0.5 0.5 -tap /code/tmp/rasters/tmp/raw_dem_clipped.tif /code/tmp/rasters/tmp/channelsurface.tif /code/tmp/rasters/tmp/temp.tif
 echo INFO pas compressie toe op DEM
 gdal_translate -ot Float32 -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/temp.tif /code/tmp/rasters/dem_$2.tif
 echo INFO Knip bodemberging, frictie en infiltratie uit gebiedsbrede rasters
@@ -39,7 +41,7 @@ gdal_translate -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/vulraster_ggg_ongec_
 gdal_translate -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/vulraster_glg_ongec_ext.tif /code/tmp/rasters/storage_glg_$2.tif
 gdal_translate -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/vulraster_friction_ext.tif /code/tmp/rasters/friction_$2.tif
 gdal_translate -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/vulraster_infiltration_ext.tif /code/tmp/rasters/infiltration_$2.tif
-echo INFO verwijder tijdelijke bestanden
+# echo INFO verwijder tijdelijke bestanden
 rm /code/tmp/rasters/tmp -rf
 cp -r /code/tmp/rasters/ /code/data/output/models/rasters
 rm /code/tmp -rf

@@ -478,6 +478,8 @@ WHERE
 ;
 
 --Voeg culvert/weir combinaties toe als weir
+DROP SEQUENCE serial;
+CREATE SEQUENCE serial START 100000;
 INSERT INTO v2_weir
        ( id
             , display_name
@@ -493,8 +495,8 @@ INSERT INTO v2_weir
             , friction_type
             , friction_value
        )
-SELECT DISTINCT
-           a.id+10000
+SELECT DISTINCT ON (b.code)
+           nextval('serial') as id
          , b.code
          , b.code
          , b.crest_level
