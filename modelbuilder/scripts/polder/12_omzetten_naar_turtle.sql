@@ -155,7 +155,8 @@ CREATE TABLE tmp.v2_channel_type AS
 
 UPDATE
        v2_channel
-SET    zoom_category = 4
+SET    zoom_category = 4,
+	   code = 1
 WHERE
        id IN
        (
@@ -170,7 +171,8 @@ WHERE
 
 UPDATE
        v2_channel
-SET    zoom_category = 3
+SET    zoom_category = 3,
+	   code = 2
 WHERE
        id IN
        (
@@ -185,7 +187,8 @@ WHERE
 
 UPDATE
        v2_channel
-SET    zoom_category = 2
+SET    zoom_category = 2,
+	   code = 3
 WHERE
        id IN
        (

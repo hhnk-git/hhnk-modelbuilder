@@ -103,7 +103,7 @@ IF EXISTS channelserial;
             
             ALTER TABLE deelgebied.tmp_sel_branches_without_structures ADD COLUMN bufgeom geometry(Polygon,28992)
             ;
-            
+            			
             UPDATE
                    deelgebied.tmp_sel_branches_without_structures
             SET    pointgeom = ST_LineInterpolatePoint(geom,0.5)
