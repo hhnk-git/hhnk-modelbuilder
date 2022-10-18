@@ -16,8 +16,8 @@ ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.voronoi_output" -nln voronoi_o
 ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.polder" -nln polder_polygon -f "ESRI Shapefile" /code/data/output/plugin/polder_polygon.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -a_srs EPSG:28992
 ogr2ogr -clipsrc -f gpkg /code/data/output/plugin/polder_polygon.shp /code/data/output/plugin/datachecker_output.gpkg /code/data/output/datachecker_output.gpkg -nlt PROMOTE_TO_MULTI
 ogr2ogr -clipsrc /code/data/output/plugin/polder_polygon.shp -overwrite -sql "SELECT * FROM deelgebied.fixeddrainagelevelarea" -nln peilgebieden -f "ESRI Shapefile" /code/data/output/plugin/peilgebieden.shp PG:"host=db user=postgres dbname=datachecker port=5432 password=postgres" -a_srs EPSG:28992
-cp /code/data/input/DAMO.gdb /code/data/output/plugin/DAMO.gdb -r
-cp /code/data/input/HDB.gdb /code/data/output/plugin/HDB.gdb -r
+cp /code/data/input/DAMO.gdb /code/data/output/plugin/DAMO.gdb 
+cp /code/data/input/HDB.gdb /code/data/output/plugin/HDB.gdb 
 
 #rm -r ./logging/modelbuilder_logfiles/
 #mkdir ./logging/modelbuilder_logfiles/

@@ -155,7 +155,8 @@ CREATE TABLE tmp.v2_channel_type AS
 
 UPDATE
        v2_channel
-SET    zoom_category = 4
+SET    zoom_category = 4,
+	   code = 1
 WHERE
        id IN
        (
@@ -170,7 +171,8 @@ WHERE
 
 UPDATE
        v2_channel
-SET    zoom_category = 3
+SET    zoom_category = 3,
+	   code = 2
 WHERE
        id IN
        (
@@ -185,7 +187,8 @@ WHERE
 
 UPDATE
        v2_channel
-SET    zoom_category = 2
+SET    zoom_category = 2,
+	   code = 3
 WHERE
        id IN
        (
@@ -478,6 +481,8 @@ WHERE
 ;
 
 --Voeg culvert/weir combinaties toe als weir
+DROP SEQUENCE serial;
+CREATE SEQUENCE serial START 100000;
 INSERT INTO v2_weir
        ( id
             , display_name
@@ -493,8 +498,8 @@ INSERT INTO v2_weir
             , friction_type
             , friction_value
        )
-SELECT DISTINCT
-           a.id+10000
+SELECT DISTINCT ON (b.code)
+           nextval('serial') as id
          , b.code
          , b.code
          , b.crest_level

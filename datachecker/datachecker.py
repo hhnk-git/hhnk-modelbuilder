@@ -25,7 +25,7 @@ logging.basicConfig(filename='/code/datachecker/datachecker.log',filemode='w',fo
 config = configparser.ConfigParser()
 config.read('/code/datachecker/datachecker_config.ini')
 
-walk_dir = '/code/datachecker/scripts/polder'
+walk_dir = '/code/datachecker/scripts/polder/'
 
 
 def get_parser():
@@ -119,12 +119,15 @@ def datachecker(**kwargs):
                     file_path = root+'/'+f
                     logging.debug('Opening file: {}'.format(file_path))
                     result = ""
+                    print(file_path)
                     if file_path.endswith('.sql'):
                         #execute .sql file
                         logging.debug('Executing .sql file')
+
                         result = execute_sql_file_multiple_transactions(file_path)
                     elif file_path.endswith('.sh'):
                         logging.debug('Executing .sh file')
+
                         result = execute_bash_file(file_path)
                     
                     else:
@@ -132,8 +135,10 @@ def datachecker(**kwargs):
         except psycopg2.Error as e:
             logging.error(e)
         logging.info("Stopping datachecker")
-        os.remove("/code/datachecker/datachecker_running.txt")
-    
+        if os.path.exists("/code/datachecker/datachecker_running.txt"):
+            os.remove("/code/datachecker/datachecker_running.txt")
+        logging.info("Stopping datachecker")
+        
     else:
         result = execute_sql_file_multiple_transactions(kwargs.get('file'))
 

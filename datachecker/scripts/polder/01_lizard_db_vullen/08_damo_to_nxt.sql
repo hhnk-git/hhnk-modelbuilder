@@ -589,7 +589,7 @@ indicatiewaterkerend smallint,
 richting real,
 functiegemaal smallint,
 maximalecapaciteit double precision,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_op_afstand_beheerd character varying(3),
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
@@ -684,11 +684,11 @@ select
     END
   , now()
   , case
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT)is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
+            else CAST(ws_categorie AS INT) -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
     end
   , case
         when functiegemaal is null
@@ -760,7 +760,7 @@ indicatiewaterkerend smallint,
 richting real,
 functiegemaal smallint,
 maximalecapaciteit double precision,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_op_afstand_beheerd character varying(3),
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
@@ -783,8 +783,8 @@ case when (code = ' ') IS NOT FALSE then 'LEEG' ELSE code END,
 maximalecapaciteit,
 case when (naam = ' ') IS NOT FALSE then 'LEEG' ELSE naam END,
 case
-when ws_categorie is null then 9999
-when ws_categorie > 4 then 9999 else ws_categorie -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
+when CAST(ws_categorie AS INT) is null then 9999
+when CAST(ws_categorie AS INT) > 4 then 9999 else CAST(ws_categorie AS INT) -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
 end,
 case
 when functiegemaal is null then 9999 -- nxt.pump heeft ook nog type 7 (boezemgemaal, maar die is niet in damo getypeerd)
@@ -840,7 +840,7 @@ laagstedoorstroomhoogte double precision,
 hoogstedoorstroomhoogte double precision,
 soortregelbaarheid smallint,
 richting real,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_kruinvorm smallint,
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
@@ -949,11 +949,11 @@ select
     end
   , -- type_function
     case
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT) is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
+            else CAST(ws_categorie AS INT) -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
     end
   , case
         when kruinbreedte         is not null
@@ -1015,7 +1015,7 @@ naam character varying(100),
 opmerking character varying(250),
 soortvispassage smallint,
 richting real,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
 ws_inwinningsdatum timestamp with time zone,
@@ -1086,11 +1086,11 @@ select
     9999
   , -- type_fuctnion =9999 want niet aan-, af- of terugloopvoorziening
     case
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT) is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
+            else CAST(ws_categorie AS INT) -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
     end
   , case
         when (
@@ -1127,7 +1127,7 @@ hoogtebinnenonderkantbov double precision,
 vormkoker smallint,
 soortmateriaal smallint,
 typekruising smallint,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
 ws_inwinningsdatum timestamp with time zone,
@@ -1263,7 +1263,7 @@ select
   , vormkoker
   , soortmateriaal
   , typekruising
-  , ws_categorie
+  , CAST(ws_categorie AS INT)
   , ws_bron
   , ws_inwinningswijze
   , ws_inwinningsdatum
@@ -1322,11 +1322,11 @@ select
   , code
   ,      -- code
     case -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT) is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie
+            else CAST(ws_categorie AS INT)
     end
   , case -- type_art = duiker (omdat typekruising = 1 Aquaduct, 2 Brug, 3 Duiker, 4 Sifon, 5 Hevel, 6 Bypass)
         when typekruising = 3
@@ -1568,11 +1568,11 @@ SELECT
   , now()
   , code
   , CASE -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
-        WHEN ws_categorie IS NULL
+        WHEN CAST(ws_categorie AS INT) IS NULL
             THEN 9999
-        WHEN ws_categorie > 4
+        WHEN CAST(ws_categorie AS INT) > 4
             THEN 9999
-            ELSE ws_categorie
+            ELSE CAST(ws_categorie AS INT)
     END
   , 2
   , --Aquaduct als syfon nxt.culvert.type = 2
@@ -1661,7 +1661,7 @@ opmerking character varying(250),
 hoogteonderzijde double precision,
 doorvaartbreedte double precision,
 richting real,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_kbrbeweg character varying(3),
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
@@ -1733,11 +1733,11 @@ on
     hoogteonderzijde
   , --bottom_level (mNAP)
     case
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT) is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
+            else CAST(ws_categorie AS INT) -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
     end
   , st_force3d(st_transform(wkb_geometry,4326))::geometry(PointZ) -- van Point naar PointZ ??
 from
@@ -1830,7 +1830,7 @@ objectid serial NOT NULL,
 code character varying(50),
 opmerking character varying(250),
 richting real,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_bron character varying(255),
 ws_inwinningswijze smallint,
 ws_inwinningsdatum timestamp with time zone,
@@ -1849,11 +1849,11 @@ select
     objectid::integer as id
   , code::varchar
   , case -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT) is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie::integer
+            else CAST(ws_categorie AS INT)::integer
     end                                                           as channel_type_id
   , st_force3d(st_transform(wkb_geometry,4326))::geometry(PointZ) as geometry -- van Point naar PointZ ??
 from
@@ -2025,7 +2025,7 @@ hoogtebinnenonderkantben double precision,
 hoogtebinnenonderkantbov double precision,
 richting real,
 drempelhoogte double precision,
-ws_categorie smallint,
+CAST(ws_categorie AS INT) smallint,
 ws_doorvaarlengte real,
 ws_doorvaardiepte real,
 ws_bron character varying(255),
@@ -2099,11 +2099,11 @@ select
     END
   ,      -- code
     case -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
-        when ws_categorie is null
+        when CAST(ws_categorie AS INT) is null
             then 9999
-        when ws_categorie > 4
+        when CAST(ws_categorie AS INT) > 4
             then 9999
-            else ws_categorie::integer
+            else CAST(ws_categorie AS INT)::integer
     end
   , case -- type
         when ws_inlaatfunctie = 'j'
