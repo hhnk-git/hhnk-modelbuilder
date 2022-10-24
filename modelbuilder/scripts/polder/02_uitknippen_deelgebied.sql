@@ -487,7 +487,21 @@ if exists serial;
     WHERE
            ST_Intersects(a.geom,b.innergeom)
     ;
-    
+
+	--Wateroppervlak voor het ophogen van DEM. Hier worden nowwayout kanalen uitgefilterd.
+    DROP TABLE IF EXISTS deelgebied.channelsurfacedem
+    ;
+		
+	CREATE TABLE deelgebied.channelsurfacedem
+	AS
+		SELECT * FROM deelgebied.channelsurface cs
+		LEFT JOIN LATERAL (
+		   SELECT True t FROM checks.channel_nowayout nwo
+		   WHERE ST_Intersects(nwo.geom, cs.geom)
+		   LIMIT 1
+		) nwo ON True
+		WHERE nwo.t IS NULL;
+	
     --Knip crosssections uit
     DROP TABLE IF EXISTS deelgebied.crosssection
     ;

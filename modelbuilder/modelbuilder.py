@@ -161,10 +161,11 @@ def modelbuilder(**kwargs):
                         execute_file(file_path, polder_id, polder_name)
             except psycopg2.Error as e:
                 logging.error(e)
+                os.remove("/code/modelbuilder/modelbuilder_running.txt")
         else:
             logging.info("No channels found in polder, stopping the modelbuilder")
         logging.info("Stopping modelbuilder")
-        #os.remove("/code/modelbuilder/modelbuilder_running.txt")
+        os.remove("/code/modelbuilder/modelbuilder_running.txt")
     
     else:
         result = execute_file(file_path, polder_id, polder_name)
