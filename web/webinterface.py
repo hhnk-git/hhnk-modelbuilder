@@ -59,7 +59,7 @@ def index():
         </ul>  
     <h2>Overzicht gebieden</h2>
         <pre>
-            ID	Naam				Peilgebieden
+            ID	Naam				Code Polders V4
             1	Heerhugowaard			"03150","03350"
             2	Drieban				"6090"
             3	Purmer				"5801","5802","5803"
