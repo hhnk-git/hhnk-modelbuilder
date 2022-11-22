@@ -489,19 +489,31 @@ if exists serial;
     ;
 
 	--Wateroppervlak voor het ophogen van DEM. Hier worden nowwayout kanalen uitgefilterd.
-    DROP TABLE IF EXISTS deelgebied.channelsurfacedem
-    ;
+       DROP SEQUENCE IF EXISTS serial;
+       CREATE SEQUENCE serial START 1;
+       DROP TABLE IF EXISTS deelgebied.channelsurfacedem;
+       CREATE TABLE deelgebied.channelsurfacedem as
+       SELECT id as org_id, nextval('serial') as id, ST_Subdivide(geom, 15) as geom 
+       FROM checks.channelsurface
+       ;
+       CREATE INDEX channelsurfacedem_geom
+       ON
+       deelgebied.channelsurfacedem
+       USING gist
+       (
+              geom
+       )
+       ;
+
+       DELETE FROM deelgebied.channelsurfacedem
+       WHERE id IN (
+              SELECT s.id 
+              FROM deelgebied.channelsurfacedem as s,
+                     checks.channel_nowayout as n
+              WHERE st_contains(n.bufgeom2,s.geom)
+              )
+       ;
 		
-	CREATE TABLE deelgebied.channelsurfacedem
-	AS
-		SELECT * FROM deelgebied.channelsurface cs
-		LEFT JOIN LATERAL (
-		   SELECT True t FROM checks.channel_nowayout nwo
-		   WHERE ST_Intersects(nwo.geom, cs.geom)
-		   LIMIT 1
-		) nwo ON True
-		WHERE nwo.t IS NULL;
-	
     --Knip crosssections uit
     DROP TABLE IF EXISTS deelgebied.crosssection
     ;
