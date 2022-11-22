@@ -3,11 +3,7 @@ data/
 __pycache__/
 *.py[cod]
 *.log
+*.bak
 modelbuilder/tools/threedi-base/deploy/
 datachecker/datachecker_running.txt
-*.bak
-*.bak
-*.bak
-modelbuilder/scripts/polder/26_voorbereiden_rasters_threedi_turtle.sh.bak
-modelbuilder/scripts/polder/29_export_feedback.sh.bak
-*.bak
+modelbuilder/modelbuilder_running.txt

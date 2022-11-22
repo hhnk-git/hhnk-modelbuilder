@@ -45,6 +45,17 @@ data
     └───HDB.gdb
 ```
 
+
+## Data
+
+To connect to the postgis database use the following settings:
+
+	host: localhost
+	port: 55550
+	database: datachecker
+	username: postgres
+	password: "same as username"
+
 ## Development
 
 `docker-compose pull` to grab the images.
