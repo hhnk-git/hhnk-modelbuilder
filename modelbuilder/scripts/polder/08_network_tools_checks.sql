@@ -40,6 +40,17 @@ CREATE TABLE feedback.misfits AS
                                         ON
                                                   a.id=b.id
                     UNION ALL
+                    SELECT  
+                            'culvert wrong length ' || floor(abs(ST_Length(a.geom) - ST_Length(b.geom)))::text || 'm' as tabel,
+                            a.code,
+                            a.geom
+                     FROM   
+                            deelgebied.culvert as a
+                            LEFT JOIN     
+                                   deelgebied.culvert_snapped as b
+                                   ON a.id=b.culvert_id
+                     WHERE abs(ST_Length(a.geom) - ST_Length(b.geom)) > 1.0
+                    UNION ALL
                     SELECT
                            'pumpstation_misfits' as tabel
                          , code
@@ -76,3 +87,4 @@ FROM
 WHERE
        ST_Length(geom) < 0.1
 ;
+
