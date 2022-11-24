@@ -211,7 +211,7 @@ WHERE
               SELECT
                      id
               FROM
-                     deelgebied.tmp_culvert_to_orifice
+                     tmp.culvert_to_orifice
        )
        AND target_type = 'v2_culvert'
 ;
