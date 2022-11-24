@@ -211,7 +211,7 @@ WHERE
               SELECT
                      id
               FROM
-                     tmp.culvert_to_orifice
+                     tmp.v2_culvert_to_orifice
        )
        AND target_type = 'v2_culvert'
 ;
