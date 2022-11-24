@@ -2349,7 +2349,7 @@ WHERE
                      connection_node_end_id IS NULL
        )
 ;
-
+/*
 -- duikers omzetten naar orifice voor snelheid
 INSERT INTO v2_orifice
        ( id
@@ -2398,21 +2398,7 @@ WHERE
        ST_Length(the_geom) < 10
 ;
 
---UPDATE control structures (change v2_culvert to v2_orifice and add +100000 to the id)
-UPDATE
-       v2_control_table
-SET    target_type = 'v2_orifice'
-     , target_id   = target_id+100000
-WHERE
-       target_id IN
-       (
-              SELECT
-                     id
-              FROM
-                     deelgebied.tmp_culvert_to_orifice
-       )
-       AND target_type = 'v2_culvert'
-;
+
 
 DELETE
 FROM
@@ -2420,7 +2406,7 @@ FROM
 WHERE
        ST_Length(the_geom) < 10
 ;
-
--- tabllen weggooien
+*/
+-- tabellen weggooien
 DROP TABLE IF EXISTS tmp.pumpstation_view
 ;
