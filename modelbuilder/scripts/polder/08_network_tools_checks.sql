@@ -41,7 +41,7 @@ CREATE TABLE feedback.misfits AS
                                                   a.id=b.id
                     UNION ALL
                     SELECT  
-                            'culvert wrong length ' || floor(abs(ST_Length(a.geom) - ST_Length(b.geom)))::text || 'm' as tabel,
+                            'culvert wrong length by ' || floor(abs(ST_Length(a.geom) - ST_Length(b.geom)))::text || 'm' as tabel,
                             a.code,
                             a.geom
                      FROM   

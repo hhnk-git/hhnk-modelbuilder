@@ -330,6 +330,7 @@ SELECT
   , (ST_dump(ST_Union(bufgeom))).geom 
   , ST_Buffer((ST_dump(ST_Union(bufgeom))).geom,2.5,'endcap=flat') as bufgeom2 -- buffer van 5 m om channelsurfaces niet mee te nemen
   , b.polder_id::numeric
+  , 'niet verbonden met afvoerkunstwerk' as opmerking
 FROM
     tmp.channel_nowayout as a
   , checks.polder        as b
@@ -366,10 +367,12 @@ WHERE
 
 -- 2.5) Voeg de foutieve segmenten toe aan channel_nowayout;
 INSERT INTO checks.channel_nowayout
-    (geom
+    (geom, opmerking
     )
 SELECT
     bufgeom
+    , opmerking
+    
 from
     tmp.wrong_channels
 ;
