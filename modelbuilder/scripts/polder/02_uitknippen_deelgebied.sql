@@ -493,8 +493,10 @@ if exists serial;
        CREATE SEQUENCE serial START 1;
        DROP TABLE IF EXISTS deelgebied.channelsurfacedem;
        CREATE TABLE deelgebied.channelsurfacedem as
-       SELECT id as org_id, nextval('serial') as id, ST_Subdivide(geom, 15) as geom 
-       FROM checks.channelsurface
+       SELECT s.id as org_id, nextval('serial') as id, ST_Subdivide(s.geom, 15) as geom 
+       FROM checks.channelsurface s
+              , checks.channel as c
+       WHERE ST_Intersects(s.geom,c.geom)
        ;
        CREATE INDEX channelsurfacedem_geom
        ON
@@ -509,11 +511,11 @@ if exists serial;
        WHERE id IN (
               SELECT s.id 
               FROM deelgebied.channelsurfacedem as s,
-                     checks.channel_nowayout as n
-              WHERE st_contains(n.bufgeom2,s.geom)
+                     checks.channel_loose as n
+              WHERE ST_Intersects(n.geom,s.geom)
               )
        ;
-		
+       
     --Knip crosssections uit
     DROP TABLE IF EXISTS deelgebied.crosssection
     ;

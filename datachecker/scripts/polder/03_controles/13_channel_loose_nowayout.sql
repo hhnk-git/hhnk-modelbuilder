@@ -328,7 +328,6 @@ CREATE TABLE checks.channel_nowayout AS
 SELECT
     nextval('serial') as id
   , (ST_dump(ST_Union(bufgeom))).geom 
-  , ST_Buffer((ST_dump(ST_Union(bufgeom))).geom,2.5,'endcap=flat') as bufgeom2 -- buffer van 5 m om channelsurfaces niet mee te nemen
   , b.polder_id::numeric
   , 'niet verbonden met afvoerkunstwerk' as opmerking
 FROM
@@ -345,14 +344,6 @@ ON
 USING gist
     (
         geom
-    )
-;
-CREATE INDEX checks_channel_nowayout_bufgeom
-ON
-    checks.channel_nowayout
-USING gist
-    (
-        bufgeom2
     )
 ;
 
