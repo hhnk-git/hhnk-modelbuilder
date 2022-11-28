@@ -327,8 +327,9 @@ DROP TABLE IF EXISTS checks.channel_nowayout
 CREATE TABLE checks.channel_nowayout AS
 SELECT
     nextval('serial') as id
-  , (ST_dump(ST_Union(bufgeom))).geom
+  , (ST_dump(ST_Union(bufgeom))).geom 
   , b.polder_id::numeric
+  , 'niet verbonden met afvoerkunstwerk' as opmerking
 FROM
     tmp.channel_nowayout as a
   , checks.polder        as b
@@ -357,10 +358,12 @@ WHERE
 
 -- 2.5) Voeg de foutieve segmenten toe aan channel_nowayout;
 INSERT INTO checks.channel_nowayout
-    (geom
+    (geom, opmerking
     )
 SELECT
     bufgeom
+    , opmerking
+    
 from
     tmp.wrong_channels
 ;

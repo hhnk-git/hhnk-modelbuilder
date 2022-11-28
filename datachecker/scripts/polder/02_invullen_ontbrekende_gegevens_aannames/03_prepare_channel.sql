@@ -15,7 +15,7 @@ SELECT
   , talud_left
   , talud_right
   , image_url
-  , ST_SnapToGrid(ST_force2D(ST_Transform(geometry,28992)),0,0,0.005,0.005)               as geom
+  , ST_force2D(ST_Transform(geometry,28992))               as geom
   , ST_lineInterpolatePoint(ST_force2D(ST_Transform(geometry,28992)),0.5)                 as pointgeom
   , ST_Buffer(ST_Buffer(ST_force2D(ST_Transform(geometry,28992)),0.1,'endcap=flat'),0.01) as bufgeom
   , "end"

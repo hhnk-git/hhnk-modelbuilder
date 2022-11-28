@@ -82,11 +82,11 @@ class Command(ThreediBaseCommand):
             channel_output_table_name=options['channel_output_table']
         )
         
-        ccl.analyze_dataset()
-        ccl.create_tmp_culverts()
-        ccl.clip_channels_by_culverts()
-        ccl.move_multi_geoms_to_misfits()
-        ccl.add_missing_culverts_to_misfits()
+        # ccl.analyze_dataset() 
+        # ccl.create_tmp_culverts()
+        # ccl.clip_channels_by_culverts()
+        # ccl.move_multi_geoms_to_misfits()
+        # ccl.add_missing_culverts_to_misfits()
 
         try:
             ccl.analyze_dataset()

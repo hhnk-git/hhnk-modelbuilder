@@ -1,18 +1,18 @@
 -- peilgrenzen omzetten naar levees
 -- maak de buitenste ringen
-DROP TABLE IF EXISTS tmp.peilgrenzen
+DROP TABLE IF EXISTS tmp.peilgrenzen3
 ;
 
-CREATE TABLE tmp.peilgrenzen AS
+CREATE TABLE tmp.peilgrenzen3 AS
 SELECT
     ST_ExteriorRing((ST_Dump(ST_Force2D(ST_Transform(geom,28992)))).geom) as geom
 FROM
     checks.fixeddrainagelevelarea
 ;
 
-CREATE INDEX tmp_peilgrenzen_geom
+CREATE INDEX tmp_peilgrenzen3_geom
 ON
-    tmp.peilgrenzen
+    tmp.peilgrenzen3
 USING gist
     (
         geom
@@ -25,9 +25,9 @@ DROP TABLE IF EXISTS tmp.peilgrenzen2
 
 CREATE TABLE tmp.peilgrenzen2 AS
 SELECT
-    ST_SimplifyPreserveTopology((ST_Dump(ST_LineMerge(ST_Union(geom)))).geom,2.0) as geom
+    ST_SimplifyPreserveTopology((ST_Dump(ST_LineMerge(ST_Union(geom)))).geom,0.2) as geom
 FROM
-    tmp.peilgrenzen
+    tmp.peilgrenzen3
 ;
 
 -- Opknippen circulaire peilgrenzen

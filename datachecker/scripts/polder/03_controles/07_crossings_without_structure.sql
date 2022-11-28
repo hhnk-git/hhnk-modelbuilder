@@ -56,13 +56,13 @@ CREATE TABLE checks.kruising_zonder_kunstwerk AS
                     )
                     ST_Intersection(a.geom,b.geom) as pointgeom
                   , a.geom                         as channelgeom
-                  , b.geom                         as leveegeom
+                  , b.geom                         as peilgrensgeom
                   , a.id                           as channel_id
-                  , b.levee_ring_id
+                  --, b.levee_ring_id
                   , channel_type_id
                 FROM
                     checks.channel_linemerge       as a
-                  , checks.peilgrens_met_waterpeil as b
+                  , tmp.peilgrenzen3 as b 
                 WHERE
                     ST_Intersects(a.geom,b.geom)
             )
