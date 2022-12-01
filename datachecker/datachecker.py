@@ -85,6 +85,8 @@ def execute_sql_file_multiple_transactions(file_path):
 #Define function for executing bash files        
 def execute_bash_file(file_path):
     logging.info("START execute bash file: {}".format(file_path))
+    file_name = file_path.split('/')[-1]
+    f = open("/code/datachecker/logging_" + file_name + ".log", "w")
     subprocess.call(['bash',file_path])
     
 
