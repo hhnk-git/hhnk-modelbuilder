@@ -142,6 +142,7 @@ def check_polder_contains_data(polder_id):
 def modelbuilder(**kwargs):
     polder_id = kwargs.get('polder_id')
     polder_name = kwargs.get('polder_name')
+    polder_name = polder_name.lower()
     file_path = kwargs.get('file')
     
     if(kwargs.get('file') is None):
