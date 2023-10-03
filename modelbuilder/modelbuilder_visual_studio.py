@@ -1,3 +1,4 @@
+# %%
 # -*- coding: utf-8 -*-
 """
 Python script reading sql and bash files in order to automatically execute datachecks on uploaded data
@@ -30,7 +31,7 @@ else:
     log_level = logging.INFO
 work_dir = Path.cwd()         
 #setup logging to write debug log to file
-logging.basicConfig(filename=work_dir.joinpath('code/modelbuilder/modelbuilder.log'),filemode='w',format='%(asctime)s - %(levelname)s - %(message)s',level=log_level)
+logging.basicConfig(filename=work_dir.joinpath('code/modelbuilder/modelbuilder_visual_studio.log'),filemode='w',format='%(asctime)s - %(levelname)s - %(message)s',level=log_level)
 
 #Read configuration file
 config = configparser.ConfigParser()
@@ -207,6 +208,7 @@ def main():
         raise  # argparse does this
 
 if __name__ == "__main__":
-    main()
+    modelbuilder(polder_id="45", polder_name="callantsoog") #main()
 
 #modelbuilder(polder_id="45", polder_name="callantsoog")
+# %%

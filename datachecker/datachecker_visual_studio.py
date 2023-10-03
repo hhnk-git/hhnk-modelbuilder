@@ -1,3 +1,4 @@
+# %%
 # -*- coding: utf-8 -*-
 """
 Python script reading sql and bash files in order to automatically execute datachecks on uploaded data
@@ -184,4 +185,4 @@ def main():
         raise  # argparse does this
 
 if __name__ == "__main__":
-    main()
+    datachecker() # main()

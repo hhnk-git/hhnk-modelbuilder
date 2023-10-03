@@ -97,6 +97,7 @@ def get_db_cretentials_from_ini(ini):
         "user": ini_reader.get('database_user'),
         "password": ini_reader.get('database_password'),
         "schema": ini_reader.get('schema'),
+        "port": ini_reader.get('port'),
     }
 
 

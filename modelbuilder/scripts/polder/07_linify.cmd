@@ -1,0 +1,2 @@
+rem Dit script roept het python script aan waarin kunstwerken die als punt in de database staan worden omgezet naar lijnsegmenten
+python .\code\modelbuilder\tools\threedi-base\manage.py 05_linify_structures .\code\modelbuilder\tools\threedi-base\config.ini

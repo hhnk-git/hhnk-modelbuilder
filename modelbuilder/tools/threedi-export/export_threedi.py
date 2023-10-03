@@ -1,3 +1,4 @@
+from sqlalchemy.sql import text
 from utils.model_schematisation import (
     ConnectionNode,
     Manhole,
@@ -49,7 +50,7 @@ import configparser
 import psycopg2
 
 config = configparser.ConfigParser()
-config.read('/code/datachecker/datachecker_config.ini')
+config.read('code/datachecker/datachecker_config.ini')
 
 def get_parser():
     """ Return argument parser. """
@@ -155,13 +156,14 @@ def export_threedi(**kwargs):
         else:
             height = "'" + postgis_cross_section_definition[3] + "'"
         session.execute(
+            text(
             "INSERT INTO v2_cross_section_definition(id,shape,width,height,code) VALUES({},'{}', '{}', {}, '{}')".format(
                 postgis_cross_section_definition[0],
                 postgis_cross_section_definition[1],
                 postgis_cross_section_definition[2],
                 height,
                 postgis_cross_section_definition[4],
-            )
+            ))
         )
 
     for postgis_channel in execute_sql_statement(
@@ -1767,7 +1769,7 @@ def execute_sql_statement(sql_statement, fetch=True):
         makes use of the existing database connection to run a custom query
         """
         
-        conn = psycopg2.connect(host=config['db']['hostname'], dbname=config['db']['database'], user=config['db']['username'], password=config['db']['password'])
+        conn = psycopg2.connect(host=config['db']['hostname'], dbname=config['db']['database'], user=config['db']['username'], password=config['db']['password'], port=config["db"]["port"])
         
         with conn:
             with conn.cursor() as cur:
