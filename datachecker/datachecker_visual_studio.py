@@ -186,3 +186,6 @@ def main():
 
 if __name__ == "__main__":
     datachecker() # main()
+
+print('datachecker klaar')
+# %%
