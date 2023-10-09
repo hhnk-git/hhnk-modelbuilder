@@ -50,7 +50,9 @@ import configparser
 import psycopg2
 
 config = configparser.ConfigParser()
+print('cwd',os.getcwd())
 config.read('code/datachecker/datachecker_config.ini')
+print(config['db']['database'],'connected')
 
 def get_parser():
     """ Return argument parser. """
@@ -1769,7 +1771,7 @@ def execute_sql_statement(sql_statement, fetch=True):
         makes use of the existing database connection to run a custom query
         """
         
-        conn = psycopg2.connect(host=config['db']['hostname'], dbname=config['db']['database'], user=config['db']['username'], password=config['db']['password'], port=config["db"]["port"])
+        conn = psycopg2.connect(host=config['db']['hostname'], dbname=config['db']['database'], user=config['db']['username'], password=config['db']['password'], port=config['db']['port'])
         
         with conn:
             with conn.cursor() as cur:

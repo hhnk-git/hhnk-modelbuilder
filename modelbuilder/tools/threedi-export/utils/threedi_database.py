@@ -19,37 +19,64 @@ Base = declarative_base()
 logger = logging.getLogger(__name__)
 
 
-def load_spatialite(con, connection_record):
-    """Load spatialite extension as described in
-    https://geoalchemy-2.readthedocs.io/en/latest/spatialite_tutorial.html"""
-    import sqlite3
+# def load_spatialite(con, connection_record):
+#     """Load spatialite extension as described in
+#     https://geoalchemy-2.readthedocs.io/en/latest/spatialite_tutorial.html"""
+#     import sqlite3
 
-    con.enable_load_extension(True)
-    cur = con.cursor()
-    libs = [
-        # SpatiaLite >= 4.2 and Sqlite >= 3.7.17, should work on all platforms
-        ("mod_spatialite", "sqlite3_modspatialite_init"),
-        # SpatiaLite >= 4.2 and Sqlite < 3.7.17 (Travis)
-        ("mod_spatialite.so", "sqlite3_modspatialite_init"),
-        # SpatiaLite < 4.2 (linux)
-        ("libspatialite.so", "sqlite3_extension_init"),
-    ]
-    found = False
-    for lib, entry_point in libs:
-        try:
-            cur.execute("select load_extension('{}', '{}')".format(lib, entry_point))
-        except sqlite3.OperationalError:
-            logger.exception(
-                "Loading extension %s from %s failed, trying the next", entry_point, lib
-            )
-            continue
-        else:
-            found = True
-            break
-    if not found:
-        raise RuntimeError("Cannot find any suitable spatialite module")
-    cur.close()
-    con.enable_load_extension(False)
+#     con.enable_load_extension(True)
+#     cur = con.cursor()
+#     libs = [
+#         # SpatiaLite >= 4.2 and Sqlite >= 3.7.17, should work on all platforms
+#         ("mod_spatialite", "sqlite3_modspatialite_init"),
+#         # SpatiaLite >= 4.2 and Sqlite < 3.7.17 (Travis)
+#         ("mod_spatialite.so", "sqlite3_modspatialite_init"),
+#         # SpatiaLite < 4.2 (linux)
+#         ("libspatialite.so", "sqlite3_extension_init"),
+#     ]
+#     found = False
+#     for lib, entry_point in libs:
+#         try:
+#             cur.execute("select load_extension('{}', '{}')".format(lib, entry_point))
+#         except sqlite3.OperationalError:
+#             logger.exception(
+#                 "Loading extension %s from %s failed, trying the next", entry_point, lib
+#             )
+#             continue
+#         else:
+#             found = True
+#             break
+#     if not found:
+#         raise RuntimeError("Cannot find any suitable spatialite module")
+#     cur.close()
+#     con.enable_load_extension(False)
+
+
+def load_spatialite(con, connection_record):
+    import sqlite3
+    MOD_SPATIALITE_PATH = r"C:\ProgramData\miniforge-pypy3\mod_spatialite-5.0.1-win-amd64"
+    conn = con
+    try:
+        # conn = sqlite3.connect(self.path)
+        conn.enable_load_extension(True)
+        conn.execute("SELECT load_extension('mod_spatialite')")
+        return conn
+    except sqlite3.OperationalError as e:
+        if e.args[0] == "The specified module could not be found.\r\n":
+            if os.path.exists(MOD_SPATIALITE_PATH):
+                os.environ["PATH"] = MOD_SPATIALITE_PATH + ";" + os.environ["PATH"]
+
+                # conn = sqlite3.connect(self.path)
+                conn.enable_load_extension(True)
+                conn.execute("SELECT load_extension('mod_spatialite')")
+                return conn
+            else:
+                print(
+                    """Download mod_spatialite extension from http://www.gaia-gis.it/gaia-sins/windows-bin-amd64/ 
+                and place into anaconda installation C:\ProgramData\Anaconda3\mod_spatialite-5.0.1-win-amd64."""
+                )
+                raise e from None
+
 
 
 class ThreediDatabase(object):
