@@ -51,7 +51,7 @@ import psycopg2
 
 config = configparser.ConfigParser()
 print('cwd',os.getcwd())
-config.read('code/datachecker/datachecker_config.ini')
+config.read(r'\\corp.hhnk.nl/data/Hydrologen_data/Data/modelbuilder/code/datachecker/datachecker_config.ini') #TODO make single config file
 print(config['db']['database'],'connected')
 
 def get_parser():

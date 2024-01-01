@@ -1,2 +1,2 @@
 rem Dit script roept het python script aan waarin kunstwerken die als punt in de database staan worden omgezet naar lijnsegmenten
-python .\code\modelbuilder\tools\threedi-base\manage.py 05_linify_structures .\code\modelbuilder\tools\threedi-base\config.ini
+%CONDA_PREFIX%\python.exe \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\code\modelbuilder\tools\threedi-base\manage.py 05_linify_structures \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\code\modelbuilder\tools\threedi-base\config.ini
