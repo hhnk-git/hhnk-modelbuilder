@@ -292,6 +292,19 @@ from
     damo_ruw.hydroobject
 group by
     objectid
+    , code
+    , ws_in_peilgebied
+  , soortoppwaterkwantiteit
+  , categorieoppwaterlichaam
+  , ws_bodemhoogte
+  , ws_talud_links
+  , ws_talud_rechts
+  , ws_bodembreedte
+  , breedte_getabuleerd
+  , --derived_width_at_waterlevel,
+     hoogte_getabuleerd
+  , --derived_bed_level,
+     bodemhoogte_nap
 ;
 
 -- koppeling hydroobject en profielen

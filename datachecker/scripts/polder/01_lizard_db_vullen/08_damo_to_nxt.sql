@@ -50,7 +50,7 @@ SELECT
             ELSE naam
     END
   , 'NULL' AS polder_type
-  , ST_CollectionExtract(ST_MakeValid(st_force3d(st_transform(wkb_geometry,4326))),3)::geometry(MultiPolygonZ)
+  , ST_Multi(ST_CollectionExtract(ST_MakeValid(st_force3d(st_transform(wkb_geometry,4326))),3))::geometry(MultiPolygonZ)
 FROM
     tmp.afvoergebiedaanvoergebied
 ;
@@ -177,7 +177,7 @@ SELECT
   ,
      -- polder_id weten we nog niet
     --st_force3d(st_transform(geom,4326))::geometry(MultiPolygonZ) -- want nxt.geometry is 3D (met z-coordinaat)
-    ST_CollectionExtract( ST_MakeValid( st_force3d( ST_Multi( st_transform(geom,4326) ) )),3)::geometry(MultiPolygonZ)
+    ST_Multi(ST_CollectionExtract( ST_MakeValid( st_force3d( ST_Multi( st_transform(geom,4326) ) )),3))::geometry(MultiPolygonZ)
     --) -- want nxt.geometry is 3D (met z-coordinaat)
 FROM
     tmp.fixedleveldrainagearea_union
@@ -545,7 +545,7 @@ select
     objectid
   , now()
   , code
-  , ST_Force3d(ST_CollectionExtract(ST_MakeValid(st_transform(wkb_geometry,4326)),3))::geometry(MultiPolygonZ) -- want nxt.geometry is 3D (met z-coordinaat)
+  , ST_Multi(ST_Force3d(ST_CollectionExtract(ST_MakeValid(st_transform(wkb_geometry,4326)),3)))::geometry(MultiPolygonZ) -- want nxt.geometry is 3D (met z-coordinaat)
 from
     tmp.waterdeel
 ;
@@ -726,7 +726,7 @@ select
   , '9999' as num_timeseries
   , maximalecapaciteit
   ,                                                               -- m3/uur naar m3/min
-    st_force3d(st_transform(wkb_geometry,4326))::geometry(PointZ) -- van Point naar PointZ ??
+    st_force3d(st_transform((ST_Dump(wkb_geometry)).geom ,4326))::geometry(PointZ) -- van Point naar PointZ ??
 from
     damo_ruw.gemaal
 ;
@@ -1586,7 +1586,6 @@ SELECT
             ELSE breedte
     END
   , 10
-  , shape_length
   , case
         when soortmateriaal is null
             then 9999 -- leeg veld wordt leeg veld

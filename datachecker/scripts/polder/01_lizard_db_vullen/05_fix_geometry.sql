@@ -20,8 +20,7 @@ CREATE TABLE tmp.peilgebiedpraktijk AS
           , NULL AS last_edited_user
           , last_edited_date
           , ws_oppervlakte
-          , shape_length
-          , shape_area
+          
           , peilgebiedpraktijk_id
           , peil_wsa
           , keuze_wsa
@@ -49,8 +48,7 @@ CREATE TABLE tmp.peilafwijkinggebied AS
           , NULL AS last_edited_user
           , last_edited_date
           , ws_oppervlakte
-          , shape_length
-          , shape_area
+          
           , peilafwijkinggebied_id
           , -- peilafwijking_id as peilafwijkinggebied_id,  --deze is veranderd tov feb levering
             peil_wsa
@@ -74,8 +72,7 @@ CREATE TABLE tmp.afvoergebiedaanvoergebied AS
           , soortafvoeraanvoergebied
           , --deze is nieuw tov feb levering
             oppervlakte
-          , shape_length
-          , shape_area
+          
           , ST_CollectionExtract(ST_MakeValid(wkb_geometry),3) AS wkb_geometry
         FROM
             damo_ruw.afvoergebiedaanvoergebied
@@ -108,11 +105,7 @@ CREATE TABLE tmp.ref_beheergebiedgrens_hhnk AS
     (
         SELECT
             objectid
-          , shape_length
-          , --shape_length as geometrie_length,   --deze is veranderd tov feb levering
-            shape_area
-          , -- shape_area as geometrie_area,        --deze is veranderd tov feb levering
-            ST_CollectionExtract(ST_MakeValid(wkb_geometry),3) AS wkb_geometry
+          , ST_CollectionExtract(ST_MakeValid(wkb_geometry),3) AS wkb_geometry
         FROM
             damo_ruw.ref_beheergebiedgrens_hhnk
     )

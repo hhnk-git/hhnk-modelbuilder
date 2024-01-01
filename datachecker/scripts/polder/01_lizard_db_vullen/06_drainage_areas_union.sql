@@ -26,8 +26,7 @@ SELECT
   , created_date
   , last_edited_user
   , last_edited_date
-  , shape_length
-  , shape_area
+          
   , peilgebiedpraktijk_id as SSC_CODE
   , peil_wsa              as ssc_level
   , keuze_wsa             as ssc_level_type
@@ -53,8 +52,7 @@ SELECT
   , created_date
   , last_edited_user
   , last_edited_date
-  , shape_length
-  , shape_area
+          
   , peilafwijkinggebied_id as POA_CODE
   , peil_wsa               as poa_level
   , keuze_wsa              as poa_level_type
@@ -75,8 +73,7 @@ SELECT
   , NULL       as created_date
   , NULL       as last_edited_user
   , NULL       as last_edited_date
-  , shape_length
-  , shape_area
+          
   , nextval('serial') as POA_CODE
   , NULL              as poa_level
   , NULL              as poa_level_type
@@ -284,8 +281,7 @@ SELECT
   , created_date
   , last_edited_user
   , last_edited_date
-  , shape_length
-  , shape_area
+          
   , a.ssc_code       as id
   , a.ssc_level      as wsa_level
   , a.ssc_level_type as wsa_level_type
@@ -312,8 +308,7 @@ SELECT
   , created_date
   , last_edited_user
   , last_edited_date
-  , shape_length
-  , shape_area
+          
   , a.poa_code       as id
   , a.poa_level      as wsa_level
   , a.poa_level_type as wsa_level_type
@@ -359,8 +354,6 @@ WITH dist                                              AS
           , created_date
           , last_edited_user
           , last_edited_date
-          , shape_length
-          , shape_area
           , id
           , ST_UNION(geom) as geom
           , type
@@ -378,8 +371,6 @@ WITH dist                                              AS
           , created_date
           , last_edited_user
           , last_edited_date
-          , shape_length
-          , shape_area
           , id
           , type
     )
@@ -443,8 +434,7 @@ ON
   , created_date
   , last_edited_user
   , last_edited_date
-  , shape_length
-  , shape_area
+          
   , id
   , wsa_level
   , wsa_level_type
@@ -464,8 +454,7 @@ GROUP BY
   , created_date
   , last_edited_user
   , last_edited_date
-  , shape_length
-  , shape_area
+          
   , id
   , wsa_level
   , wsa_level_type

@@ -25,7 +25,7 @@ if not Path("code").absolute().resolve().exists():
     os.chdir(Path(__file__).absolute().resolve().parents[2])
 
 windows = True
-debug = False
+debug = True
 if debug:
     log_level = logging.DEBUG
 else:

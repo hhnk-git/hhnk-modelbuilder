@@ -66,7 +66,7 @@ SELECT
   , string_to_array(replace(meetwaarden,' ',''),',')::double precision[ ]
   , string_to_array(replace(actiewaarden,' ',''),',')::double precision[]
   , action_table
-  , ST_Force3d(ST_Transform(wkb_geometry,4326))::geometry(PointZ)
+  , ST_Force3d(ST_GeometryN(ST_Transform(wkb_geometry,4326),1))::geometry(PointZ)
 FROM
     hdb.sturing_3di
 ;

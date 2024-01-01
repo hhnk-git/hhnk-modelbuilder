@@ -208,7 +208,7 @@ def main():
         raise  # argparse does this
 
 if __name__ == "__main__":
-    modelbuilder(polder_id="4", polder_name="castricum") #main()
+    modelbuilder(polder_id="3", polder_name="purmer") #main()
     print('modelbuilder klaar')
 
 #modelbuilder(polder_id="45", polder_name="callantsoog")
