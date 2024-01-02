@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS tmp.SSC
 
 CREATE TABLE tmp.SSC AS
 SELECT
-    objectid
+    id as id_was_objectid
   , code as ssc_name
   , naam
   , opmerking
@@ -41,7 +41,7 @@ DROP TABLE IF EXISTS tmp.POA
 
 CREATE TABLE tmp.POA AS
 SELECT
-    objectid
+    id as id_was_objectid
   , code as poa_name
   , naam
   , opmerking
@@ -61,7 +61,7 @@ FROM
     tmp.peilafwijkinggebied
 UNION
 SELECT
-    objectid
+    id as id_was_objectid
   , 'HDB:'
         || code as poa_name
   , naam
@@ -269,8 +269,8 @@ DROP TABLE IF EXISTS tmp.union
 ;
 
 CREATE TABLE tmp.union AS
-SELECT
-    b.objectid
+SELECT DISTINCT ON (a.geom)
+    b.id_was_objectid
   , b.ssc_name as code
   , naam
   , opmerking
@@ -296,8 +296,8 @@ FROM
 WHERE
     a.poa_code IS NULL
 UNION
-SELECT
-    b.objectid
+SELECT DISTINCT ON (a.geom)
+    b.id_was_objectid
   , b.poa_name as code
   , naam
   , opmerking
@@ -343,7 +343,7 @@ WITH dist                                              AS
   , grouped AS
     (
         SELECT
-            objectid
+            id_was_objectid
           , code
           , naam
           , opmerking
@@ -360,7 +360,7 @@ WITH dist                                              AS
         FROM
             tmp.union
         GROUP BY
-            objectid
+            id_was_objectid
           , code
           , naam
           , opmerking
@@ -406,11 +406,11 @@ UPDATE
     tmp.union as a
 SET code = b.code
         || '--'
-        || b.objectid
+        || b.id_was_objectid
 FROM
     checks.fixeddrainagelevelarea_double_code as b
 WHERE
-    a.objectid = b.objectid
+    a.id_was_objectid = b.id_was_objectid
     AND a.code = b.code
 ;
 
@@ -423,7 +423,7 @@ ON
     (
         geom
     )
-    objectid
+    id_was_objectid
   , code
   , naam
   , opmerking
@@ -443,7 +443,7 @@ ON
 FROM
     tmp.union
 GROUP BY
-    objectid
+    id_was_objectid
   , code
   , naam
   , opmerking

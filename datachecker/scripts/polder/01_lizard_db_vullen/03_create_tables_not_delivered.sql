@@ -3,7 +3,7 @@ Controleert of inputdata bestaat, als dit niet zo is, maakt hij tabellen aan zon
 */
 CREATE TABLE IF NOT EXISTS damo_ruw.afvoergebiedaanvoergebied
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code                     character varying(200)
       , naam                     character varying(100)
       , opmerking                character varying(200)
@@ -12,13 +12,13 @@ CREATE TABLE IF NOT EXISTS damo_ruw.afvoergebiedaanvoergebied
       , shape_length double precision
       , shape_area double precision
       , wkb_geometry geometry(MultiPolygon,28992)
-      , CONSTRAINT afvoergebiedaanvoergebied_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT afvoergebiedaanvoergebied_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.aquaductlijn
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , aquaductid integer
       , code       character varying(50)
       , naam       character varying(100)
@@ -34,34 +34,34 @@ CREATE TABLE IF NOT EXISTS damo_ruw.aquaductlijn
       , ws_categorie    smallint
       , shape_length double precision
       , wkb_geometry geometry(MultiLineString,28992)
-      , CONSTRAINT aquaductlijn_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT aquaductlijn_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.brug
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code character varying(200)
       , hoogteonderzijde double precision
       , ws_categorie smallint
       , brug_id      integer
       , wkb_geometry geometry(Point,28992)
-      , CONSTRAINT brug_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT brug_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.doorstroomopening
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , breedteopening double precision
       , brugid integer
-      , CONSTRAINT doorstroomopening_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT doorstroomopening_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.duikersifonhevel
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code                 character varying(200)
       , ws_inlaatfunctie     character varying(3)
       , naam                 character varying(100)
@@ -83,37 +83,37 @@ CREATE TABLE IF NOT EXISTS damo_ruw.duikersifonhevel
       , ws_afsluitwijze2   smallint
       , shape_length double precision
       , wkb_geometry geometry(MultiLineString,28992)
-      , CONSTRAINT duikersifonhevel_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT duikersifonhevel_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.gemaal
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code          character varying(200)
       , naam          character varying(100)
       , functiegemaal smallint
       , maximalecapaciteit double precision
       , ws_categorie smallint
       , wkb_geometry geometry(Point,28992)
-      , CONSTRAINT gemaal_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT gemaal_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.gw_pbp
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , prw_prw_id integer
       , iws_hoogte double precision
       , iws_afstand double precision
 	  , pbpsoort integer
-      , CONSTRAINT gw_pbp_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT gw_pbp_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.gw_pro
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , pro_id     integer
       , proident   character varying(200)
       , ovk_ovk_id integer
@@ -121,23 +121,23 @@ CREATE TABLE IF NOT EXISTS damo_ruw.gw_pro
       , osmomsch   character varying(200)
       , shape_length double precision
       , wkb_geometry geometry(MultiLineStringZ,28992)
-      , CONSTRAINT gw_pro_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT gw_pro_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.gw_prw
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , prw_id     integer
       , pro_pro_id integer
       , osmomsch   character varying(60)
-      , CONSTRAINT gw_prw_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT gw_prw_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.hydroobject
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code                     character varying(200)
       , soortoppwaterkwantiteit  smallint
       , categorieoppwaterlichaam smallint
@@ -148,28 +148,28 @@ CREATE TABLE IF NOT EXISTS damo_ruw.hydroobject
       , ws_in_peilgebied         character varying(200)
       , shape_length double precision
       , wkb_geometry geometry(MultiLineString,28992)
-      , CONSTRAINT hydroobject_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT hydroobject_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.iws_geo_beschr_profielpunten
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , wkb_geometry geometry(PointZ,28992)
-      , CONSTRAINT iws_geo_beschr_profielpunten_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT iws_geo_beschr_profielpunten_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.iws_profiel_reeksen
     (
-        objectid serial NOT NULL
-      , CONSTRAINT iws_profiel_reeksen_pkey PRIMARY KEY (objectid)
+        id serial NOT NULL
+      , CONSTRAINT iws_profiel_reeksen_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.peilafwijkinggebied
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code                   character varying(200)
       , naam                   character varying(100)
       , opmerking              character varying(200)
@@ -185,13 +185,13 @@ CREATE TABLE IF NOT EXISTS damo_ruw.peilafwijkinggebied
       , shape_length double precision
       , shape_area double precision
       , wkb_geometry geometry(MultiPolygon,28992)
-      , CONSTRAINT peilafwijkinggebied_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT peilafwijkinggebied_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.peilgebiedpraktijk
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code                   character varying(200)
       , naam                   character varying(100)
       , opmerking              character varying(200)
@@ -208,23 +208,23 @@ CREATE TABLE IF NOT EXISTS damo_ruw.peilgebiedpraktijk
       , shape_length double precision
       , shape_area double precision
       , wkb_geometry geometry(MultiPolygon,28992)
-      , CONSTRAINT peilgebiedpraktijk_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT peilgebiedpraktijk_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.ref_beheergebiedgrens_hhnk
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , shape_length double precision
       , shape_area double precision
       , wkb_geometry geometry(MultiPolygon,28992)
-      , CONSTRAINT ref_beheergebiedgrens_hhnk_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT ref_beheergebiedgrens_hhnk_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.sluis
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code character varying(200)
       , naam character varying(100)
       , doorvaartbreedte double precision
@@ -238,24 +238,24 @@ CREATE TABLE IF NOT EXISTS damo_ruw.sluis
       , ws_afsluitwijze1  smallint
       , ws_afsluitwijze2  smallint
       , wkb_geometry geometry(Point,28992)
-      , CONSTRAINT sluis_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT sluis_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.streefpeil
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , soortstreefpeil smallint
       , waterhoogte double precision
       , peilgebiedpraktijkid  integer
       , peilafwijkinggebiedid integer
-      , CONSTRAINT streefpeil_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT streefpeil_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.stuw
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code character varying(200)
       , naam character varying(100)
       , doorstroombreedte double precision
@@ -266,34 +266,34 @@ CREATE TABLE IF NOT EXISTS damo_ruw.stuw
       , ws_kruinvorm       smallint
       , ws_functiestuw     smallint
       , wkb_geometry geometry(Point,28992)
-      , CONSTRAINT stuw_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT stuw_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.vastedam
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code         character varying(200)
       , ws_categorie smallint
       , wkb_geometry geometry(Point,28992)
-      , CONSTRAINT vastedam_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT vastedam_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.vispassage
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , code         character varying(200)
       , naam         character varying(100)
       , ws_categorie smallint
       , wkb_geometry geometry(Point,28992)
-      , CONSTRAINT vispassage_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT vispassage_pkey PRIMARY KEY (id)
     )
 ;
 
 CREATE TABLE IF NOT EXISTS damo_ruw.waterdeel
     (
-        objectid serial NOT NULL
+        id serial NOT NULL
       , bgtstatus double precision
       , bgttype double precision
       , bronhouder double precision
@@ -318,6 +318,6 @@ CREATE TABLE IF NOT EXISTS damo_ruw.waterdeel
       , shape_length double precision
       , shape_area double precision
       , wkb_geometry geometry(MultiPolygon,28992)
-      , CONSTRAINT waterdeel_pkey PRIMARY KEY (objectid)
+      , CONSTRAINT waterdeel_pkey PRIMARY KEY (id)
     )
 ;

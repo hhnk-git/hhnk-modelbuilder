@@ -56,7 +56,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.iws_geo_beschr_profielpunten'::text as tabel
-          , objectid::text                                as code
+          , pbp_pbp_id::text                                as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM
@@ -86,7 +86,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.ref_beheergebiedgrens_hhnk'::text as tabel
-          , objectid::text                              as code
+          , id::text                              as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM
@@ -96,7 +96,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.sluis'::text as tabel
-          , objectid::text         as code
+          , code         as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM
@@ -106,7 +106,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.stuw'::text as tabel
-          , objectid::text        as code
+          , code        as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM
@@ -116,7 +116,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.vastedam'::text as tabel
-          , objectid::text            as code
+          , code           as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM
@@ -126,7 +126,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.vispassage'::text as tabel
-          , objectid::text              as code
+          , code              as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM
@@ -136,7 +136,7 @@ CREATE TABLE checks.invalid_geometry AS
         UNION
         SELECT
             'damo_ruw.waterdeel'::text as tabel
-          , objectid::text             as code
+          , id::text             as code
           , wkb_geometry
           , ST_IsValidReason(wkb_geometry) as invalid_reason
         FROM

@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS tmp.peilgebiedpraktijk
 CREATE TABLE tmp.peilgebiedpraktijk AS
     (
         SELECT
-            objectid
+            id
           , code
           , naam
           , opmerking
@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS tmp.peilafwijkinggebied
 CREATE TABLE tmp.peilafwijkinggebied AS
     (
         SELECT
-            objectid
+            id
           , code
           , naam
           , opmerking
@@ -65,7 +65,7 @@ DROP TABLE IF EXISTS tmp.afvoergebiedaanvoergebied
 CREATE TABLE tmp.afvoergebiedaanvoergebied AS
     (
         SELECT
-            objectid
+            id
           , code
           , naam
           , opmerking
@@ -104,7 +104,7 @@ DROP TABLE IF EXISTS tmp.ref_beheergebiedgrens_hhnk
 CREATE TABLE tmp.ref_beheergebiedgrens_hhnk AS
     (
         SELECT
-            objectid
+            id
           , ST_CollectionExtract(ST_MakeValid(wkb_geometry),3) AS wkb_geometry
         FROM
             damo_ruw.ref_beheergebiedgrens_hhnk
@@ -117,7 +117,7 @@ DROP TABLE IF EXISTS tmp.waterdeel
 CREATE TABLE tmp.waterdeel AS
     (
         SELECT
-            objectid
+            id
           ,
              --bgtstatus,
              --bgttype,

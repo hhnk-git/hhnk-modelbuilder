@@ -542,7 +542,7 @@ insert into nxt.channelsurface
       , geometry
     )
 select
-    objectid
+    id
   , now()
   , code
   , ST_Multi(ST_Force3d(ST_CollectionExtract(ST_MakeValid(st_transform(wkb_geometry,4326)),3)))::geometry(MultiPolygonZ) -- want nxt.geometry is 3D (met z-coordinaat)
@@ -673,7 +673,7 @@ insert into nxt.pumpstation
       , geometry
     )
 select
-    objectid
+    id
   , case
         when (
                 code = ' '
@@ -925,7 +925,7 @@ insert into nxt.weir
       , shape
     )
 select
-    objectid
+    id
   , now()
   , case
         when (
@@ -1241,7 +1241,7 @@ drop table if exists tmp.duikersifonhevel_sp
 create table tmp.duikersifonhevel_sp as
 select
     nextval('serial') as serial
-  , objectid
+  , id
   , code
   , case
         when (
@@ -1274,7 +1274,7 @@ select
 from
     damo_ruw.duikersifonhevel
 group by
-    objectid
+    id
 ;
 
 delete
@@ -1317,7 +1317,7 @@ insert into nxt.culvert
       , geometry
     )
 select
-    objectid
+    id
   , now()
   , code
   ,      -- code
@@ -1642,8 +1642,8 @@ SELECT
             else 9999
     end
   , 1
-  , --vorm
-    '9999' as num_timeseries
+  , NULL as shape --vorm
+  ,  '9999' as num_timeseries
   , st_force3d(st_transform((ST_Dump(wkb_geometry)).geom,4326))::geometry(LineStringZ) -- van (wkb_geometry, 4326) naar geometry geometry(LineStringZ,4326),
  from
     damo_ruw.aquaductlijn
@@ -1845,7 +1845,7 @@ drop table if exists nxt.fixed_dam
 
 create table nxt.fixed_dam as
 select
-    objectid::integer as id
+    id
   , code::varchar
   , case -- channel_type_id = 1 primair, 2 secundair, 3 tertiair
         when CAST(ws_categorie AS INT) is null
@@ -2077,7 +2077,7 @@ insert into nxt.sluice
       , geometry
     )
 select
-    objectid
+    id
   , now()
   , case
         when (
@@ -2193,7 +2193,7 @@ DROP TABLE IF EXISTS nxt.polderclusters
 CREATE TABLE nxt.polderclusters AS
     (
         SELECT
-            objectid as id
+            id
           , polder_id
           , naam         as name
           , wkb_geometry as geom
