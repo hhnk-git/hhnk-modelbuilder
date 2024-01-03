@@ -61,7 +61,7 @@ rem gdal_translate -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/vulraster_fricti
 rem gdal_translate -co "COMPRESS=DEFLATE" /code/tmp/rasters/tmp/vulraster_infiltration_ext.tif /code/tmp/rasters/infiltration_%2.tif
 
 echo INFO verwijder tijdelijke bestanden
-rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\code\tmp\rasters\tmp
-xcopy /E /I /Y \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp\rasters \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\models\rasters
-rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\code\tmp
+rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp\rasters\tmp
+xcopy /E /I /Y \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp\rasters \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\02_schematisation\00_basis\rasters
+rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp
 echo Klaar tmp_data
