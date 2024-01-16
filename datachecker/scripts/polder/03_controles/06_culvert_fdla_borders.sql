@@ -203,7 +203,7 @@ UPDATE
     checks.culvert a
 SET hdb_open = True
 FROM
-    hdb.duikers_op_peilgrens as b
+    hdb.duikers as b
 WHERE
     a.code = b.code
     AND a.code IN
@@ -211,7 +211,7 @@ WHERE
         SELECT
             code
         FROM
-            hdb.duikers_op_peilgrens
+            hdb.duikers
         WHERE
             modelleren_als LIKE '%open%'
     )

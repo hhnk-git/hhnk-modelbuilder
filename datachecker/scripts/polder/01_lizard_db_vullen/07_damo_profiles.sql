@@ -265,6 +265,7 @@ create table tmp.hydroobject_sp as
 select
     nextval('serial') as serial
   , objectid
+  , hydroobject_id
   , code
   , case
         when (
@@ -292,6 +293,7 @@ from
     damo_ruw.hydroobject
 group by
     objectid
+    , hydroobject_id
     , code
     , ws_in_peilgebied
   , soortoppwaterkwantiteit
@@ -307,20 +309,7 @@ group by
      bodemhoogte_nap
 ;
 
--- koppeling hydroobject en profielen
-alter table tmp.hydroobject_sp add column objectid_ori integer
-;
-
-update
-    tmp.hydroobject_sp a
-set objectid_ori = b.objectid
-from
-    fixed_data.code_hydroobject_objectid b
-where
-    a.code = b.hydroobj_2
-;
-
--- nu weten we de originele object_id van de hydroobjecten --> deze tmp.hydroobject_sp zetten we om in nxt.channel format
+-- gebruik hydroobject_id als de originele object_id van de hydroobjecten --> deze tmp.hydroobject_sp zetten we om in nxt.channel format
 alter table nxt.channel add column channel_type_id integer
 ;
 
@@ -336,7 +325,7 @@ alter table nxt.channel add column tabulated_height text
 alter table nxt.channel add column derived_bed_level double precision
 ;
 
-alter table nxt.channel add column objectid_ori varchar
+alter table nxt.channel add column hydroobject_id integer
 ;
 
 delete
@@ -346,7 +335,7 @@ from
 
 insert into nxt.channel
     (id
-      , objectid_ori
+      , hydroobject_id
       , created
       , code
       , channel_type_id
@@ -363,7 +352,7 @@ insert into nxt.channel
     )
 select
     serial
-  , objectid_ori
+  , hydroobject_id
   , now()
   , case
         when (
@@ -446,7 +435,7 @@ drop table if exists tmp.channel_28992_sp
 create table tmp.channel_28992_sp as
 select
     nextval('serial') as serial
-  , objectid_ori::integer
+  , hydroobject_id::integer
   , id                                                                                                as nxt_channel_id
   , (st_dump(st_collect(st_transform(st_force2d(geometry), 28992)))).geom::geometry(Linestring,28992) AS geom
 from
@@ -531,9 +520,9 @@ set channel_id = b.nxt_channel_id
 from
     tmp.channel_28992_sp b
 where
-    a.ovk_id               = b.objectid_ori
+    a.ovk_id               = b.hydroobject_id
     and a.channel_id is null
-    and a.ovk_id is not null
+    and a.ovk_id is not null --TODO
 ;
 
 update
@@ -544,7 +533,7 @@ set numGeometries = 1
 from
     tmp.channel_28992_sp b
 where
-    a.ovk_id = b.objectid_ori
+    a.ovk_id = b.hydroobject_id
     and a.pro_id in
     (
         select distinct

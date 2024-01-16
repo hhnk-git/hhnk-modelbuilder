@@ -53,7 +53,7 @@ WHERE
         SELECT
             code
         FROM
-            hdb.gemalen_op_peilgrens
+            hdb.gemalen
         WHERE
             moet_op_peilgrens LIKE '%hoeft niet op peilgrens%'
     )
@@ -93,7 +93,7 @@ WHERE
         SELECT
             code
         FROM
-            hdb.stuwen_op_peilgrens
+            hdb.stuwen
         WHERE
             moet_op_peilgrens LIKE '%hoeft niet op peilgrens%'
     )

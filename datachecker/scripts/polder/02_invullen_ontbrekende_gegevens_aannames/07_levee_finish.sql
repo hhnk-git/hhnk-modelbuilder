@@ -42,7 +42,7 @@ SET opmerking = 'Levee below waterlevel +30cm'
   , height    = maximum_water_level + 0.3
 WHERE
     (
-        maximum_water_level +0.3
+        maximum_water_level + 0.3
     )
     > height
 ;
