@@ -9,7 +9,6 @@ SELECT
   , max_wl       as maximum_water_level
   , objectid     as levee_id
   , height
-  , ST_Buffer(ST_LineInterpolatePoint(ST_LineSubstring(wkb_geometry, 0, 0.5),0.5),2) as midgeom
   , NULL::varchar(250)                                                               as opmerking
 FROM
     tmp.levee_height
@@ -26,14 +25,6 @@ USING gist
     )
 ;
 
-CREATE INDEX checks_levee_mifdeom
-ON
-    checks.levee
-USING gist
-    (
-        midgeom
-    )
-;
 
 -- check of hoogte valide is
 UPDATE
@@ -45,6 +36,36 @@ WHERE
         maximum_water_level + 0.3
     )
     > height
+;
+
+drop sequence if exists serial;
+create sequence serial;
+select
+    setval('serial', max(levee_id))
+from
+    checks.levee
+;
+--toevoegen keringen en wegen
+INSERT INTO checks.levee
+SELECT DISTINCT
+    (ST_Dump(wkb_geometry)).geom as geom
+  , id      as levee_ring_id
+  , -9999       as maximum_water_level
+  , nextval('serial')     as levee_id
+  , height
+  , CASE WHEN a.type LIKE 'weg' THEN concat(weg_typeweg,';',weg_fysiekvoorkomen,';',weg_naam)
+		 WHEN a.type LIKE 'kering%' THEN concat(waterkering_code,';',waterkering_naam)
+		 WHEN a.type LIKE 'spoor' THEN concat(a.type,';',spoor_geocode_naam)
+	END as opmerking
+FROM hdb.keringen_hoge_lijnelementen a, checks.polder
+WHERE ST_INTERSECTS(wkb_geometry,geom) 
+	AND id NOT IN (
+		SELECT id 
+		FROM hdb.keringen_hoge_lijnelementen
+		WHERE weg_fysiekvoorkomen LIKE '%brug%'
+			OR weg_fysiekvoorkomen LIKE '%tunnel%'
+			OR weg_fysiekvoorkomen LIKE '%overkluisd%'
+			)
 ;
 
 -- opruimen
