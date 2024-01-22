@@ -15,8 +15,9 @@ IF EXISTS serial;
 -- maken punten 10x10 m afstand van elkaar per peilgebied
 DROP TABLE IF EXISTS tmp.fdla_ordered_points;
 CREATE TABLE tmp.fdla_ordered_points as
-SELECT (ST_DUMP(make_ordered_point_grid(a.geom, 10))).geom, a.id, a.code, nextval('serial') as pnt_id FROM deelgebied.fixeddrainagelevelarea as a, deelgebied.polder as b
-WHERE st_intersects(a.geom,b.geom)
+SELECT (ST_DUMP(make_ordered_point_grid(a.geom, 10))).geom, 
+       a.id, a.code, nextval('serial') as pnt_id 
+FROM deelgebied.fixeddrainagelevelarea as a
 ;
 
 CREATE INDEX tmp_fdla_orderd_points_geom 
@@ -29,13 +30,31 @@ ON tmp.fdla_ordered_points
 USING btree(id)
 ;
 
--- koppel connection nodes aan fdla
 
+-- verwijder punten buiten polder
+DELETE FROM tmp.fdla_ordered_points 
+WHERE pnt_id NOT IN (
+       SELECT pnt_id 
+       FROM tmp.fdla_ordered_points as a,
+              deelgebied.polder as b 
+       WHERE st_intersects(a.geom,b.geom)
+       )
+;
+
+-- koppel connection nodes aan fdla
 DROP TABLE IF EXISTS tmp.v2_connection_nodes_fdla;
 CREATE TABLE tmp.v2_connection_nodes_fdla as
-SELECT DISTINCT ON (a.id) a.id as con_id, b.code as fdla_code, b.id as fdla_id, a.the_geom
-FROM v2_connection_nodes as a, 	deelgebied.fixeddrainagelevelarea as b
+SELECT DISTINCT ON (a.id) a.id as con_id, b.code as fdla_code, 
+       b.id as fdla_id, a.the_geom, 0.0 as norm
+FROM v2_connection_nodes as a, 	
+       deelgebied.fixeddrainagelevelarea as b
 WHERE ST_Intersects(a.the_geom,b.geom)
+;
+--afvoernorm instellen
+UPDATE tmp.v2_connection_nodes_fdla 
+set norm = historische_afvoernorm_mm_d
+FROM hdb.polders_v4
+WHERE ST_Intersects(the_geom,wkb_geometry)
 ;
 
 CREATE INDEX tmp_v2_connection_nodes_flda_geom 
@@ -187,12 +206,12 @@ ORDER BY ST_Distance(p.geom,n.the_geom) ASC
 -- dichtsbijzijnde punt zoeken (https://gis.stackexchange.com/questions/401425/postgis-closest-point-to-another-point)
 DROP TABLE IF EXISTS tmp.node_fdlap_link;
 CREATE TABLE tmp.node_fdlap_link as 
-SELECT a.pnt_id, a.id, a.code as fdla_code,
-       b.con_id,
+SELECT a.pnt_id, a.id, a.code as fdla_code, 
+       b.con_id, b.norm,
        a.geom
 FROM   tmp.fdla_ordered_points AS a
 CROSS JOIN LATERAL (
-  SELECT con_id
+  SELECT con_id, norm
   FROM   tmp.v2_connection_nodes_fdla
   WHERE fdla_id = a.id
   ORDER BY
@@ -218,16 +237,25 @@ GROUP BY con_id, fdla_code
 
 DROP TABLE IF EXISTS deelgebied.impervious_surface_simple;
 CREATE TABLE deelgebied.impervious_surface_simple as
-SELECT ST_Collect(geom) as geom, fdla_code, con_id
+SELECT ST_Collect(geom) as geom, fdla_code, con_id, norm
 FROM tmp.node_fdlap_link
-GROUP BY fdla_code, con_id;
+GROUP BY fdla_code, con_id, norm;
 
 CREATE INDEX deelgebied_impervious_surface_simple_geom 
 ON deelgebied.impervious_surface_simple
 USING gist(geom)
 ;
 
-
+DROP TABLE IF EXISTS deelgebied.impervious_surface_concave;
+CREATE TABLE deelgebied.impervious_surface_concave as
+SELECT ST_Buffer(ST_ConcaveHull(a.geom,0.1,TRUE),4.5) as geom,
+        a.fdla_code, a.con_id, a.norm,
+       b.area as node_area,
+       ST_Area(ST_Buffer(ST_ConcaveHull(a.geom,0.1,TRUE),4.5))
+FROM deelgebied.impervious_surface_simple as a 
+LEFT JOIN deelgebied.area_per_node_nn_search as b
+ON a.con_id = b.con_id
+;
 
 
 /* ************************
@@ -254,18 +282,18 @@ INSERT INTO v2_impervious_surface
 SELECT DISTINCT
        con_id
      , fdla_code
-     , fdla_code
+     , coalesce(fdla_code, ' on ', con_id::text, ' norm ', norm::text)
      , 'gesloten verharding'
      , NULL
      , 'uitgestrekt'
      , 1
      , 0
      , 0
-     , area
-     , NULL
+     , node_area
+     , geom
 FROM
-       deelgebied.area_per_node_nn_search
-WHERE area > 0
+       deelgebied.impervious_surface_concave
+WHERE node_area > 0
 ;
 
 DELETE
@@ -280,10 +308,10 @@ INSERT INTO v2_impervious_surface_map
             , percentage
        )
 SELECT
-       id
-     , id
-     , id
-     , 14.4
+       con_id
+     , con_id
+     , con_id
+     , norm
 FROM
-       v2_impervious_surface
+       deelgebied.impervious_surface_concave
 ;
