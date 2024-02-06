@@ -647,15 +647,15 @@ USING        gist
                             geom
               )
 ;
-
-CREATE INDEX deelgebied_levee_miggeom
+/*
+CREATE INDEX deelgebied_levee_midgeom
 ON
               deelgebied.levee
 USING        gist
               (
                             midgeom
               )
-;
+;*/
 
 --Knip manholes uit
 DROP TABLE IF EXISTS deelgebied.manhole
