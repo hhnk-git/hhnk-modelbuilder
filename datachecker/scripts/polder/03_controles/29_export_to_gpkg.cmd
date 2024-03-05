@@ -27,9 +27,12 @@ ogr2ogr -overwrite -sql "SELECT geom, levee_ring_id, levee_id, maximum_water_lev
 ogr2ogr -overwrite -sql "SELECT * FROM checks.control_table" -nln control_table -f "GPKG" \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp\datachecker_output.gpkg PG:"host=localhost user=postgres dbname=datachecker password=postgres port=5433" -nlt Point
 echo "Copy Geopackage to output folder"
 mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output
-copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp\datachecker_output.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\datachecker_output.gpkg
+rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\
+mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data
+
+copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp\datachecker_output.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\datachecker_output.gpkg
 rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\tmp
 
 echo "Copy input to output folder"
-copy \\corp.hhnk.nl\data\Hydrologen_data\Data\01.basisgegevens\00.HDB\Hydro_database.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\HDB.gpkg
-copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\input\DAMO.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\DAMO.gpkg
+copy \\corp.hhnk.nl\data\Hydrologen_data\Data\01.basisgegevens\00.HDB\Hydro_database.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\HDB.gpkg
+copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\input\DAMO.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\DAMO.gpkg

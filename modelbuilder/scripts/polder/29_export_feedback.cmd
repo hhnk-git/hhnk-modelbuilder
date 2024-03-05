@@ -1,6 +1,4 @@
 rem bestanden voor modelbulder feedback worden nu weggeschreven
-rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\
-mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data
 mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\modelbuilder_output
 mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\peilgebieden
 ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.feedback" -nln feedback -f "ESRI Shapefile" \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\modelbuilder_output\model_feedback.shp PG:"host=localhost user=postgres dbname=datachecker port=5433 password=postgres" -nlt Point -a_srs EPSG:28992
