@@ -396,7 +396,7 @@ ALTER TABLE checks.channel DROP COLUMN IF EXISTS profile_valid
 
 ALTER TABLE checks.channel ADD COLUMN profile_valid boolean
 ;
-
+-- TODO, gaat dit goed met gemeten profielen?
 UPDATE
     checks.channel
 SET profile_valid = ( tabulated_width ~ '^\d+(\.\d+)?(\s\d+(\.\d+)?)*\s\d+(\.\d+)?$'
