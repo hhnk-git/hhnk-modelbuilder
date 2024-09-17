@@ -220,7 +220,7 @@ DELETE
 FROM
     tmp.levee_split
 WHERE
-    ST_Length(geom) < 2
+    ST_Length(geom) < 0.1
 ;
 
 DELETE

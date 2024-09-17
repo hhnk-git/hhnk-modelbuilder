@@ -13,7 +13,7 @@ SELECT
 FROM
     tmp.levee_height
 WHERE
-    ST_Length(wkb_geometry) > 2
+    ST_Length(wkb_geometry) > 0.1
 ;
 
 CREATE INDEX checks_levee_geom
