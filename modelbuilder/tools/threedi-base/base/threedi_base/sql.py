@@ -183,7 +183,7 @@ UPDATE {{ schema }}.{{ structure_table }}_linified SET channel_code = NULL;
 UPDATE {{ schema }}.{{ structure_table }}_linified AS a
 SET channel_code = b.id
 FROM {{ schema }}.{{ channel_table }} AS b
-WHERE ST_DWithin(a.geom, b.geom, 0.5) -- TODO: verbeteren manier van koppelen en zoekafstand kiezen
+WHERE ST_DWithin(a.geom, b.geom, 0.1) -- TODO: verbeteren manier van koppelen en zoekafstand kiezen
 ;
 DROP TABLE IF EXISTS {{ schema }}.{{ structure_table }}_misfits;
 CREATE TABLE {{ schema }}.{{ structure_table }}_misfits AS

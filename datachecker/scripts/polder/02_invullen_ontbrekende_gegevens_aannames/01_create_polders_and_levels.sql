@@ -38,6 +38,24 @@ CREATE TABLE checks.polderclusters AS
     )
 ;
 
+-- middelpunt aan damo peilen toevoegen voor selectie
+ALTER TABLE damo_ruw.peilen ADD COLUMN pointgeom geometry
+;
+
+UPDATE
+    damo_ruw.peilen
+SET pointgeom = ST_PointOnSurface(wkb_geometry)
+;
+
+CREATE INDEX tmp_damo_ruw_peilen
+ON
+    damo_ruw.peilen
+USING gist
+    (
+        pointgeom
+    )
+;
+
 -- Aanmaken 1 shape van alle peilgebieden binnen polderclusters
 DROP TABLE IF EXISTS tmp.fixeddrainagelevelarea_poldercode
 ;
@@ -45,12 +63,12 @@ DROP TABLE IF EXISTS tmp.fixeddrainagelevelarea_poldercode
 CREATE TABLE tmp.fixeddrainagelevelarea_poldercode AS
 SELECT
     a.code
-  , a.geom
+  , a.wkb_geometry as geom
   , b.polder_id::numeric as polder_id
   , b.polder_type
   , b.name
 FROM
-    tmp.fixedleveldrainagearea_union as a
+    damo_ruw.peilen as a
   , checks.polderclusters            as b
 WHERE
     ST_Contains(b.geom, a.pointgeom)
@@ -209,11 +227,11 @@ DROP TABLE IF EXISTS tmp.fixeddrainagelevelarea_afvoergebiedcode
 CREATE TABLE tmp.fixeddrainagelevelarea_afvoergebiedcode AS
 SELECT
     b.code
-  , a.geom
+  , a.wkb_geometry as geom
   , b.id::numeric as afvoer_id
   , b.name
 FROM
-    tmp.fixedleveldrainagearea_union as a
+    damo_ruw.peilen as a
   , tmp.afvoergebieden               as b
 WHERE
     ST_Contains(b.geom, a.pointgeom)

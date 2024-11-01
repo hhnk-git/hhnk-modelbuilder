@@ -1,30 +1,32 @@
--- copy fixeddrainagelevelarea to checks schema
+-- copy peilen to checks schema
 DROP TABLE IF EXISTS checks.fixeddrainagelevelarea
 ;
 
 CREATE TABLE checks.fixeddrainagelevelarea AS
 SELECT
     id
-  , peil_id
-  , organisation_id
-  , created
+  , NULL::integer as peil_id
+  , NULL organisation_id
+  , NULL created
   , code
-  , name
-  , type
-  , water_level_summer
-  , water_level_winter
-  , water_level_fixed
-  , water_level_flexible
-  , image_url
-  , ST_CollectionExtract(ST_MakeValid(ST_force2D(ST_Transform(geometry,28992))),3) as geom
+  , naam::varchar(50) as name
+  , CASE WHEN type LIKE '%Peilgebied%' THEN 1::integer ELSE 2::integer END as type 
+  , zomerpeil::numeric as water_level_summer
+  , winterpeil::numeric as water_level_winter
+  , NULL as water_level_fixed
+  , NULL as water_level_flexible
+  , peil_wsa::numeric as streefpeil_bwn2
+  , keuze_wsa as streefpeil_bwn2_source
+  , type as image_url
+  , ST_CollectionExtract(ST_MakeValid(ST_force2D(wkb_geometry)),3) as geom
   , --ST_force2D(ST_Transform(geometry,28992)) as geom,
-    "end"
-  , start
-  , polder_id::numeric
+    NULL as "end"
+  , NULL as start
+  , NULL::numeric as polder_id
   , NULL::varchar(250) as opmerking
   , NULL::integer      as wgtype_id
 FROM
-    nxt.fixeddrainagelevelarea
+    damo_ruw.peilen
 ;
 
 CREATE INDEX checks_fixeddrainagelevelarea_geom

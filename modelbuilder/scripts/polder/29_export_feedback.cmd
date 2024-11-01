@@ -1,6 +1,4 @@
 rem bestanden voor modelbulder feedback worden nu weggeschreven
-rmdir /s /q \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\
-mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data
 mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\modelbuilder_output
 mkdir \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\peilgebieden
 ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.feedback" -nln feedback -f "ESRI Shapefile" \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\modelbuilder_output\model_feedback.shp PG:"host=localhost user=postgres dbname=datachecker port=5433 password=postgres" -nlt Point -a_srs EPSG:28992
@@ -18,7 +16,7 @@ ogr2ogr -clipsrc -f gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\d
 
 ogr2ogr -clipsrc \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\polder_polygon.shp -overwrite -sql "SELECT * FROM deelgebied.fixeddrainagelevelarea" -nln peilgebieden -f "ESRI Shapefile" \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\peilgebieden\peilgebieden.shp PG:"host=localhost user=postgres dbname=datachecker port=5433 password=postgres" -a_srs EPSG:28992
 copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\input\DAMO.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\DAMO.gpkg
-copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\input\HDB.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\HDB.gpkg
+copy \\corp.hhnk.nl\data\Hydrologen_data\01.basisgegevens\00.HDB\Hydro_database.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\HDB.gpkg
 
 rem rm -r ./logging/modelbuilder_logfiles/
 rem mkdir ./logging/modelbuilder_logfiles/
@@ -32,3 +30,10 @@ rem cp ./logging/logging_23_create_raster.sh.txt ./logging/modelbuilder_logfiles
 rem cp ./logging/logging_24_export_and_run_model.sh.txt ./logging/modelbuilder_logfiles/07_create_and_run_model.log
 rem rm ./models/bwn_${2}_1d2d_test/preprocessed/grid_data*
 rem cp -r ./models/bwn_${2}_1d2d_test/preprocessed/ ./models/feedback/
+
+
+
+rem The -spat parameter in ogr2ogr https://gdal.org/programs/ogr2ogr.html#ogr2ogr affects all available layers. This selects data withing the given rectangle from all layers if you write only the name of the datasource into the command but not the layername. So just "...input.gpkg" instead of "...input.gpkg selected_layer".
+
+rem ogr2ogr -f gpkg -spat 100000 6000000 101000 6001000 subset.gpkg input.gpkg
+rem Various clip options should work as well for all the layers. The -sql option would require writing names of all the tables explicitly into the SQL statement (FROM and also into WHERE) and that would not be nice.

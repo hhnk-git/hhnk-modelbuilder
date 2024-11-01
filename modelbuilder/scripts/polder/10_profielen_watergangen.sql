@@ -323,7 +323,7 @@ IF EXISTS channelserial;
                              FROM
                                     deelgebied.tmp_v2_cross_section_location
                       )
-                      AND ST_Distance(a.geom,b.geom) < 250 --Only take profile if the closest point of channel is within 250 meter
+                      AND ST_Distance(a.geom,b.geom) < 0 -- update: dit uitgezet, komt uit FME 250 --Only take profile if the closest point of channel is within 250 meter
             ORDER BY
                       a.reach_id ASC
                     , ST_Distance(a.pointgeom,b.geom) ASC
@@ -387,8 +387,11 @@ IF EXISTS channelserial;
                    b.streefpeil_bwn2 + 0.1 as bank_level
                  , --> aanname!
                    ST_LineInterpolatePoint(a.geom,0.1) as the_geom
-                 , ('HO1:'
-                          || a.name) as code
+                 , CASE profile_type
+                          WHEN 'legger'
+                                 THEN ('HO1:'|| a.name) 
+                          WHEN 'getabuleerde breedte en bodemhoogte'
+                                 THEN ('TP1:'|| a.name)  END as code
                  , 6                 as shape
                  , CASE profile_type
                           WHEN 'legger'
@@ -433,8 +436,11 @@ IF EXISTS channelserial;
                    b.streefpeil_bwn2 + 0.1 as bank_level
                  , --> aanname!
                    ST_LineInterpolatePoint(a.geom,0.9) as the_geom
-                 , ('HO2:'
-                          || a.name) as code
+                 , CASE profile_type
+                          WHEN 'legger'
+                                 THEN ('HO2:'|| a.name) 
+                          WHEN 'getabuleerde breedte en bodemhoogte'
+                                 THEN ('TP2:'|| a.name)  END as code
                  , 6                 as shape
                  , CASE profile_type
                           WHEN 'legger'
@@ -696,6 +702,7 @@ IF EXISTS channelserial;
                    deelgebied.tmp_v2_cross_section_location
             WHERE
                    code LIKE 'HO%'
+              OR   code LIKE 'TP%'
             ;
             
             -- fix als location niet op lijn ligt

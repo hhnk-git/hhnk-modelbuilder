@@ -1,3 +1,4 @@
+/*
 -- nxt.fixeddrainagelevelarea mergen met datamining peil obv peilgebied code (bijv 'GPG-Q-142172')
 drop table if exists tmp.fixeddrainagelevelarea_datamining
 ;
@@ -219,4 +220,4 @@ USING gist
     (
         geom
     )
-;
+;*/

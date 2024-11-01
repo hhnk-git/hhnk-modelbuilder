@@ -1,6 +1,6 @@
 /*
 Dit script leest gebruikt de volgende tabellen:
--hdb.sturing_3di
+-hdb.sturing_kunstwerken
 -nxt.weir
 Aan de nxt.weir tabel wordt het volgende toegevoegd:
 -is_controlled (boolean)
@@ -68,5 +68,5 @@ SELECT
   , action_table
   , ST_Force3d(ST_GeometryN(ST_Transform(wkb_geometry,4326),1))::geometry(PointZ)
 FROM
-    hdb.sturing_3di
+    hdb.sturing_kunstwerken
 ;

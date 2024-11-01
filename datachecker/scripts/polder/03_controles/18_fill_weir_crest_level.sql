@@ -49,7 +49,7 @@ UPDATE
     checks.weirs a
 SET crest_height_datamining = round(b.kruinhoogte_hdb::numeric,2)
 FROM
-    hdb.stuwen_op_peilgrens b
+    hdb.stuwen b
 WHERE
     a.code LIKE b.code
 ;

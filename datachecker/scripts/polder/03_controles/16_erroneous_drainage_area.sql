@@ -80,77 +80,11 @@ USING btree
     )
 ;
 
--- vergelijking maken tussen hhnk peilen en datamining peilen obv 1) peilgebiedscode en 2) geometrie (omdat obv peilcode soms niet lukt door verschillende code door spatie/raar teken/helemaal andere code
--- De uitkomst hiervan gebruiken we later om opmerking toe te voegen aan checks.fixeddrainagelevelarea (20 regels hieronder)
-ALTER TABLE tmp.fixeddrainagelevelarea_datamining DROP COLUMN IF EXISTS bwn_vs_datamining_code
-;
 
-ALTER TABLE tmp.fixeddrainagelevelarea_datamining ADD COLUMN bwn_vs_datamining_code float
-;
-
-update
-    tmp.fixeddrainagelevelarea_datamining
-set bwn_vs_datamining_code = streefpeil_bwn2 -
-    (
-        select
-            case
-                when datamining_mediaan_code > -9999
-                    and datamining_wss_code  > -9999
-                    then (datamining_mediaan_code + datamining_wss_code)/2
-                when datamining_mediaan_code      > -9999
-                    and datamining_wss_code is null
-                    then datamining_mediaan_code
-                when datamining_mediaan_code is null
-                    and datamining_wss_code        > -9999
-                    then datamining_wss_code
-            end
-    )
-;
-
-ALTER TABLE tmp.fixeddrainagelevelarea_datamining DROP COLUMN IF EXISTS bwn_vs_datamining_geom
-;
-
-ALTER TABLE tmp.fixeddrainagelevelarea_datamining ADD COLUMN bwn_vs_datamining_geom float
-;
-
-update
-    tmp.fixeddrainagelevelarea_datamining
-set bwn_vs_datamining_geom = streefpeil_bwn2 -
-    (
-        select
-            case
-                when datamining_mediaan_geom > -9999
-                    and datamining_wss_geom  > -9999
-                    then (datamining_mediaan_geom + datamining_wss_geom)/2
-                when datamining_mediaan_geom      > -9999
-                    and datamining_wss_geom is null
-                    then datamining_mediaan_geom
-                when datamining_mediaan_geom is null
-                    and datamining_wss_geom        > -9999
-                    then datamining_wss_geom
-            end
-    )
-;
-
--- peilgebieden die geen peil hebben in damo_ruw
+-- peilgebieden die geen peil hebben in damo_ruw 
 update
     checks.fixeddrainagelevelarea
-set opmerking = concat_ws(',',opmerking,'geen damo peil')
-where
-    (
-        streefpeil_bwn2_source = ' '
-    )
-    is not false
-    or streefpeil_bwn2_source = 'datamining_mediaan_geom'
-    or streefpeil_bwn2_source = 'datamining_mediaan_code'
-    or streefpeil_bwn2_source = 'datamining_wss_geom'
-    or streefpeil_bwn2_source = 'datamining_wss_code'
-;
-
--- peilgebieden die geen peil hebben in damo_ruw en geen datamining peil
-update
-    checks.fixeddrainagelevelarea
-set opmerking = concat_ws(',',opmerking,'geen damopeil en geen dataminingpeil')
+set opmerking = concat_ws(',',opmerking,'geen damopeil')
 where
     streefpeil_bwn2 is null
     or streefpeil_bwn2 NOT BETWEEN -9.99 AND 10

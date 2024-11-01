@@ -3,9 +3,10 @@ DROP TYPE IF EXISTS tabulated_type CASCADE;
 CREATE TYPE tabulated_type as (height float[], width float[], max_height float, max_width float, min float, max float, length integer);
 drop sequence if exists serial;
 create sequence serial start 1;
+
+-- vereenvoudig geometrie profiel lijnen
 drop table if exists tmp.gw_pro_sp
 ;
-
 create table tmp.gw_pro_sp as
 select
     nextval('serial') as serial
@@ -21,9 +22,9 @@ group by
     pro_id
 ;
 
+-- selecteer profielmetingen in baggerlaag Z2 en natte delen
 drop table if exists tmp.profielpunten_selectie
 ;
-
 create table tmp.profielpunten_selectie as
 select *
 from
@@ -34,16 +35,16 @@ where
         select
             prw_id
         from
-            damo_ruw.gw_prw
+            damo_ruw.gw_prw -- gw_prw bevat beschrijving Z1 of Z2
         where
             osmomsch = 'Z2'
     )
     AND pbpsoort = ANY (ARRAY[5,6,7,22])
 ;
 
+-- ordenen en hernoemen profielhoogtemetingen en afstand naar resp. z en y
 drop table if exists tmp.yz_table
 ;
-
 create table tmp.yz_table as
 select
     prw_prw_id::varchar as name
@@ -57,6 +58,11 @@ order by
   , iws_afstand
 ;
 
+/* functie die profielmetingen om zet naar vereenvoudigd getalleerd profiel
+    steps: het aan tabelregels in het getabuleerde profiel
+    y: de afstand van de meting vanaf het eerste meetpunt
+    z: de NAP hoogte van de meting
+*/
 CREATE OR REPLACE FUNCTION yz_to_tabulated(steps integer, y float[], z float[])
 RETURNS setof tabulated_type AS $$
 DECLARE
@@ -183,12 +189,17 @@ select
 
 END; $$
 LANGUAGE PLPGSQL;
--- set correct cross_section_definition_id for iteration
--- select setval('v2_cross_section_definition_id_seq', (select max(id) from v2_cross_section_definition));
+
+/* DEBUG remark:
+set correct cross_section_definition_id for iteration
+select setval('v2_cross_section_definition_id_seq', (select max(id) from v2_cross_section_definition));
+*/
+
 -- YZ to TABULATED in one query!!!
+-- hier functie gebruikt met 5 regels in de tabel voor breedte en hoogte
+-- vervolgens nog enkele algemente eigenschappen afgeleid tbv checks later
 drop table if exists tmp.tabulated_table
 ;
-
 create table tmp.tabulated_table as
 select
     name                                                                                                              as defname
@@ -212,13 +223,11 @@ group by
   , prw_prw_id
 ;
 
--- we koppelen nu de yz array (width, height) aan een profiel id (de dwarslijnen op de hydroobjecten).
+-- koppelen yz array (width, height) aan een profiel id (de dwarslijnen op de hydroobjecten).
 alter table tmp.tabulated_table add column channel_id integer
 ;
-
 alter table tmp.tabulated_table add column pro_id integer
 ;
-
 update
     tmp.tabulated_table a
 set pro_id = b.pro_pro_id
@@ -228,7 +237,13 @@ where
     a.prw_id = b.prw_id
 ;
 
+-- verwijder onmogelijke profielen (slechts twee metingen)
+DELETE FROM tmp.tabulated_table 
+WHERE nr_input_points <3
+;
+
 -- nxt.channel maken en vullen vanuit damo
+-- TODO: waarom hier en niet in 08?
 drop table if exists nxt.channel
 ;
 
@@ -256,75 +271,73 @@ CREATE TABLE nxt.channel
     )
 ;
 
+-- vereenvoudigen geometrie hydroobjecten en ophalen gegevens
 drop sequence if exists serial;
 create sequence serial start 1;
 drop table if exists tmp.hydroobject_sp
 ;
-
 create table tmp.hydroobject_sp as
 select
     nextval('serial') as serial
-  , objectid
+  , id
+  , hydroobject_id
   , code
   , case
         when (
-                objectid, code
+                hydroobject_id, code
             )
             is null
             then null
-            else concat(objectid, '-', code)
-    end
-  , ws_in_peilgebied
+            else concat(hydroobject_id, '-', code)
+    end as name
+  , peilgebied_code
   , soortoppwaterkwantiteit
   , categorieoppwaterlichaam
   , ws_bodemhoogte
   , ws_talud_links
   , ws_talud_rechts
   , ws_bodembreedte
-  , breedte_getabuleerd as tabulated_width
-  , --derived_width_at_waterlevel,
-     hoogte_getabuleerd as tabulated_height
-  , --derived_bed_level,
-     bodemhoogte_nap as derived_bed_level
-  , --verander bodemhoogte in nieuw aangeleverde kolom.
-    (st_dump(st_collect(st_transform(wkb_geometry, 4326)))).geom AS geom
+  , NULL::varchar(100) as tabulated_width 
+  , NULL::varchar(100) as tabulated_height
+  , bodemhoogtenap::numeric as derived_bed_level
+  , breedte::numeric as width_at_waterlevel
+  , round(diepte::numeric,2) as depth
+  , taludvoorkeur::numeric
+  , round(breedte::numeric - (diepte::numeric * taludvoorkeur::numeric),2)
+            as bed_width 
+  , geschikt_pro_id::int
+  , st_transform(wkb_geometry, 4326) AS geom
 from
     damo_ruw.hydroobject
-group by
-    objectid
-    , code
-    , ws_in_peilgebied
-  , soortoppwaterkwantiteit
-  , categorieoppwaterlichaam
-  , ws_bodemhoogte
-  , ws_talud_links
-  , ws_talud_rechts
-  , ws_bodembreedte
-  , breedte_getabuleerd
-  , --derived_width_at_waterlevel,
-     hoogte_getabuleerd
-  , --derived_bed_level,
-     bodemhoogte_nap
 ;
 
--- koppeling hydroobject en profielen
-alter table tmp.hydroobject_sp add column objectid_ori integer
+-- invullen getabuleerde profiel wanneer gemeten profiel beschikbaar
+UPDATE tmp.hydroobject_sp as ho
+SET tabulated_width = tab.width,
+    tabulated_height = tab.height
+FROM tmp.tabulated_table as tab
+WHERE ho.geschikt_pro_id = tab.pro_id
 ;
 
-update
-    tmp.hydroobject_sp a
-set objectid_ori = b.objectid
-from
-    fixed_data.code_hydroobject_objectid b
-where
-    a.code = b.hydroobj_2
+-- aanmaken getabuleerde profielen op basis van gegevens legger/FME
+UPDATE tmp.hydroobject_sp
+SET tabulated_width = array_to_string(ARRAY[bed_width,width_at_waterlevel],' ')
+WHERE tabulated_width IS NULL
+    AND bed_width IS NOT NULL
+    AND width_at_waterlevel IS NOT NULL
 ;
+UPDATE tmp.hydroobject_sp
+SET tabulated_height = array_to_string(ARRAY[0,depth],' ')
+WHERE tabulated_height IS NULL
+    AND depth IS NOT NULL
+;    
 
--- nu weten we de originele object_id van de hydroobjecten --> deze tmp.hydroobject_sp zetten we om in nxt.channel format
+
+-- gebruik hydroobject_id als de originele object_id van de hydroobjecten --> deze tmp.hydroobject_sp zetten we om in nxt.channel format
 alter table nxt.channel add column channel_type_id integer
 ;
 
-alter table nxt.channel add column bed_width double precision
+alter table nxt.channel add column bed_width double precision 
 ;
 
 alter table nxt.channel add column tabulated_width text
@@ -336,7 +349,7 @@ alter table nxt.channel add column tabulated_height text
 alter table nxt.channel add column derived_bed_level double precision
 ;
 
-alter table nxt.channel add column objectid_ori varchar
+alter table nxt.channel add column hydroobject_id integer
 ;
 
 delete
@@ -346,7 +359,7 @@ from
 
 insert into nxt.channel
     (id
-      , objectid_ori
+      , hydroobject_id
       , created
       , code
       , channel_type_id
@@ -363,15 +376,15 @@ insert into nxt.channel
     )
 select
     serial
-  , objectid_ori
+  , hydroobject_id
   , now()
   , case
         when (
-                ws_in_peilgebied = ' '
+                peilgebied_code = ' '
             )
             IS NOT FALSE
             then 'LEEG'
-            ELSE ws_in_peilgebied
+            ELSE peilgebied_code
     END
   , -- code::varchar
     case
@@ -423,12 +436,12 @@ select
             then 'Overige'
             else 'LEEG'
     end
-  , concat
+  , name
   , -- name::varchar --> objectid-code (van damo.hydroobject) wordt name (van nxt.channel) voor koppelen van tabellen
     ws_bodemhoogte
   , ws_talud_links
   , ws_talud_rechts
-  , ws_bodembreedte
+  , bed_width
   , tabulated_width
   , tabulated_height
   , derived_bed_level
@@ -446,7 +459,7 @@ drop table if exists tmp.channel_28992_sp
 create table tmp.channel_28992_sp as
 select
     nextval('serial') as serial
-  , objectid_ori::integer
+  , hydroobject_id::integer
   , id                                                                                                as nxt_channel_id
   , (st_dump(st_collect(st_transform(st_force2d(geometry), 28992)))).geom::geometry(Linestring,28992) AS geom
 from
@@ -531,9 +544,9 @@ set channel_id = b.nxt_channel_id
 from
     tmp.channel_28992_sp b
 where
-    a.ovk_id               = b.objectid_ori
+    a.ovk_id               = b.hydroobject_id
     and a.channel_id is null
-    and a.ovk_id is not null
+    and a.ovk_id is not null --TODO
 ;
 
 update
@@ -544,7 +557,7 @@ set numGeometries = 1
 from
     tmp.channel_28992_sp b
 where
-    a.ovk_id = b.objectid_ori
+    a.ovk_id = b.hydroobject_id
     and a.pro_id in
     (
         select distinct
