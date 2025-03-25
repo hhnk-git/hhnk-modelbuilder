@@ -359,7 +359,7 @@ from
 
 insert into nxt.channel
     (id
-      , hydroobject_id
+      , CAST(hydroobject_id AS int)
       , created
       , code
       , channel_type_id
