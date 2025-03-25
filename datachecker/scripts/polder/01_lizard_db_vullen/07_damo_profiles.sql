@@ -359,7 +359,7 @@ from
 
 insert into nxt.channel
     (id
-      , CAST(hydroobject_id AS int)
+      , hydroobject_id
       , created
       , code
       , channel_type_id
@@ -376,7 +376,7 @@ insert into nxt.channel
     )
 select
     serial
-  , hydroobject_id
+  , CAST(hydroobject_id AS int)
   , now()
   , case
         when (
