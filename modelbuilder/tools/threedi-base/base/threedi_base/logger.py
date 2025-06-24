@@ -1,8 +1,8 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.rst.
 # -*- coding: utf-8 -*-
 
-import sys
 import logging
+import sys
 
 BASIC_FORMAT = '(%(name)s) %(asctime)s: [%(levelname)s] %(message)s'
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from base.threedi_base.command_utils import ThreediBaseCommand
 from psycopg2 import DatabaseError
+
+from base.threedi_base.command_utils import ThreediBaseCommand
 
 
 class Command(ThreediBaseCommand):

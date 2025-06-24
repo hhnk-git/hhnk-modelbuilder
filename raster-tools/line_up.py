@@ -18,15 +18,13 @@ import math
 import os
 import sys
 
-from osgeo import gdal
-from osgeo import ogr
-from scipy import ndimage
-import numpy as np
-
 import datasources
 import groups
+import numpy as np
 import utils
 import vectors
+from osgeo import gdal, ogr
+from scipy import ndimage
 
 logger = logging.getLogger(__name__)
 

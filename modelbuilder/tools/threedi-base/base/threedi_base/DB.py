@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
+from django.template import Context, Template
 from psycopg2.extras import RealDictCursor
 
-from django.template import Context, Template
-
-from base.threedi_base.apps import ThreediBaseConfig as conf
-from base.threedi_base.logger import Logger
-from base.threedi_base.exceptions import UpdateError
 from base.threedi_base import sql
+from base.threedi_base.apps import ThreediBaseConfig as conf
+from base.threedi_base.exceptions import UpdateError
+from base.threedi_base.logger import Logger
 
 logger = Logger.get(__name__, conf.LOG_LEVEL)
 

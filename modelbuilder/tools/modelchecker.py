@@ -5,16 +5,16 @@ Created on Wed Jun 17 14:51:04 2020
 @author: chris.kerklaan
 """
 
-import os
-import sys
+import argparse
 import csv
 import logging
-import argparse
+import os
+import sys
 
-
-from threedi_modelchecker.exporters import format_check_results, export_to_file
+from threedi_modelchecker.exporters import export_to_file, format_check_results
 from threedi_modelchecker.model_checks import ThreediModelChecker
 from threedi_modelchecker.threedi_database import ThreediDatabase
+
 
 def get_parser():
     """ Return argument parser. """

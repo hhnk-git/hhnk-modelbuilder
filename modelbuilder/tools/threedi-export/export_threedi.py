@@ -1,53 +1,52 @@
+import argparse
+import configparser
+import os
+import shutil
+
+import psycopg2
+from osgeo import ogr, osr
+from sqlalchemy.orm import load_only
 from sqlalchemy.sql import text
+from utils.constants import Constants
 from utils.model_schematisation import (
-    ConnectionNode,
-    Manhole,
-    BoundaryCondition1D,
-    Pipe,
-    CrossSectionDefinition,
-    Orifice,
-    Weir,
-    Pumpstation,
-    ImperviousSurface,
-    ImperviousSurfaceMap,
-    Channel,
-    CrossSectionLocation,
-    Culvert,
-    Obstacle,
-    Levee,
-    BoundaryCondition1D,
-    GridRefinementArea,
-    GridRefinement,
-    Surface,
-    SurfaceParameters,
-    SurfaceMap,
-    NumericalSettings,
-    GlobalSetting,
-    DemAverageArea,
-    Windshielding,
-    Lateral2D,
-    Lateral1D,
-    BoundaryCondition2D,
-    Groundwater,
-    Interflow,
     AggregationSettings,
-    SimpleInfiltration,
+    BoundaryCondition1D,
+    BoundaryCondition2D,
+    Channel,
+    ConnectionNode,
+    Control,
     ControlGroup,
     ControlMeasureGroup,
     ControlMeasureMap,
-    Control,
     ControlTable,
+    CrossSectionDefinition,
+    CrossSectionLocation,
+    Culvert,
+    DemAverageArea,
+    GlobalSetting,
+    GridRefinement,
+    GridRefinementArea,
+    Groundwater,
+    ImperviousSurface,
+    ImperviousSurfaceMap,
+    Interflow,
+    Lateral1D,
+    Lateral2D,
+    Levee,
+    Manhole,
+    NumericalSettings,
+    Obstacle,
+    Orifice,
+    Pipe,
+    Pumpstation,
+    SimpleInfiltration,
+    Surface,
+    SurfaceMap,
+    SurfaceParameters,
+    Weir,
+    Windshielding,
 )
-from sqlalchemy.orm import load_only
-from utils.constants import Constants
-from osgeo import osr
-from osgeo import ogr
 from utils.threedi_database import ThreediDatabase
-import shutil
-import os
-import argparse
-import configparser
-import psycopg2
 
 config = configparser.ConfigParser()
 print('cwd',os.getcwd())

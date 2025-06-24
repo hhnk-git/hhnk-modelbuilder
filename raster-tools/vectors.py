@@ -1,8 +1,8 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.rst.
 # -*- coding: utf-8 -*-
 
-from osgeo import ogr
 import numpy as np
+from osgeo import ogr
 
 
 def point2geometry(point):

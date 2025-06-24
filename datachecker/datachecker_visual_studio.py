@@ -6,20 +6,18 @@ Python script reading sql and bash files in order to automatically execute datac
 """
 
 # import libraries
+import argparse
+import configparser
+import logging
 import os
 import subprocess
-import argparse
 from pathlib import Path
 
-import sqlparse
 import psycopg2
+import sqlparse
+from hhnk_research_tools import logging as logging_hrt
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
-import logging
-import configparser
-from hhnk_research_tools import logging as logging_hrt
-
 
 # set the work-dir so code-dir can be found
 if not Path("code").absolute().resolve().exists():
@@ -35,19 +33,11 @@ work_dir = Path.cwd()
 
 logger = logging_hrt.get_logger(
     name=__name__,
-    filepath=work_dir.joinpath("code/datachecker/datachecker_hrt.log"),
+    filepath=work_dir.joinpath("code/datachecker/datachecker.log"),
     level=log_level,
     filemode="w",
 )
 
-
-# setup logging to write debug log to file
-logging.basicConfig(
-    filename=work_dir.joinpath("code/datachecker/datachecker.log"),
-    filemode="w",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=log_level,
-)
 
 # Read configuration file
 config = configparser.ConfigParser()

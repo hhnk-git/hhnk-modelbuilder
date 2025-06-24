@@ -6,10 +6,10 @@ That is, sources differ and so is their precision. This scripts ensures
 that all data lies on a regular grid. All successive steps rely on this
 operation.
 """
-from base.threedi_base.exceptions import UpdateError
-from base.threedi_base.command_utils import ThreediBaseCommand
-from base.threedi_base.logger import Logger
 from base.threedi_base.apps import ThreediBaseConfig as conf
+from base.threedi_base.command_utils import ThreediBaseCommand
+from base.threedi_base.exceptions import UpdateError
+from base.threedi_base.logger import Logger
 
 logger = Logger.get(__name__, conf.LOG_LEVEL)
 

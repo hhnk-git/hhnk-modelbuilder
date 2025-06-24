@@ -1,6 +1,7 @@
-from osgeo import gdal
-import logging
 import argparse
+import logging
+
+from osgeo import gdal
 
 
 def get_parser():

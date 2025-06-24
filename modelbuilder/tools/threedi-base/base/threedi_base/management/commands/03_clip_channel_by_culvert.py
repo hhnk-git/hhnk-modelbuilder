@@ -2,9 +2,7 @@
 from psycopg2 import DatabaseError
 
 from base.threedi_base.command_utils import ThreediBaseCommand
-
-from base.threedi_base.constants import CULVERT_BUFFER_SIZE
-from base.threedi_base.constants import CULVERT_SNAPPED_TABLE_NAME
+from base.threedi_base.constants import CULVERT_BUFFER_SIZE, CULVERT_SNAPPED_TABLE_NAME
 from base.threedi_base.culverts import CulvertChannelLines
 from base.threedi_base.exceptions import InsertError
 

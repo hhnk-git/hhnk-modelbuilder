@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 
-from base.threedi_base.constants import START_POSITION
-from base.threedi_base.constants import END_POSITION
-from base.threedi_base.logger import Logger
 from base.threedi_base.apps import ThreediBaseConfig as conf
-
+from base.threedi_base.constants import END_POSITION, START_POSITION
+from base.threedi_base.logger import Logger
 
 logger = Logger.get(__name__, conf.LOG_LEVEL)
 

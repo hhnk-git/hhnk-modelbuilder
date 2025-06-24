@@ -1,7 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.rst.
 # -*- coding: utf-8 -*-
-from base.threedi_base.logger import Logger
 from base.threedi_base.apps import ThreediBaseConfig as conf
+from base.threedi_base.logger import Logger
 
 try:
     # py 3

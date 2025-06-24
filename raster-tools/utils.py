@@ -4,8 +4,8 @@
 import logging
 import math
 
-from osgeo import ogr
 import numpy as np
+from osgeo import ogr
 
 logger = logging.getLogger(__name__)
 

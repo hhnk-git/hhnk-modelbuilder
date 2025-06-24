@@ -1,6 +1,8 @@
 # %% test database path
 import configparser
+
 import psycopg2
+
 #Read configuration file
 config = configparser.ConfigParser()
 config.read('/code/datachecker/datachecker_config.ini')
@@ -11,19 +13,17 @@ print(db_cur.execute("select nspname from pg_catalog.pg_namespace"))
 
 # %% prepare run single tests
 #import libraries
+import argparse
+import configparser
+import logging
 import os
 import subprocess
-import argparse
-
 from pathlib import Path
 
-import sqlparse
 import psycopg2
+import sqlparse
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
-import logging
-import configparser
 
 # set the work-dir so code-dir can be found
 if not Path("code").absolute().resolve().exists():

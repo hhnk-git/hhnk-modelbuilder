@@ -5,9 +5,10 @@ import os
 import sys
 import time
 
-from base.threedi_base.config_reader import IniReader
 from django.core.management.base import BaseCommand
+
 from base.threedi_base.apps import ThreediBaseConfig as conf
+from base.threedi_base.config_reader import IniReader
 from base.threedi_base.DB import ThreediDatabase
 from base.threedi_base.logger import Logger
 

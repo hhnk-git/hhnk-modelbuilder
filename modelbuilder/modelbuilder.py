@@ -5,18 +5,18 @@ Python script reading sql and bash files in order to automatically execute datac
 """
 
 #import libraries
-import os
-import sys
-import subprocess
 import argparse
+import configparser
+import logging
+import os
+import subprocess
+import sys
 from pathlib import Path
-import sqlparse
+
 import psycopg2
+import sqlparse
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
-import logging
-import configparser
 
 # set the work-dir so code-dir can be found
 if not Path("code").absolute().resolve().exists():

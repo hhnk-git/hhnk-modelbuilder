@@ -3,8 +3,7 @@
 
 import os
 
-from osgeo import gdal
-from osgeo import ogr
+from osgeo import gdal, ogr
 
 
 class PartialDataSource(object):  # pragma: no cover

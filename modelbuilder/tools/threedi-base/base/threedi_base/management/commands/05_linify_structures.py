@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from psycopg2 import DatabaseError
 
-from base.threedi_base.command_utils import ThreediBaseCommand
-from base.threedi_base.constants import CULVERT_SNAPPED_TABLE_NAME
-from base.threedi_base.constants import CULVERT_OUTPUT_TABLE_NAME
 from base.threedi_base import sql
+from base.threedi_base.command_utils import ThreediBaseCommand
+from base.threedi_base.constants import (
+    CULVERT_OUTPUT_TABLE_NAME,
+    CULVERT_SNAPPED_TABLE_NAME,
+)
 
 
 class Command(ThreediBaseCommand):

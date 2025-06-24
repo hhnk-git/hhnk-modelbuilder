@@ -3,10 +3,19 @@
 
 import logging
 
-from sqlalchemy import Boolean, Column, Integer, String, Float, ForeignKey, DateTime, Text
+from geoalchemy2.types import Geometry
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from geoalchemy2.types import Geometry
 
 from .constants import Constants
 

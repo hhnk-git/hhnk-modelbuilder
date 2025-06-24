@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) Nelen & Schuurmans, see LICENSE.rst.
 
-from osgeo import gdal
-from osgeo import gdal_array
+from osgeo import gdal, gdal_array
 
 
 def create(array, geo_transform=None, projection=None, no_data_value=None):

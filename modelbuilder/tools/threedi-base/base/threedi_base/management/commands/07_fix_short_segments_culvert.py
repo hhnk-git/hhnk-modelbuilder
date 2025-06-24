@@ -4,6 +4,7 @@ from psycopg2 import DatabaseError
 from base.threedi_base.command_utils import ThreediBaseCommand
 from base.threedi_base.constants import CULVERT_OUTPUT_TABLE_NAME
 
+
 class Command(ThreediBaseCommand):
     help = "Fix short segments by effectively removing them."
 

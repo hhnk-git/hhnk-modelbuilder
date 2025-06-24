@@ -1,10 +1,12 @@
 import os.path
 from time import sleep
+
 from flask import Flask, request
+
 app = Flask(__name__)
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
 
 # set the work-dir so code-dir can be found
 if not Path("code").absolute().resolve().exists():

@@ -1,18 +1,18 @@
 #from .sqlalchemy_add_columns import create_and_upgrade
+#from ThreeDiToolbox.utils.user_messages import StatusProgressBar
+import collections
+import copy
+import logging
+import os
+
 from osgeo import ogr
+
 #from qgis.PyQt.QtCore import QSettings
 from sqlalchemy import create_engine
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
-#from ThreeDiToolbox.utils.user_messages import StatusProgressBar
-
-import collections
-import copy
-import logging
-import os
-
 
 Base = declarative_base()
 

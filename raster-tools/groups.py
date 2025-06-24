@@ -3,14 +3,10 @@
 
 import logging
 
-from osgeo import gdal
-from osgeo import gdal_array
-from osgeo import ogr
-from osgeo import osr
-import numpy as np
-
 import datasets
+import numpy as np
 import utils
+from osgeo import gdal, gdal_array, ogr, osr
 
 logger = logging.getLogger(__name__)
 
