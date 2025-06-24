@@ -26,9 +26,9 @@ if not Path("code").absolute().resolve().exists():
 windows = True
 debug = False
 if debug:
-    log_level = logging.debug
+    log_level = "DEBUG"
 else:
-    log_level = logging.info
+    log_level = "INFO" 
 work_dir = Path.cwd()
 
 logger = logging_hrt.get_logger(
