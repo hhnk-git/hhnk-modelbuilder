@@ -488,7 +488,7 @@ def get_parser():
                         help='no data value for no data pixels.')
     return parser
 
-
+#%%
 def main():
     """ Call line_up with commandline args. """
     logging.basicConfig(stream=sys.stderr,
@@ -496,6 +496,10 @@ def main():
                         format='%(message)s')
     line_up(**vars(get_parser().parse_args()))
 
-
+#%%
 if __name__ == '__main__':
     exit(main())
+
+#%%
+
+#%%

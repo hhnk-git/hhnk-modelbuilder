@@ -9,7 +9,6 @@ Python script reading sql and bash files in order to automatically execute datac
 import os
 import subprocess
 import argparse
-
 from pathlib import Path
 
 import sqlparse

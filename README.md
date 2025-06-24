@@ -114,3 +114,4 @@ During starting the web service a folder is accessed. This gives an permission d
 
 The folder is created, but perhaps not quickly enough. Retry the docker-compose up -d command.
 
+## Standard area list
