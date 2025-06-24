@@ -6,14 +6,14 @@ from osgeo import ogr
 
 
 def point2geometry(point):
-    """ Return geometry. """
+    """Return geometry."""
     geometry = ogr.Geometry(ogr.wkbPoint)
     geometry.AddPoint_2D(*map(float, point))
     return geometry
 
 
 def line2geometry(line):
-    """ Return geometry. """
+    """Return geometry."""
     geometry = ogr.Geometry(ogr.wkbLineString)
     for point in line:
         geometry.AddPoint_2D(*map(float, point))
@@ -21,7 +21,7 @@ def line2geometry(line):
 
 
 def polygon2geometry(line):
-    """ Return geometry. """
+    """Return geometry."""
     geometry = ogr.Geometry(ogr.wkbPolygon)
     ring = ogr.Geometry(ogr.wkbLinearRing)
     for point in line:
@@ -31,29 +31,32 @@ def polygon2geometry(line):
 
 
 def magnitude(vectors):
-    """ Return magnitudes. """
-    return np.sqrt((vectors ** 2).sum(1))
+    """Return magnitudes."""
+    return np.sqrt((vectors**2).sum(1))
 
 
 def normalize(vectors):
-    """ Return unit vectors. """
+    """Return unit vectors."""
     return vectors / magnitude(vectors).reshape(-1, 1)
 
 
 def rotate(vectors, degrees):
-    """ Return vectors rotated by degrees. """
-    return np.vstack([
-        +np.cos(np.radians(degrees)) * vectors[:, 0] +
-        -np.sin(np.radians(degrees)) * vectors[:, 1],
-        +np.sin(np.radians(degrees)) * vectors[:, 0] +
-        +np.cos(np.radians(degrees)) * vectors[:, 1],
-    ]).transpose()
+    """Return vectors rotated by degrees."""
+    return np.vstack(
+        [
+            +np.cos(np.radians(degrees)) * vectors[:, 0]
+            + -np.sin(np.radians(degrees)) * vectors[:, 1],
+            +np.sin(np.radians(degrees)) * vectors[:, 0]
+            + +np.cos(np.radians(degrees)) * vectors[:, 1],
+        ]
+    ).transpose()
 
 
 class ParameterizedLine(object):
     """
     LineString with handy parameterization and projection properties.
     """
+
     def __init__(self, points):
         # data
         self.points = np.array(points)
@@ -69,11 +72,11 @@ class ParameterizedLine(object):
         self.centers = (self.p + self.q) / 2
 
     def __getitem__(self, parameters):
-        """ Return points corresponding to parameters. """
-        i = np.uint64(np.where(parameters == self.length,
-                               self.length - 1, parameters))
-        t = np.where(parameters == self.length,
-                     1, np.remainder(parameters, 1)).reshape(-1, 1)
+        """Return points corresponding to parameters."""
+        i = np.uint64(np.where(parameters == self.length, self.length - 1, parameters))
+        t = np.where(parameters == self.length, 1, np.remainder(parameters, 1)).reshape(
+            -1, 1
+        )
         return self.p[i] + t * self.vectors[i]
 
     def pixelize(self, geo_transform):
@@ -83,8 +86,7 @@ class ParameterizedLine(object):
         """
         p, a, b, q, c, d = geo_transform
         if p % a or q % d or b or c or a + d:
-            raise ValueError('Currently only aligned, '
-                             'square pixels are implemented')
+            raise ValueError("Currently only aligned, square pixels are implemented")
         size = a
 
         extent = np.array([self.points.min(0), self.points.max(0)])
@@ -98,8 +100,7 @@ class ParameterizedLine(object):
             ).reshape(-1, 1)
             # calculate intersection parameters for each vector
             nonzero = self.vectors[:, i].nonzero()
-            lparameters = ((intersects - self.p[nonzero, i])
-                           / self.vectors[nonzero, i])
+            lparameters = (intersects - self.p[nonzero, i]) / self.vectors[nonzero, i]
             # add integer to parameter and mask outside line
             global_parameters = np.ma.array(
                 np.ma.array(lparameters + np.arange(nonzero[0].size)),
@@ -112,7 +113,7 @@ class ParameterizedLine(object):
         parameters.append(np.arange(self.length + 1))
 
         # apply unique on single precision, eliminating really close points
-        unique = np.unique(np.concatenate(parameters).astype('f4'))
+        unique = np.unique(np.concatenate(parameters).astype("f4"))
 
         return ParameterizedLine(self[unique])
 
@@ -139,8 +140,7 @@ class ParameterizedLine(object):
 
         # add integer to parameter and mask outside line
         gparameters = np.ma.array(
-            np.array(lparameters
-                     + np.arange(len(self.vectors)).reshape(1, -1)),
+            np.array(lparameters + np.arange(len(self.vectors)).reshape(1, -1)),
             mask=np.logical_or(lparameters < 0, lparameters > 1),
         )
 
@@ -153,7 +153,7 @@ class ParameterizedLine(object):
         closest = gparameters[(np.arange(len(distances)), distances.argmin(1))]
 
         if closest.mask.any():
-            raise ValueError('Masked values in projection.')
+            raise ValueError("Masked values in projection.")
 
         return closest.data
 
@@ -171,9 +171,9 @@ def array2polygon(array):
     # little endian
     data[0:1] = 1
     # wkb type, number of rings, number of points
-    data[1:13].view('u4')[:] = (3, 1, array.shape[0])
+    data[1:13].view("u4")[:] = (3, 1, array.shape[0])
     # set the points
-    data[13:].view('f8')[:] = array.ravel()
+    data[13:].view("f8")[:] = array.ravel()
     return ogr.CreateGeometryFromWkb(data.tostring())
 
 
@@ -184,13 +184,13 @@ def array2multipoint(array):
     This method numpy to prepare a wkb string. Performance not tested.
     """
     npoints = len(array)
-    head = np.empty(9, dtype='u1')
-    head[0] = 0                                             # endianness
-    head[1:5] = 128, 0, 0, 4                                # wkb multipoint
-    head[5:9].view('i4')[:] = np.int32(npoints).byteswap()  # amount of points
+    head = np.empty(9, dtype="u1")
+    head[0] = 0  # endianness
+    head[1:5] = 128, 0, 0, 4  # wkb multipoint
+    head[5:9].view("i4")[:] = np.int32(npoints).byteswap()  # amount of points
 
-    bulk = np.empty((npoints, 29), 'u1')
-    bulk[:, 0] = 0                                          # unknown
-    bulk[:, 1:5] = 128, 0, 0, 1                             # wkb point
-    bulk[:, 5:] = array.astype('f8').view('i8').byteswap().view('u1')
+    bulk = np.empty((npoints, 29), "u1")
+    bulk[:, 0] = 0  # unknown
+    bulk[:, 1:5] = 128, 0, 0, 1  # wkb point
+    bulk[:, 5:] = array.astype("f8").view("i8").byteswap().view("u1")
     return ogr.CreateGeometryFromWkb(head.tostring() + bulk.tostring())

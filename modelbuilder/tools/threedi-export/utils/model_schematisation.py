@@ -41,16 +41,16 @@ class GlobalSetting(Base):
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    use_2d_flow =Column(Boolean)
+    use_2d_flow = Column(Boolean)
     use_1d_flow = Column(Boolean)
     manhole_storage_area = Column(Float)
     name = Column(String(255), nullable=True)
     sim_time_step = Column(Float)
     output_time_step = Column(Float)
     nr_timesteps = Column(Float)
-    
+
     start_time = Column(DateTime)
-    start_date = Column(String(255),nullable=False)
+    start_date = Column(String(255), nullable=False)
     grid_space = Column(Float)
     dist_calc_points = Column(Float)
     kmax = Column(Integer)
@@ -59,7 +59,7 @@ class GlobalSetting(Base):
     flooding_threshold = Column(Float)
     advection_1d = Column(Integer)
     advection_2d = Column(Integer)
-    
+
     dem_file = Column(String(255), nullable=True)
     frict_type = Column(Integer)
     frict_coef = Column(Float)
@@ -68,8 +68,8 @@ class GlobalSetting(Base):
     initial_waterlevel = Column(Float)
     initial_waterlevel_file = Column(String(255), nullable=True)
     interception_global = Column(Float)
-    interception_file = Column(String(255), nullable = True)
-    
+    interception_file = Column(String(255), nullable=True)
+
     dem_obstacle_detection = Column(Boolean)
     dem_obstacle_height = Column(Float)
     embedded_cutoff_threshold = Column(Float)
@@ -79,8 +79,8 @@ class GlobalSetting(Base):
     minimum_sim_time_step = Column(Float)
     maximum_sim_time_step = Column(Float)
     frict_avg = Column(Integer)
-    wind_shielding_file = Column(String(255), nullable = True)
-    
+    wind_shielding_file = Column(String(255), nullable=True)
+
     control_group_id = Column(Integer)
     numerical_settings_id = Column(Integer)
     use_0d_inflow = Column(Integer)
@@ -88,17 +88,16 @@ class GlobalSetting(Base):
     table_step_size_volume_2d = Column(Float)
     use_2d_rain = Column(Integer)
     initial_groundwater_level = Column(Float)
-    initial_groundwater_level_file = Column(String(255), nullable = True)
+    initial_groundwater_level_file = Column(String(255), nullable=True)
     initial_groundwater_level_type = Column(Integer)
     groundwater_settings_id = Column(Integer)
     simple_infiltration_settings_id = Column(Integer)
     interflow_settings_id = Column(Integer)
-    
+
     kmax = Column(Integer)
 
-
     def __str__(self):
-        return u"Global setting [dem_file=%s, frict_coef_file=%s]" % (
+        return "Global setting [dem_file=%s, frict_coef_file=%s]" % (
             self.dem_file,
             self.frict_coef_file,
         )
@@ -142,14 +141,10 @@ class ConnectionNode(Base):
     impervious_surface_map = relationship(
         "ImperviousSurfaceMap", back_populates="connection_node"
     )
-    
-    surface_map = relationship(
-        "SurfaceMap", back_populates="connection_node"
-    )
-    
-    lateral_1d = relationship(
-        "Lateral1D", back_populates="connection_node"
-    )
+
+    surface_map = relationship("SurfaceMap", back_populates="connection_node")
+
+    lateral_1d = relationship("Lateral1D", back_populates="connection_node")
 
 
 #    onedee_lateral = relationship("OnedeeLateral")
@@ -213,7 +208,6 @@ class BoundaryCondition1D(Base):
 
 
 class Channel(Base):
-
     __tablename__ = "v2_channel"
 
     CALCULATION_TYPES = Constants.CALCULATION_TYPES
@@ -248,10 +242,8 @@ class Channel(Base):
     cross_section_locations = relationship(
         "CrossSectionLocation", back_populates="channel"
     )
-    
-    windshielding = relationship(
-        "Windshielding", back_populates="channel"
-    )
+
+    windshielding = relationship("Windshielding", back_populates="channel")
 
 
 class CrossSectionLocation(Base):
@@ -279,7 +271,6 @@ class CrossSectionLocation(Base):
 
 
 class Pipe(Base):
-
     __tablename__ = "v2_pipe"
 
     CALCULATION_TYPES = Constants.CALCULATION_TYPES
@@ -384,7 +375,6 @@ class Culvert(Base):
 
 
 class Weir(Base):
-
     __tablename__ = "v2_weir"
 
     CREST_TYPES = Constants.CREST_TYPES
@@ -434,7 +424,6 @@ class Weir(Base):
 
 
 class Orifice(Base):
-
     __tablename__ = "v2_orifice"
 
     CREST_TYPES = Constants.CREST_TYPES
@@ -492,7 +481,6 @@ class Orifice(Base):
 
 
 class Pumpstation(Base):
-
     __tablename__ = "v2_pumpstation"
 
     id = Column(Integer, primary_key=True)
@@ -562,7 +550,6 @@ class Levee(Base):
 
 
 class ImperviousSurface(Base):
-
     __tablename__ = "v2_impervious_surface"
 
     id = Column(Integer, primary_key=True)
@@ -588,6 +575,7 @@ class ImperviousSurface(Base):
         "ImperviousSurfaceMap", back_populates="impervious_surface"
     )
 
+
 class ImperviousSurfaceMap(Base):
     __tablename__ = "v2_impervious_surface_map"
 
@@ -609,23 +597,22 @@ class ImperviousSurfaceMap(Base):
 
     percentage = Column(Float)
 
+
 class SurfaceParameters(Base):
     __tablename__ = "v2_surface_parameters"
-    
+
     id = Column(Integer, primary_key=True)
-    surface = relationship(
-        "Surface", back_populates="surface_parameters"
-    )
+    surface = relationship("Surface", back_populates="surface_parameters")
     outflow_delay = Column(Float)
     surface_layer_thickness = Column(Float)
     infiltration = Column(Boolean)
     max_infiltration_capacity = Column(Float)
     min_infiltration_capacity = Column(Float)
     infiltration_decay_constant = Column(Float)
-    infiltration_recovery_constant = Column(Float)  
-    
-class Surface(Base):
+    infiltration_recovery_constant = Column(Float)
 
+
+class Surface(Base):
     __tablename__ = "v2_surface"
 
     id = Column(Integer, primary_key=True)
@@ -639,21 +626,19 @@ class Surface(Base):
     nr_of_inhabitants = Column(Float)
     area = Column(Float)
     dry_weather_flow = Column(Float)
-    surface_parameters_id = Column(Integer, ForeignKey(SurfaceParameters.__tablename__ + ".id"), nullable=True
+    surface_parameters_id = Column(
+        Integer, ForeignKey(SurfaceParameters.__tablename__ + ".id"), nullable=True
     )
 
     the_geom = Column(
         Geometry(geometry_type="POLYGON", srid=4326, spatial_index=True), nullable=True
     )
 
-    surface_parameters = relationship(
-        "SurfaceParameters", back_populates="surface"
-        )
-    
-    surface_maps = relationship(
-        "SurfaceMap", back_populates="surface"
-    )
-    
+    surface_parameters = relationship("SurfaceParameters", back_populates="surface")
+
+    surface_maps = relationship("SurfaceMap", back_populates="surface")
+
+
 class SurfaceMap(Base):
     __tablename__ = "v2_surface_map"
 
@@ -663,25 +648,21 @@ class SurfaceMap(Base):
     surface_id = Column(
         Integer, ForeignKey(Surface.__tablename__ + ".id"), nullable=True
     )
-    surface = relationship(
-        Surface, back_populates="surface_maps"
-    )
+    surface = relationship(Surface, back_populates="surface_maps")
 
     connection_node_id = Column(
         Integer, ForeignKey(ConnectionNode.__tablename__ + ".id"), nullable=False
     )
-    connection_node = relationship(
-        ConnectionNode, back_populates="surface_map"
-    )
+    connection_node = relationship(ConnectionNode, back_populates="surface_map")
 
     percentage = Column(Float)
-  
+
 
 class GridRefinementArea(Base):
     __tablename__ = "v2_grid_refinement_area"
-    
+
     id = Column(Integer, primary_key=True)
-    
+
     display_name = Column(String(255), nullable=False, default="")
     refinement_level = Column(Integer, nullable=False)
     code = Column(String(255), nullable=False, default="")
@@ -690,40 +671,43 @@ class GridRefinementArea(Base):
         Geometry(geometry_type="POLYGON", srid=4326, spatial_index=True), nullable=False
     )
 
+
 class GridRefinement(Base):
     __tablename__ = "v2_grid_refinement"
-    
+
     id = Column(Integer, primary_key=True)
-    
+
     display_name = Column(String(255), nullable=False, default="")
     refinement_level = Column(Integer, nullable=False)
     code = Column(String(255), nullable=False, default="")
 
     the_geom = Column(
-        Geometry(geometry_type="LINESTRING", srid=4326, spatial_index=True), nullable=False
-    )    
+        Geometry(geometry_type="LINESTRING", srid=4326, spatial_index=True),
+        nullable=False,
+    )
+
 
 class NumericalSettings(Base):
     __tablename__ = "v2_numerical_settings"
-    
+
     id = Column(Integer, primary_key=True)
     cfl_strictness_factor_1d = Column(Float)
     cfl_strictness_factor_2d = Column(Float)
     convergence_cg = Column(Float)
     convergence_eps = Column(Float)
     flow_direction_threshold = Column(Float)
-    
+
     frict_shallow_water_correction = Column(Integer)
     general_numerical_threshold = Column(Float)
     integration_method = Column(Float)
     limiter_grad_1d = Column(Integer)
     limiter_grad_2d = Column(Integer)
-    limiter_slope_crossectional_area_2d=Column(Integer)
-    
+    limiter_slope_crossectional_area_2d = Column(Integer)
+
     limiter_slope_friction_2d = Column(Integer)
     max_nonlin_iterations = Column(Integer)
     max_degree = Column(Integer)
-    
+
     minimum_friction_velocity = Column(Float)
     minimum_surface_area = Column(Float)
     precon_cg = Column(Integer)
@@ -732,24 +716,25 @@ class NumericalSettings(Base):
     thin_water_layer_definition = Column(Float)
     use_of_cg = Column(Integer)
     use_of_nested_newton = Column(Integer)
-    
+
+
 class DemAverageArea(Base):
     __tablename__ = "v2_dem_average_area"
-    
+
     id = Column(Integer, primary_key=True)
     the_geom = Column(
         Geometry(geometry_type="POLYGON", srid=4326, spatial_index=True), nullable=False
     )
-    
+
+
 class Windshielding(Base):
     __tablename__ = "v2_windshielding"
-    
+
     id = Column(Integer, primary_key=True)
-    channel_id = Column(Integer, ForeignKey(Channel.__tablename__ + ".id"), nullable=False
+    channel_id = Column(
+        Integer, ForeignKey(Channel.__tablename__ + ".id"), nullable=False
     )
-    channel = relationship(
-        Channel, back_populates="windshielding"
-    )
+    channel = relationship(Channel, back_populates="windshielding")
     north = Column(Float)
     northeast = Column(Float)
     east = Column(Float)
@@ -760,91 +745,100 @@ class Windshielding(Base):
     northwest = Column(Float)
     the_geom = Column(
         Geometry(geometry_type="POINT", srid=4326, spatial_index=True), nullable=False
-    ) 
+    )
+
 
 class Lateral2D(Base):
     __tablename__ = "v2_2d_lateral"
-    
+
     id = Column(Integer, primary_key=True)
     type = Column(Integer)
     the_geom = Column(
         Geometry(geometry_type="POINT", srid=4326, spatial_index=True), nullable=False
-    ) 
+    )
     timeseries = Column(String(255), nullable=False, default="")
-    
+
+
 class Lateral1D(Base):
     __tablename__ = "v2_1d_lateral"
-    
+
     id = Column(Integer, primary_key=True)
     connection_node_id = Column(
         Integer, ForeignKey(ConnectionNode.__tablename__ + ".id"), nullable=False
     )
-    connection_node = relationship(
-        ConnectionNode, back_populates="lateral_1d"
-    )
+    connection_node = relationship(ConnectionNode, back_populates="lateral_1d")
     timeseries = Column(String(255), nullable=False, default="")
-    
+
+
 class BoundaryCondition2D(Base):
     __tablename__ = "v2_2d_boundary_conditions"
-    
+
     id = Column(Integer, primary_key=True)
     display_name = Column(String(255), nullable=False, default="")
     timeseries = Column(String(255), nullable=False, default="")
     boundary_type = Column(Integer)
     the_geom = Column(
-        Geometry(geometry_type="LINESTRING", srid=4326, spatial_index=True), nullable=False
+        Geometry(geometry_type="LINESTRING", srid=4326, spatial_index=True),
+        nullable=False,
     )
-    
+
+
 class Groundwater(Base):
     __tablename__ = "v2_groundwater"
-    
+
     id = Column(Integer, primary_key=True)
-    
+
     groundwater_impervious_layer_level = Column(Float)
-    groundwater_impervious_layer_level_file = Column(String(255), nullable=False, default="")
+    groundwater_impervious_layer_level_file = Column(
+        String(255), nullable=False, default=""
+    )
     groundwater_impervious_layer_level_type = Column(Integer)
-    
+
     phreatic_storage_capacity = Column(Float)
     phreatic_storage_capacity_file = Column(String(255), nullable=False, default="")
     phreatic_storage_capacity_type = Column(Integer)
-    
+
     equilibrium_infiltration_rate = Column(Float)
     equilibrium_infiltration_rate_file = Column(String(255), nullable=False, default="")
     equilibrium_infiltration_rate_type = Column(Integer)
-    
+
     initial_infiltration_rate = Column(Float)
     initial_infiltration_rate_file = Column(String(255), nullable=False, default="")
     initial_infiltration_rate_type = Column(Integer)
-    
+
     infiltration_decay_period = Column(Float)
     infiltration_decay_period_file = Column(String(255), nullable=False, default="")
     infiltration_decay_period_type = Column(Integer)
-    
+
     groundwater_hydro_connectivity = Column(Float)
-    groundwater_hydro_connectivity_file = Column(String(255), nullable=False, default="")
+    groundwater_hydro_connectivity_file = Column(
+        String(255), nullable=False, default=""
+    )
     groundwater_hydro_connectivity_type = Column(Integer)
-    
+
     display_name = Column(String(255), nullable=False, default="")
     leakage = Column(Float)
     leakage_file = Column(String(255), nullable=False, default="")
-    
+
+
 class Interflow(Base):
     __tablename__ = "v2_interflow"
-    
+
     id = Column(Integer, primary_key=True)
     interflow_type = Column(Integer)
     porosity = Column(Float)
     porosity_file = Column(String(255), nullable=False, default="")
     porosity_layer_thickness = Column(Float)
-    
+
     impervious_layer_elevation = Column(Float)
     hydraulic_conductivity = Column(Float)
     hydraulic_conductivity_file = Column(String(255), nullable=False, default="")
     display_name = Column(String(255), nullable=False, default="")
-    
+
+
 class AggregationSettings(Base):
     __tablename__ = "v2_aggregation_settings"
-    
+
     id = Column(Integer, primary_key=True)
     global_settings_id = Column(Integer)
     var_name = Column(String(100), nullable=False, default="")
@@ -852,59 +846,72 @@ class AggregationSettings(Base):
     aggregation_method = Column(String(100), nullable=False, default="")
     aggregation_in_space = Column(Boolean)
     timestep = Column(Integer)
-    
+
+
 class SimpleInfiltration(Base):
     __tablename__ = "v2_simple_infiltration"
-    
+
     id = Column(Integer, primary_key=True)
     infiltration_rate = Column(Float)
     infiltration_rate_file = Column(String(255), nullable=False, default="")
     infiltration_surface_option = Column(Integer)
     max_infiltration_capacity_file = Column(String(255), nullable=False, default="")
     display_name = Column(String(255), nullable=False, default="")
-    
+
+
 # TODO: add, floodfill, v2 pumpeddrainagearea control
+
 
 class ControlGroup(Base):
     __tablename__ = "v2_control_group"
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False, default="")
     description = Column(Text, nullable=False, default="")
 
+
 class ControlMeasureGroup(Base):
     __tablename__ = "v2_control_measure_group"
-    
+
     id = Column(Integer, primary_key=True)
+
 
 class ControlMeasureMap(Base):
     __tablename__ = "v2_control_measure_map"
-    
+
     id = Column(Integer, primary_key=True)
-    measure_group_id = Column(Integer, ForeignKey(ControlMeasureGroup.__tablename__ + ".id"), nullable=False)
+    measure_group_id = Column(
+        Integer, ForeignKey(ControlMeasureGroup.__tablename__ + ".id"), nullable=False
+    )
     object_type = Column(String(100), nullable=False, default="")
     object_id = Column(Integer)
     weight = Column(Float)
 
+
 class Control(Base):
     __tablename__ = "v2_control"
-    
+
     id = Column(Integer, primary_key=True)
-    control_group_id = Column(Integer, ForeignKey(ControlGroup.__tablename__ + ".id"), nullable=False)
+    control_group_id = Column(
+        Integer, ForeignKey(ControlGroup.__tablename__ + ".id"), nullable=False
+    )
     control_type = Column(String(15), nullable=False, default="")
     control_id = Column(Integer)
-    measure_group_id = Column(Integer, ForeignKey(ControlMeasureGroup.__tablename__ + ".id"), nullable=False)
+    measure_group_id = Column(
+        Integer, ForeignKey(ControlMeasureGroup.__tablename__ + ".id"), nullable=False
+    )
     start = Column(String(50))
     end = Column(String(50))
     measure_frequency = Column(Integer)
-    
+
+
 class ControlTable(Base):
     __tablename__ = "v2_control_table"
-    
-    id = Column(Integer, primary_key = True)
-    action_type = Column(String(50), nullable = False)
-    measure_variable = Column(String(50), nullable = False)
-    target_type = Column(String(100), nullable = False)
+
+    id = Column(Integer, primary_key=True)
+    action_type = Column(String(50), nullable=False)
+    measure_variable = Column(String(50), nullable=False)
+    target_type = Column(String(100), nullable=False)
     target_id = Column(Integer)
-    measure_operator = Column(String(2), nullable = False)
+    measure_operator = Column(String(2), nullable=False)
     action_table = Column(Text)

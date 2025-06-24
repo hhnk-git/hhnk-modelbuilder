@@ -26,7 +26,7 @@ class ThreediBaseCommand(BaseCommand):
         """
         add an ini file as an optional positional argument
         """
-        parser.add_argument('ini', nargs='?', type=str)
+        parser.add_argument("ini", nargs="?", type=str)
 
     def setup_db(self, *args, **options):
         """
@@ -43,25 +43,23 @@ class ThreediBaseCommand(BaseCommand):
         decide which ini file to use
         """
         default_ini = os.path.abspath(
-            os.path.join(conf.PROJECT_DIR, '..', '..', 'default_config.ini')
+            os.path.join(conf.PROJECT_DIR, "..", "..", "default_config.ini")
         )
-        custom_ini_file = options.get('ini')
+        custom_ini_file = options.get("ini")
         if custom_ini_file is None:
-            logger.info('[*] Using default ini file {}'.format(
-                os.path.basename(default_ini))
+            logger.info(
+                "[*] Using default ini file {}".format(os.path.basename(default_ini))
             )
             return default_ini
-        if all((os.path.exists(custom_ini_file),
-               os.path.isfile(custom_ini_file))):
-            logger.info('[*] Using custom ini file {}'.format(
-                os.path.basename(custom_ini_file))
+        if all((os.path.exists(custom_ini_file), os.path.isfile(custom_ini_file))):
+            logger.info(
+                "[*] Using custom ini file {}".format(os.path.basename(custom_ini_file))
             )
             return custom_ini_file
         else:
             self.stdout.write(
                 self.style.ERROR(
-                    'Error: Could not find the ini file {}'.format(
-                        custom_ini_file)
+                    "Error: Could not find the ini file {}".format(custom_ini_file)
                 )
             )
             sys.exit(1)
@@ -77,28 +75,26 @@ class ThreediBaseCommand(BaseCommand):
         _m, s = divmod(duration, 60)
         h, m = divmod(_m, 60)
         if all([h < 1, m < 1, s < 1]):
-            return 'less than a second'
+            return "less than a second"
         return "%d:%02d:%02d" % (h, m, s)
 
     def deliver_message(self, msg, status):
         """
         print the message to stdout
         """
-        if status == 'error':
+        if status == "error":
             self.stdout.write(self.style.ERROR(msg))
-        elif status == 'success':
+        elif status == "success":
             self.stdout.write(self.style.SUCCESS(msg))
 
 
 def get_db_cretentials_from_ini(ini):
     ini_reader = IniReader(ini)
     return {
-        "dbname": ini_reader.get('database_name'),
-        "host": ini_reader.get('database_host'),
-        "user": ini_reader.get('database_user'),
-        "password": ini_reader.get('database_password'),
-        "schema": ini_reader.get('schema'),
-        "port": ini_reader.get('port'),
+        "dbname": ini_reader.get("database_name"),
+        "host": ini_reader.get("database_host"),
+        "user": ini_reader.get("database_user"),
+        "password": ini_reader.get("database_password"),
+        "schema": ini_reader.get("schema"),
+        "port": ini_reader.get("port"),
     }
-
-

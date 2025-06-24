@@ -5,7 +5,7 @@ from osgeo import gdal
 
 
 def get_parser():
-    """ Return argument parser. """
+    """Return argument parser."""
 
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter

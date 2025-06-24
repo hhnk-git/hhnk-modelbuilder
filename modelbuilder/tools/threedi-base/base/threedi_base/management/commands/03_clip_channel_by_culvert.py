@@ -14,52 +14,52 @@ class Command(ThreediBaseCommand):
         super(Command, self).add_arguments(parser)
 
         parser.add_argument(
-            '--channel-input-table',
-            action='store',
-            dest='channel_input_table',
-            default='channel_simplified',
+            "--channel-input-table",
+            action="store",
+            dest="channel_input_table",
+            default="channel_simplified",
             help="Channel input table name",
         )
         parser.add_argument(
-            '--culvert-input-table',
-            action='store',
-            dest='culvert_input_table',
-            default='culvert',
+            "--culvert-input-table",
+            action="store",
+            dest="culvert_input_table",
+            default="culvert",
             help="Culvert input table name",
         )
         parser.add_argument(
-            '--channel-output-table',
-            action='store',
-            dest='channel_output_table',
-            default='channel_clipped',
+            "--channel-output-table",
+            action="store",
+            dest="channel_output_table",
+            default="channel_clipped",
             help="Channel output table name",
         )
         parser.add_argument(
-            '--culvert-output-table',
-            action='store',
-            dest='culvert_output_table',
+            "--culvert-output-table",
+            action="store",
+            dest="culvert_output_table",
             default=CULVERT_SNAPPED_TABLE_NAME,
             help="Culvert output table name",
         )
         parser.add_argument(
-            '--search-radius',
-            action='store',
-            dest='buffer_size',
+            "--search-radius",
+            action="store",
+            dest="buffer_size",
             default=CULVERT_BUFFER_SIZE,
             type=float,
             help="Radius from culvert used to search for channels",
         )
         parser.add_argument(
-            '--remove-intermediate-tables',
-            dest='rm_tmp_tables',
-            action='store_true',
-            help="Remove all intermediate tables (default)"
+            "--remove-intermediate-tables",
+            dest="rm_tmp_tables",
+            action="store_true",
+            help="Remove all intermediate tables (default)",
         )
         parser.add_argument(
-            '--save-intermediate-tables',
-            dest='rm_tmp_tables',
-            action='store_false',
-            help="Save all intermediate tables"
+            "--save-intermediate-tables",
+            dest="rm_tmp_tables",
+            action="store_false",
+            help="Save all intermediate tables",
         )
         parser.set_defaults(rm_tmp_tables=True)
 
@@ -69,18 +69,19 @@ class Command(ThreediBaseCommand):
         self.run_command(**options)
 
     def run_command(self, **options):
-        status = 'error'
-        msg = ''
+        status = "error"
+        msg = ""
         print(options)
         ccl = CulvertChannelLines(
-            self.db, buffer_size=options['buffer_size'],
-            culvert_input_table=options['culvert_input_table'],
-            channel_input_table=options['channel_input_table'],
-            culvert_output_table_name=options['culvert_output_table'],
-            channel_output_table_name=options['channel_output_table']
+            self.db,
+            buffer_size=options["buffer_size"],
+            culvert_input_table=options["culvert_input_table"],
+            channel_input_table=options["channel_input_table"],
+            culvert_output_table_name=options["culvert_output_table"],
+            channel_output_table_name=options["channel_output_table"],
         )
-        
-        # ccl.analyze_dataset() 
+
+        # ccl.analyze_dataset()
         # ccl.create_tmp_culverts()
         # ccl.clip_channels_by_culverts()
         # ccl.move_multi_geoms_to_misfits()
@@ -98,7 +99,7 @@ class Command(ThreediBaseCommand):
         except InsertError as i_err:
             msg = i_err
         else:
-            status = 'success'
+            status = "success"
             msg = """
             Successfully clipped geometries of channels from table
             '{schema}.{channel_input_table}' with culverts from table
@@ -111,16 +112,16 @@ class Command(ThreediBaseCommand):
             They have been stored at {schema}.{misfits_table}
             \n\n
             Finished in {exec_time}""".format(
-                channel_input_table=options['channel_input_table'],
-                culvert_input_table=options['culvert_input_table'],
-                culvert_output_table=options['culvert_output_table'],
-                channel_output_table=options['channel_output_table'],
+                channel_input_table=options["channel_input_table"],
+                culvert_input_table=options["culvert_input_table"],
+                culvert_output_table=options["culvert_output_table"],
+                channel_output_table=options["channel_output_table"],
                 schema=self.db.schema,
                 exec_time=self.get_exec_time(),
                 error_cnt=ccl.get_count_misfits(),
-                misfits_table=ccl.misfits_table_name
+                misfits_table=ccl.misfits_table_name,
             )
         finally:
-            if options['rm_tmp_tables']:
+            if options["rm_tmp_tables"]:
                 ccl.remove_tmp_tables()
             self.deliver_message(msg, status)

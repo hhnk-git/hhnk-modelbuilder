@@ -47,10 +47,14 @@ def add_start_end_position(positions):
     positions = list(set(positions))
     # order might got lost due to set operation
     positions.sort()
-    if all([0.0 in positions,
-           1.0 in positions,
-           (len(positions) % 2 == 0),
-            len(positions) > 2]):
+    if all(
+        [
+            0.0 in positions,
+            1.0 in positions,
+            (len(positions) % 2 == 0),
+            len(positions) > 2,
+        ]
+    ):
         return remove_start_end_points(positions)
 
     # runs from start to x, all good
@@ -70,8 +74,8 @@ def get_positions(entry):
     """
     get the correct start and end position
     """
-    start_position = entry['pal_s']
-    end_position = entry['pal_e']
+    start_position = entry["pal_s"]
+    end_position = entry["pal_e"]
     if start_position > end_position:
         _start_position = start_position
         start_position = end_position
@@ -123,26 +127,24 @@ def correct_positions_by_distance(entry):
     will be reset
     """
 
-    if all([entry['pal_s'] == START_POSITION,
-            entry['pal_e'] == START_POSITION]):
+    if all([entry["pal_s"] == START_POSITION, entry["pal_e"] == START_POSITION]):
         return entry
-    if all([entry['pal_s'] == END_POSITION,
-            entry['pal_e'] == END_POSITION]):
+    if all([entry["pal_s"] == END_POSITION, entry["pal_e"] == END_POSITION]):
         return entry
 
     reset_value = 0.0
     s_diff = e_diff = None
-    if entry['dist_start'] > entry['l_len'] / 2:
-        if entry['pal_e'] >= 0.5:
+    if entry["dist_start"] > entry["l_len"] / 2:
+        if entry["pal_e"] >= 0.5:
             reset_value = 1.0
-        entry['pal_s'] = reset_value
-        s_diff = abs(entry['pal_s'] - entry['pal_s_org'])
+        entry["pal_s"] = reset_value
+        s_diff = abs(entry["pal_s"] - entry["pal_s_org"])
 
-    if entry['dist_end'] > entry['l_len'] / 2:
-        if entry['pal_s'] == END_POSITION:
+    if entry["dist_end"] > entry["l_len"] / 2:
+        if entry["pal_s"] == END_POSITION:
             reset_value = 1.0
-        entry['pal_e'] = reset_value
-        e_diff = abs(entry['pal_e'] - entry['pal_e_org'])
+        entry["pal_e"] = reset_value
+        e_diff = abs(entry["pal_e"] - entry["pal_e_org"])
 
     # make sure the pal* attributes of a culvert that touches a channel
     # perpendicularly will get reset
@@ -150,16 +152,15 @@ def correct_positions_by_distance(entry):
         diff_l = [s_diff, e_diff]
         diff = max(x for x in diff_l if x is not None)
         # we assume a difference of 10% is not likely
-        if all([diff > 0.1,
-                diff != 0.0,
-                diff != 1.0,
-                entry['pal_e'] != entry['pal_s']]):
-            entry['pal_s'] = entry['pal_e'] = 0.0
+        if all(
+            [diff > 0.1, diff != 0.0, diff != 1.0, entry["pal_e"] != entry["pal_s"]]
+        ):
+            entry["pal_s"] = entry["pal_e"] = 0.0
 
     return entry
 
-def correct_positions_by_threshold(entry, min_threshold=0.01,
-                                   max_threshold=0.99):
+
+def correct_positions_by_threshold(entry, min_threshold=0.01, max_threshold=0.99):
     """
     the position of the culvert start- and endpoints along the
     channel line will either be snapped to the start- or
@@ -176,25 +177,21 @@ def correct_positions_by_threshold(entry, min_threshold=0.01,
     """
     cnt_corrected_start = 0
     cnt_corrected_end = 0
-    pal_s_org = entry['pal_s_org']
-    if all([pal_s_org < min_threshold,
-            pal_s_org != START_POSITION]):
+    pal_s_org = entry["pal_s_org"]
+    if all([pal_s_org < min_threshold, pal_s_org != START_POSITION]):
         corrected_pal_s = START_POSITION
         cnt_corrected_start += 1
-    elif all([pal_s_org > max_threshold,
-              pal_s_org != END_POSITION]):
+    elif all([pal_s_org > max_threshold, pal_s_org != END_POSITION]):
         corrected_pal_s = END_POSITION
         cnt_corrected_end += 1
     else:
         corrected_pal_s = pal_s_org
 
-    pal_e_org = entry['pal_e_org']
-    if all([pal_e_org > max_threshold,
-            pal_e_org != END_POSITION]):
+    pal_e_org = entry["pal_e_org"]
+    if all([pal_e_org > max_threshold, pal_e_org != END_POSITION]):
         corrected_pal_e = END_POSITION
         cnt_corrected_end += 1
-    elif all([pal_e_org < min_threshold,
-              pal_e_org != START_POSITION]):
+    elif all([pal_e_org < min_threshold, pal_e_org != START_POSITION]):
         corrected_pal_e = START_POSITION
         cnt_corrected_start += 1
     else:
@@ -203,15 +200,14 @@ def correct_positions_by_threshold(entry, min_threshold=0.01,
     # if both pal_s and pal_e are close to either the start or endpoint
     # keep them as they are. Those are culverts on a very long
     # channel line
-    if any([cnt_corrected_end == 2,
-            cnt_corrected_start == 2]):
+    if any([cnt_corrected_end == 2, cnt_corrected_start == 2]):
         relative_len_positions = abs(pal_e_org - pal_s_org) * 100
-        relative_len_lines = (entry['l_len']*100) / entry['ch_len']
+        relative_len_lines = (entry["l_len"] * 100) / entry["ch_len"]
         if are_almost_equal(relative_len_positions, relative_len_lines):
             corrected_pal_e = pal_e_org
             corrected_pal_s = pal_s_org
-    entry['pal_s'] = corrected_pal_s
-    entry['pal_e'] = corrected_pal_e
+    entry["pal_s"] = corrected_pal_s
+    entry["pal_e"] = corrected_pal_e
 
     return entry
 
@@ -239,10 +235,10 @@ def correct_crossings(culvert_id, entries):
     pe_org = []
     # group entries for point along line attributes (start(s) and end(e))
     for entry in entries:
-        ps.append(entry['pal_s'])
-        pe.append(entry['pal_e'])
-        ps_org.append(entry['pal_s_org'])
-        pe_org.append(entry['pal_e_org'])
+        ps.append(entry["pal_s"])
+        pe.append(entry["pal_e"])
+        ps_org.append(entry["pal_s_org"])
+        pe_org.append(entry["pal_e_org"])
 
     s_index = e_index = None
     s_value = [x for x in ps if all((x > START_POSITION, x < END_POSITION))]
@@ -265,21 +261,23 @@ def correct_crossings(culvert_id, entries):
         pal_e = pe[s_index]
         pal_e_org = pe_org[s_index]
         if pal_e != pal_e_org:
-            entries[s_index]['pal_e'] = pal_e_org
+            entries[s_index]["pal_e"] = pal_e_org
             logger.info(
-                '[*] Culvert {}: '
-                'Attribute pal_e has been reset from {} to {}'.format(
-                    culvert_id, pal_e, pal_e_org)
+                "[*] Culvert {}: Attribute pal_e has been reset from {} to {}".format(
+                    culvert_id, pal_e, pal_e_org
+                )
             )
         pal_s = ps[e_index]
         pal_s_org = ps_org[e_index]
         if pal_s != pal_s_org:
-            entries[e_index]['pal_s'] = pal_s_org
+            entries[e_index]["pal_s"] = pal_s_org
             logger.info(
-                '[*] Culvert {}: '
-                'Attribute pal_s has been reset from {} to {}'.format(
-                    culvert_id, pal_s, pal_s_org)
+                "[*] Culvert {}: Attribute pal_s has been reset from {} to {}".format(
+                    culvert_id, pal_s, pal_s_org
+                )
             )
 
-    return [(entry['channel_id'], entry['culvert_id'], entry['pal_e'],
-             entry['pal_s']) for entry in entries]
+    return [
+        (entry["channel_id"], entry["culvert_id"], entry["pal_e"], entry["pal_s"])
+        for entry in entries
+    ]

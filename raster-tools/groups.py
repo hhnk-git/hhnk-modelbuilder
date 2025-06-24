@@ -30,11 +30,13 @@ class Meta(object):
         self.no_data_value = numpy_type(no_data_value)
 
     def __eq__(self, other):
-        return (self.width == other.width
-                and self.height == other.height
-                and self.data_type == other.data_type
-                and self.projection == other.projection
-                and self.geo_transform == other.geo_transform)
+        return (
+            self.width == other.width
+            and self.height == other.height
+            and self.data_type == other.data_type
+            and self.projection == other.projection
+            and self.geo_transform == other.geo_transform
+        )
 
 
 class Group(object):
@@ -42,11 +44,12 @@ class Group(object):
     A group of gdal rasters, automatically merges, and has a more pythonic
     interface.
     """
+
     def __init__(self, *datasets):
         metas = [Meta(dataset) for dataset in datasets]
         meta = metas[0]
         if not all([meta == m for m in metas]):
-            raise ValueError('Incompatible rasters.')
+            raise ValueError("Incompatible rasters.")
 
         self.dtype = meta.dtype
         self.width = meta.width
@@ -71,8 +74,7 @@ class Group(object):
         """
         # find indices
         if isinstance(bounds, ogr.Geometry):
-            x1, y1, x2, y2 = self.geo_transform.get_indices(bounds,
-                                                            inflate=inflate)
+            x1, y1, x2, y2 = self.geo_transform.get_indices(bounds, inflate=inflate)
         else:
             x1, y1, x2, y2 = bounds
 
@@ -85,9 +87,9 @@ class Group(object):
 
         # result array plus a view for what's actually inside datasets
         array = np.full((y2 - y1, x2 - x1), self.no_data_value, self.dtype)
-        view = array[q1 - y1: q2 - y1, p1 - x1: p2 - x1]
+        view = array[q1 - y1 : q2 - y1, p1 - x1 : p2 - x1]
 
-        kwargs = {'xoff': p1, 'yoff': q1, 'xsize': p2 - p1, 'ysize': q2 - q1}
+        kwargs = {"xoff": p1, "yoff": q1, "xsize": p2 - p1, "ysize": q2 - q1}
         for dataset, no_data_value in zip(self.datasets, self.no_data_values):
             data = dataset.ReadAsArray(**kwargs)
             index = data != no_data_value
@@ -100,6 +102,7 @@ class RGBWrapper(object):
     """
     A wrapper around GDAL RGB datasets for pythonic querying.
     """
+
     def __init__(self, dataset):
         self.dataset = dataset
 
@@ -109,26 +112,24 @@ class RGBWrapper(object):
         self.geo_transform = utils.GeoTransform(dataset.GetGeoTransform())
 
     def get_mask(self, geometry, shape):
-
         # create an ogr datasource
-        driver = ogr.GetDriverByName('Memory')
-        source = driver.CreateDataSource('')
+        driver = ogr.GetDriverByName("Memory")
+        source = driver.CreateDataSource("")
         sr = osr.SpatialReference(self.projection)
-        layer = source.CreateLayer('', sr)
+        layer = source.CreateLayer("", sr)
         defn = layer.GetLayerDefn()
         feature = ogr.Feature(defn)
         feature.SetGeometry(geometry)
         layer.CreateFeature(feature)
 
         # burn where data should be
-        mask = np.zeros(shape, dtype='u1')
+        mask = np.zeros(shape, dtype="u1")
         geo_transform = self.geo_transform.shifted(geometry)
-        kwargs = {'geo_transform': geo_transform,
-                  'projection': self.projection}
+        kwargs = {"geo_transform": geo_transform, "projection": self.projection}
         with datasets.Dataset(mask, **kwargs) as dataset:
             gdal.RasterizeLayer(dataset, (1,), layer, burn_values=(1,))
 
-        return mask.astype('b1').repeat(3, axis=0)
+        return mask.astype("b1").repeat(3, axis=0)
 
     def read(self, geometry):
         """
@@ -150,11 +151,11 @@ class RGBWrapper(object):
         q2 = min(h, max(0, y2))
 
         # result array plus a view for what's actually inside datasets
-        data = np.full((3, y2 - y1, x2 - x1), 0, 'u1')
-        view = data[:, q1 - y1: q2 - y1, p1 - x1: p2 - x1]
+        data = np.full((3, y2 - y1, x2 - x1), 0, "u1")
+        view = data[:, q1 - y1 : q2 - y1, p1 - x1 : p2 - x1]
 
         # query the data and put it in the view
-        kwargs = {'xoff': p1, 'yoff': q1, 'xsize': p2 - p1, 'ysize': q2 - q1}
+        kwargs = {"xoff": p1, "yoff": q1, "xsize": p2 - p1, "ysize": q2 - q1}
         view[:] = self.dataset.ReadAsArray(**kwargs)
 
         # create a mask

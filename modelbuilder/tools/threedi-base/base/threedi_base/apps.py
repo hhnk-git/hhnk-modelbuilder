@@ -6,7 +6,7 @@ from django.apps import AppConfig
 
 
 class ThreediBaseDefaultConfig(AppConfig):
-    name = 'threedi_base'
+    name = "threedi_base"
     PROJECT_DIR = os.path.realpath(os.path.dirname(__file__))
     DEBUG = False
     TESTING = False
@@ -15,19 +15,19 @@ class ThreediBaseDefaultConfig(AppConfig):
 class ProductionConfig(ThreediBaseDefaultConfig):
     DEBUG = False
     LOG_LEVEL = "INFO"
-    DEFAULT_FETCH = 'default'
+    DEFAULT_FETCH = "default"
 
 
 class DevelopmentConfig(ThreediBaseDefaultConfig):
-
     # the same settigns for now.
     DEBUG = True
     LOG_LEVEL = "INFO"
-    DEFAULT_FETCH = 'default'
+    DEFAULT_FETCH = "default"
 
 
 class TestingConfig(ThreediBaseDefaultConfig):
     TESTING = True
+
 
 #
 config_class = {

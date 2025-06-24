@@ -6,6 +6,7 @@ That is, sources differ and so is their precision. This scripts ensures
 that all data lies on a regular grid. All successive steps rely on this
 operation.
 """
+
 from base.threedi_base.apps import ThreediBaseConfig as conf
 from base.threedi_base.command_utils import ThreediBaseCommand
 from base.threedi_base.exceptions import UpdateError
@@ -15,18 +16,18 @@ logger = Logger.get(__name__, conf.LOG_LEVEL)
 
 
 tables_geom_map = {
-    'bridge': ['geom'],
-    'channel': ['geom', 'bufgeom', 'pointgeom'],
-    'channelsurface': ['geom'],
-    'crosssection': ['geom'],
-    'culvert': ['geom'],
-    'fixeddrainagelevelarea': ['geom'],
-    'manhole': ['geom'],
-    'orifice': ['geom'],
-    'polder': ['geom'],
-    'pumpstation': ['geom'],
-    'sluice': ['geom'],
-    'weirs': ['geom']
+    "bridge": ["geom"],
+    "channel": ["geom", "bufgeom", "pointgeom"],
+    "channelsurface": ["geom"],
+    "crosssection": ["geom"],
+    "culvert": ["geom"],
+    "fixeddrainagelevelarea": ["geom"],
+    "manhole": ["geom"],
+    "orifice": ["geom"],
+    "polder": ["geom"],
+    "pumpstation": ["geom"],
+    "sluice": ["geom"],
+    "weirs": ["geom"],
 }
 
 
@@ -36,7 +37,8 @@ class Command(ThreediBaseCommand):
     database connection the ThreediBaseCommand.setup_db() method is
     called first.
     """
-    help = 'Snap all geometries to a regular grid'
+
+    help = "Snap all geometries to a regular grid"
 
     def handle(self, *args, **options):
         """
@@ -54,25 +56,22 @@ class Command(ThreediBaseCommand):
             for table_name, geom_columns in tables_geom_map.items():
                 if not self.db.table_exists(table_name=table_name):
                     logger.warning(
-                        '[!] Table {} does not exist at schema {}. '
-                        'Skipping...'.format(
-                            table_name, self.db.schema)
+                        "[!] Table {} does not exist at schema {}. Skipping...".format(
+                            table_name, self.db.schema
+                        )
                     )
                     continue
                 for column in geom_columns:
                     self.db.snap_to_grid(
-                        table_name=table_name, geom_column=column,
-                        precision=0.05
+                        table_name=table_name, geom_column=column, precision=0.05
                     )
         except UpdateError as u_err:
-            self.stdout.write(
-                self.style.ERROR(u_err)
-            )
+            self.stdout.write(self.style.ERROR(u_err))
         else:
             self.stdout.write(
                 self.style.SUCCESS(
                     "Successfully snapped geometries for the tables {}".format(
-                        ', '.join(tables_geom_map.keys())
+                        ", ".join(tables_geom_map.keys())
                     )
                 )
             )
