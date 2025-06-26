@@ -206,7 +206,6 @@ class Constants(object):
 
 
 class QualityCheckResult(object):
-
     RELIABLE = 0
     UNCERTAIN = 1
     UNRELIABLE = 2

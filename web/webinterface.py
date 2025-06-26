@@ -1,50 +1,54 @@
 import os.path
 from time import sleep
+
 from flask import Flask, request
+
 app = Flask(__name__)
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
 
 # set the work-dir so code-dir can be found
 if not Path("code").absolute().resolve().exists():
     os.chdir(Path(__file__).absolute().resolve().parents[2])
 
-work_dir = Path.cwd()     
+work_dir = Path.cwd()
 
 
 def datachecker_running():
     return work_dir.joinpath("code/datachecker/datachecker_running.txt").is_file()
 
+
 def modelbuilder_running():
     return work_dir.joinpath(r"code/modelbuilder/modelbuilder_running.txt").is_file()
+
 
 def get_status():
     return {
         "datachecker": not datachecker_running(),
-        "modelbuilder": not modelbuilder_running()
-        }
+        "modelbuilder": not modelbuilder_running(),
+    }
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
     if work_dir.joinpath("code/datachecker/datachecker_running.txt").is_file():
         datachecker_status = "running"
     else:
         datachecker_status = "not running"
-    
+
     if work_dir.joinpath(r"code/modelbuilder/modelbuilder_running.txt").is_file():
         modelbuilder_status = "running"
     else:
         modelbuilder_status = "not running"
-    
-    if datachecker_status == 'running' or modelbuilder_status == 'running':
+
+    if datachecker_status == "running" or modelbuilder_status == "running":
         refresh = """<meta http-equiv="refresh" content="10" />"""
-        form_disabled = 'disabled'
+        form_disabled = "disabled"
     else:
-        refresh = ''
-        form_disabled = ''
-    
+        refresh = ""
+        form_disabled = ""
+
     return """
     <head>
         <title>Datachecker/Modelbuilder</title>
@@ -137,57 +141,80 @@ def index():
             56	Beetskoog			"5010","5020","5030","5040","5050","5080"
             57	Texel-Zuid			"8010","8020","8030","8071"
         <pre>
-    """.format(refresh,datachecker_status,form_disabled,modelbuilder_status,form_disabled,form_disabled,form_disabled)
+    """.format(
+        refresh,
+        datachecker_status,
+        form_disabled,
+        modelbuilder_status,
+        form_disabled,
+        form_disabled,
+        form_disabled,
+    )
 
-#%% 
 
-@app.route("/datachecker/start/", methods=['GET', 'POST'])
+# %%
+
+
+@app.route("/datachecker/start/", methods=["GET", "POST"])
 def datachecker_start():
-    with open(work_dir.joinpath("code/datachecker/datachecker_running.txt"), 'w') as fp: 
+    with open(work_dir.joinpath("code/datachecker/datachecker_running.txt"), "w") as fp:
         pass
     subprocess.Popen([f"{sys.executable}", "code/datachecker/datachecker.py"])
     return """<head>
         <meta http-equiv='refresh' content='5; URL=/'>
         </head>
         Datachecker gestart, je wordt terugverwezen naar de vorige pagina binnen enkele seconde"""
-    
-@app.route("/modelbuilder/start/", methods=['GET', 'POST'])
+
+
+@app.route("/modelbuilder/start/", methods=["GET", "POST"])
 def modelbuilder_start():
-    polder_id = request.form['polder_id']
-    polder_name = request.form['polder_name']
-    
-    if polder_id == '' or polder_name == '':
-        return 'Fill in both a polder id and name'
-    
-    with open(work_dir.joinpath("code/modelbuilder/modelbuilder_running.txt"), 'w') as fp: 
+    polder_id = request.form["polder_id"]
+    polder_name = request.form["polder_name"]
+
+    if polder_id == "" or polder_name == "":
+        return "Fill in both a polder id and name"
+
+    with open(
+        work_dir.joinpath("code/modelbuilder/modelbuilder_running.txt"), "w"
+    ) as fp:
         pass
-    subprocess.Popen([f"{sys.executable}", "code/modelbuilder/modelbuilder.py", str(polder_id), str(polder_name)])
+    subprocess.Popen(
+        [
+            f"{sys.executable}",
+            "code/modelbuilder/modelbuilder.py",
+            str(polder_id),
+            str(polder_name),
+        ]
+    )
     return """<head>
             <meta http-equiv='refresh' content='5; URL=/'>
             </head>
         Modelbuilder gestart, je wordt terugverwezen naar de vorige pagina binnen enkele seconde"""
 
-@app.route('/datachecker/log')
+
+@app.route("/datachecker/log")
 def stream_datachecker():
     def generate():
-        with open(work_dir.joinpath('code/datachecker/datachecker.log')) as f:
+        with open(work_dir.joinpath("code/datachecker/datachecker.log")) as f:
             yield f.read()
 
-    return app.response_class(generate(), mimetype='text/plain')
+    return app.response_class(generate(), mimetype="text/plain")
 
-    
-@app.route('/modelbuilder/log')
+
+@app.route("/modelbuilder/log")
 def stream_modelbuilder():
     def generate():
-        with open(work_dir.joinpath('code/modelbuilder/modelbuilder.log')) as f:
+        with open(work_dir.joinpath("code/modelbuilder/modelbuilder.log")) as f:
             yield f.read()
 
-    return app.response_class(generate(), mimetype='text/plain')
+    return app.response_class(generate(), mimetype="text/plain")
 
-@app.route('/status')
+
+@app.route("/status")
 def status():
     return get_status()
 
+
 if __name__ == "__main__":
     # Starts on port 5000 by default.
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host="0.0.0.0")

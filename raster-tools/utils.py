@@ -4,14 +4,14 @@
 import logging
 import math
 
-from osgeo import ogr
 import numpy as np
+from osgeo import ogr
 
 logger = logging.getLogger(__name__)
 
 
 def get_inverse(a, b, c, d):
-    """ Return inverse for a 2 x 2 matrix with elements (a, b), (c, d). """
+    """Return inverse for a 2 x 2 matrix with elements (a, b), (c, d)."""
     D = 1 / (a * d - b * c)
     return d * D, -b * D, -c * D, a * D
 
@@ -35,25 +35,37 @@ def get_geometry(dataset):
     return geometry
 
 
-def aggregate(values, no_data_value, func='mean'):
+def aggregate(values, no_data_value, func="mean"):
     """
     Return aggregated array.
 
     Arrays with uneven dimension sizes will raise an exception.
     """
     func = getattr(np.ma, func)
-    result = func(np.ma.masked_values(
-        np.dstack([values[0::2, 0::2],
-                   values[0::2, 1::2],
-                   values[1::2, 0::2],
-                   values[1::2, 1::2]]), no_data_value,
-    ), 2).astype(values.dtype).filled(no_data_value)
-    return {'values': result, 'no_data_value': no_data_value}
+    result = (
+        func(
+            np.ma.masked_values(
+                np.dstack(
+                    [
+                        values[0::2, 0::2],
+                        values[0::2, 1::2],
+                        values[1::2, 0::2],
+                        values[1::2, 1::2],
+                    ]
+                ),
+                no_data_value,
+            ),
+            2,
+        )
+        .astype(values.dtype)
+        .filled(no_data_value)
+    )
+    return {"values": result, "no_data_value": no_data_value}
 
 
-def aggregate_uneven(values, no_data_value, func='mean'):
-    """ Pad, fold, return. """
-    kwargs = {'no_data_value': no_data_value, 'func': func}
+def aggregate_uneven(values, no_data_value, func="mean"):
+    """Pad, fold, return."""
+    kwargs = {"no_data_value": no_data_value, "func": func}
 
     s1, s2 = values.shape
     p1, p2 = s1 % 2, s2 % 2  # required padding to make even-sized
@@ -65,17 +77,17 @@ def aggregate_uneven(values, no_data_value, func='mean'):
     # 4-step: a) even section, b) bottom, c) right and d) corner
     result = np.empty(((s1 + p1) / 2, (s2 + p2) / 2), dtype=values.dtype)
     # the even section
-    a = aggregate(values[:s1 - p1, :s2 - p2], **kwargs)
-    result[:(s1 - p1) / 2, :(s2 - p2) / 2] = a['values']
+    a = aggregate(values[: s1 - p1, : s2 - p2], **kwargs)
+    result[: (s1 - p1) / 2, : (s2 - p2) / 2] = a["values"]
     if p1:  # bottom row
-        b = aggregate(values[-1:, :s2 - p2].repeat(2, axis=0), **kwargs)
-        result[-1:, :(s2 - p2) / 2] = b['values']
-    if p2:   # right column
-        c = aggregate(values[:s1 - p1, -1:].repeat(2, axis=1), **kwargs)
-        result[:(s1 - p1) / 2:, -1:] = c['values']
+        b = aggregate(values[-1:, : s2 - p2].repeat(2, axis=0), **kwargs)
+        result[-1:, : (s2 - p2) / 2] = b["values"]
+    if p2:  # right column
+        c = aggregate(values[: s1 - p1, -1:].repeat(2, axis=1), **kwargs)
+        result[: (s1 - p1) / 2 :, -1:] = c["values"]
     if p1 and p2:  # corner pixel
         result[-1, -1] = values[-1, -1]
-    return {'values': result, 'no_data_value': no_data_value}
+    return {"values": result, "no_data_value": no_data_value}
 
 
 class GeoTransform(tuple):
@@ -101,7 +113,7 @@ class GeoTransform(tuple):
         return self.__class__([p, a * w, b * h, q, c * w, d * h])
 
     def get_coordinates(self, indices):
-        """ Return x, y coordinates.
+        """Return x, y coordinates.
 
         :param indices: i, j tuple of integers or arrays.
 
@@ -159,4 +171,4 @@ class GeoTransform(tuple):
         :param geometry: geometry to subselect
         """
         x1, y1, x2, y2 = self.get_indices(geometry)
-        return {'xoff': x1, 'yoff': y1, 'xsize': x2 - x1, 'ysize': y2 - y1}
+        return {"xoff": x1, "yoff": y1, "xsize": x2 - x1, "ysize": y2 - y1}

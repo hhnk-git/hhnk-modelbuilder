@@ -3,12 +3,12 @@
 
 import os
 
-from osgeo import gdal
-from osgeo import ogr
+from osgeo import gdal, ogr
 
 
 class PartialDataSource(object):  # pragma: no cover
-    """ Wrap a shapefile. """
+    """Wrap a shapefile."""
+
     def __init__(self, path):
         self.data_source = ogr.Open(path)
         self.layer = self.data_source[0]
@@ -26,15 +26,15 @@ class PartialDataSource(object):  # pragma: no cover
         return self.layer.GetFeatureCount()
 
     def query(self, geometry):
-        """ Return generator of features with geometry as spatial filter. """
+        """Return generator of features with geometry as spatial filter."""
         self.layer.SetSpatialFilter(geometry)
         for fid in range(len(self)):
             yield self.layer[fid]
         self.layer.SetSpatialFilter(None)
 
     def select(self, text):
-        """ Return generator of features for text, e.g. '2/5' """
-        selected, parts = map(int, text.split('/'))
+        """Return generator of features for text, e.g. '2/5'"""
+        selected, parts = map(int, text.split("/"))
         size = len(self) / parts
         start = int((selected - 1) * size)
         stop = len(self) if selected == parts else int(selected * size)
@@ -46,7 +46,8 @@ class PartialDataSource(object):  # pragma: no cover
 
 
 class TargetDataSource(object):  # pragma: no cover
-    """ Wrap a shapefile, copied from raster-analysis. """
+    """Wrap a shapefile, copied from raster-analysis."""
+
     def __init__(self, path, template_path, attributes):
         # read template
         template_data_source = ogr.Open(template_path)
@@ -54,7 +55,7 @@ class TargetDataSource(object):  # pragma: no cover
         template_sr = template_layer.GetSpatialRef()
 
         # create or replace shape
-        driver = ogr.GetDriverByName('ESRI Shapefile')
+        driver = ogr.GetDriverByName("ESRI Shapefile")
         self.dataset = driver.CreateDataSource(path)
         layer_name = os.path.basename(path)
         self.layer = self.dataset.CreateLayer(layer_name, template_sr)
@@ -70,8 +71,9 @@ class TargetDataSource(object):  # pragma: no cover
         # add extra fields
         for attribute in attributes:
             if attribute.lower() in existing:
-                raise NameError(('field named "{}" already '
-                                 'exists in template').format(attribute))
+                raise NameError(
+                    ('field named "{}" already exists in template').format(attribute)
+                )
             field_defn = ogr.FieldDefn(str(attribute), ogr.OFTReal)
             field_defn.SetWidth(255)
             field_defn.SetPrecision(15)
@@ -79,7 +81,7 @@ class TargetDataSource(object):  # pragma: no cover
         self.layer_defn = self.layer.GetLayerDefn()
 
     def append(self, geometry, attributes):
-        """ Append geometry and attributes as new feature. """
+        """Append geometry and attributes as new feature."""
         feature = ogr.Feature(self.layer_defn)
         feature.SetGeometry(geometry)
         for key, value in attributes.items():
@@ -93,11 +95,12 @@ class Layer(object):
         >>> with Layer(geometry) as layer:
         ...     # do ogr things.
     """
+
     def __init__(self, geometry):
-        driver = ogr.GetDriverByName(str('Memory'))
-        self.data_source = driver.CreateDataSource('')
+        driver = ogr.GetDriverByName(str("Memory"))
+        self.data_source = driver.CreateDataSource("")
         sr = geometry.GetSpatialReference()
-        self.layer = self.data_source.CreateLayer(str(''), sr)
+        self.layer = self.data_source.CreateLayer(str(""), sr)
         layer_defn = self.layer.GetLayerDefn()
         feature = ogr.Feature(layer_defn)
         feature.SetGeometry(geometry)
@@ -111,7 +114,7 @@ class Layer(object):
 
 
 def iter_layer(layer):
-    """ Pygdal has a bug that doesn't allow iterating layers. """
+    """Pygdal has a bug that doesn't allow iterating layers."""
     feature = layer.GetNextFeature()
     while feature is not None:
         yield feature

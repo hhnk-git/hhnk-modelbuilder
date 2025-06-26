@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # (c) Nelen & Schuurmans, see LICENSE.rst.
 
-from osgeo import gdal
-from osgeo import gdal_array
+from osgeo import gdal, gdal_array
 
 
 def create(array, geo_transform=None, projection=None, no_data_value=None):
@@ -27,15 +26,15 @@ def create(array, geo_transform=None, projection=None, no_data_value=None):
     bandoffset, lineoffset, pixeloffset = array.strides
 
     dataset_name_template = (
-        'MEM:::'
-        'DATAPOINTER={datapointer},'
-        'PIXELS={pixels},'
-        'LINES={lines},'
-        'BANDS={bands},'
-        'DATATYPE={datatype},'
-        'PIXELOFFSET={pixeloffset},'
-        'LINEOFFSET={lineoffset},'
-        'BANDOFFSET={bandoffset}'
+        "MEM:::"
+        "DATAPOINTER={datapointer},"
+        "PIXELS={pixels},"
+        "LINES={lines},"
+        "BANDS={bands},"
+        "DATATYPE={datatype},"
+        "PIXELOFFSET={pixeloffset},"
+        "LINEOFFSET={lineoffset},"
+        "BANDOFFSET={bandoffset}"
     )
     dataset_name = dataset_name_template.format(
         datapointer=datapointer,
@@ -69,6 +68,7 @@ class Dataset(object):
         >>> with Dataset(array) as dataset:
         ...     # do gdal things.
     """
+
     def __init__(self, array, **kwargs):
         self.array = array
         self.dataset = create(array, **kwargs)

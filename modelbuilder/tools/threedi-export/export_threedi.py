@@ -1,70 +1,75 @@
+import argparse
+import configparser
+import os
+import shutil
+
+import psycopg2
+from osgeo import ogr, osr
+from sqlalchemy.orm import load_only
 from sqlalchemy.sql import text
+from utils.constants import Constants
 from utils.model_schematisation import (
-    ConnectionNode,
-    Manhole,
-    BoundaryCondition1D,
-    Pipe,
-    CrossSectionDefinition,
-    Orifice,
-    Weir,
-    Pumpstation,
-    ImperviousSurface,
-    ImperviousSurfaceMap,
-    Channel,
-    CrossSectionLocation,
-    Culvert,
-    Obstacle,
-    Levee,
-    BoundaryCondition1D,
-    GridRefinementArea,
-    GridRefinement,
-    Surface,
-    SurfaceParameters,
-    SurfaceMap,
-    NumericalSettings,
-    GlobalSetting,
-    DemAverageArea,
-    Windshielding,
-    Lateral2D,
-    Lateral1D,
-    BoundaryCondition2D,
-    Groundwater,
-    Interflow,
     AggregationSettings,
-    SimpleInfiltration,
+    BoundaryCondition1D,
+    BoundaryCondition2D,
+    Channel,
+    ConnectionNode,
+    Control,
     ControlGroup,
     ControlMeasureGroup,
     ControlMeasureMap,
-    Control,
     ControlTable,
+    CrossSectionDefinition,
+    CrossSectionLocation,
+    Culvert,
+    DemAverageArea,
+    GlobalSetting,
+    GridRefinement,
+    GridRefinementArea,
+    Groundwater,
+    ImperviousSurface,
+    ImperviousSurfaceMap,
+    Interflow,
+    Lateral1D,
+    Lateral2D,
+    Levee,
+    Manhole,
+    NumericalSettings,
+    Obstacle,
+    Orifice,
+    Pipe,
+    Pumpstation,
+    SimpleInfiltration,
+    Surface,
+    SurfaceMap,
+    SurfaceParameters,
+    Weir,
+    Windshielding,
 )
-from sqlalchemy.orm import load_only
-from utils.constants import Constants
-from osgeo import osr
-from osgeo import ogr
 from utils.threedi_database import ThreediDatabase
-import shutil
-import os
-import argparse
-import configparser
-import psycopg2
 
 config = configparser.ConfigParser()
-print('cwd',os.getcwd())
-config.read(r'\\corp.hhnk.nl/data/Hydrologen_data/Data/modelbuilder/code/datachecker/datachecker_config.ini') #TODO make single config file
-print(config['db']['database'],'connected')
+print("cwd", os.getcwd())
+config.read(
+    r"\\corp.hhnk.nl/data/Hydrologen_data/Data/modelbuilder/code/datachecker/datachecker_config.ini"
+)  # TODO make single config file
+print(config["db"]["database"], "connected")
+
 
 def get_parser():
-    """ Return argument parser. """
+    """Return argument parser."""
 
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        'filename', default='model.sqlite',
-        help='filename (including path) of the model')
+        "filename",
+        default="model.sqlite",
+        help="filename (including path) of the model",
+    )
     return parser
+
 
 def transform(wkt, srid_source, srid_dest):
     source_crs = osr.SpatialReference()
@@ -79,7 +84,7 @@ def transform(wkt, srid_source, srid_dest):
 
 
 def export_threedi(**kwargs):
-    filename = kwargs.get('filename')
+    filename = kwargs.get("filename")
     connection_nodes = []
     manholes = []
     pumpstations = []
@@ -111,7 +116,7 @@ def export_threedi(**kwargs):
     interflows = []
     aggregation_settings = []
     simple_infiltrations = []
-    
+
     control_groups = []
     control_measure_groups = []
     control_measure_maps = []
@@ -152,20 +157,21 @@ def export_threedi(**kwargs):
     for postgis_cross_section_definition in execute_sql_statement(
         "select id,shape,width,height,code from v2_cross_section_definition", fetch=True
     ):
-        #Prevent height from being None
+        # Prevent height from being None
         if postgis_cross_section_definition[3] is None:
             height = "NULL"
         else:
             height = "'" + postgis_cross_section_definition[3] + "'"
         session.execute(
             text(
-            "INSERT INTO v2_cross_section_definition(id,shape,width,height,code) VALUES({},'{}', '{}', {}, '{}')".format(
-                postgis_cross_section_definition[0],
-                postgis_cross_section_definition[1],
-                postgis_cross_section_definition[2],
-                height,
-                postgis_cross_section_definition[4],
-            ))
+                "INSERT INTO v2_cross_section_definition(id,shape,width,height,code) VALUES({},'{}', '{}', {}, '{}')".format(
+                    postgis_cross_section_definition[0],
+                    postgis_cross_section_definition[1],
+                    postgis_cross_section_definition[2],
+                    height,
+                    postgis_cross_section_definition[4],
+                )
+            )
         )
 
     for postgis_channel in execute_sql_statement(
@@ -320,7 +326,7 @@ def export_threedi(**kwargs):
         fetch=True,
     ):
         add_simple_infiltration(simple_infiltrations, postgis_simple_infiltration)
-        
+
     for postgis_control_group in execute_sql_statement(
         "select id, name, description FROM v2_control_group",
         fetch=True,
@@ -332,7 +338,7 @@ def export_threedi(**kwargs):
         fetch=True,
     ):
         add_control_measure_group(control_measure_groups, postgis_control_measure_group)
-        
+
     for postgis_control_measure_map in execute_sql_statement(
         "select id, measure_group_id, object_type, object_id, weight FROM v2_control_measure_map",
         fetch=True,
@@ -340,7 +346,7 @@ def export_threedi(**kwargs):
         add_control_measure_map(control_measure_maps, postgis_control_measure_map)
 
     for postgis_control in execute_sql_statement(
-        "select id, control_group_id, control_type, control_id, measure_group_id, \"start\", \"end\", measure_frequency FROM v2_control",
+        'select id, control_group_id, control_type, control_id, measure_group_id, "start", "end", measure_frequency FROM v2_control',
         fetch=True,
     ):
         add_control(controls, postgis_control)
@@ -350,8 +356,6 @@ def export_threedi(**kwargs):
         fetch=True,
     ):
         add_control_table(control_tables, postgis_control_table)
-
-
 
     export_to_db(
         session,
@@ -1109,7 +1113,7 @@ def export_to_db(
     commit_counts["simple_infiltration_settings"] = len(simple_infiltrations_list)
     session.bulk_save_objects(simple_infiltrations_list)
     session.commit()
-    
+
     control_groups_list = []
     for control_group in control_groups:
         control_groups_list.append(
@@ -1122,7 +1126,7 @@ def export_to_db(
     commit_counts["control_group"] = len(control_groups_list)
     session.bulk_save_objects(control_groups_list)
     session.commit()
-    
+
     control_measure_groups_list = []
     for control_measure_group in control_measure_groups:
         control_measure_groups_list.append(
@@ -1133,7 +1137,7 @@ def export_to_db(
     commit_counts["control_measure_group"] = len(control_measure_groups_list)
     session.bulk_save_objects(control_measure_groups_list)
     session.commit()
-    
+
     control_measure_maps_list = []
     for control_measure_map in control_measure_maps:
         control_measure_maps_list.append(
@@ -1148,7 +1152,7 @@ def export_to_db(
     commit_counts["control_measure_map"] = len(control_measure_maps_list)
     session.bulk_save_objects(control_measure_maps_list)
     session.commit()
-    
+
     controls_list = []
     for control in controls:
         controls_list.append(
@@ -1166,7 +1170,7 @@ def export_to_db(
     commit_counts["control"] = len(controls_list)
     session.bulk_save_objects(controls_list)
     session.commit()
-    
+
     control_tables_list = []
     for control_table in control_tables:
         control_tables_list.append(
@@ -1183,6 +1187,7 @@ def export_to_db(
     commit_counts["control_table"] = len(control_tables_list)
     session.bulk_save_objects(control_tables_list)
     session.commit()
+
 
 def add_connection_node(connection_nodes, postgis_connection_node):
     """Add hydx.connection_node into threedi.connection_node and threedi.manhole"""
@@ -1709,6 +1714,7 @@ def add_simple_infiltration(simple_infiltrations, postgis_simple_infiltration):
     simple_infiltrations.append(simple_infiltration)
     return simple_infiltrations
 
+
 def add_control_group(control_groups, postgis_control_group):
     control_group = {
         "id": postgis_control_group[0],
@@ -1718,12 +1724,14 @@ def add_control_group(control_groups, postgis_control_group):
     control_groups.append(control_group)
     return control_groups
 
+
 def add_control_measure_group(control_measure_groups, postgis_control_measure_group):
     control_measure_group = {
         "id": postgis_control_measure_group[0],
     }
     control_measure_groups.append(control_measure_group)
     return control_measure_groups
+
 
 def add_control_measure_map(control_measure_maps, postgis_control_measure_map):
     control_measure_map = {
@@ -1735,6 +1743,7 @@ def add_control_measure_map(control_measure_maps, postgis_control_measure_map):
     }
     control_measure_maps.append(control_measure_map)
     return control_measure_maps
+
 
 def add_control(controls, postgis_control):
     control = {
@@ -1749,7 +1758,8 @@ def add_control(controls, postgis_control):
     }
     controls.append(control)
     return controls
-    
+
+
 def add_control_table(control_tables, postgis_control_table):
     control_table = {
         "id": postgis_control_table[0],
@@ -1759,31 +1769,39 @@ def add_control_table(control_tables, postgis_control_table):
         "target_id": postgis_control_table[4],
         "measure_operator": postgis_control_table[5],
         "action_table": postgis_control_table[6],
-
     }
     control_tables.append(control_table)
     return control_tables
 
-def execute_sql_statement(sql_statement, fetch=True):
-        """
-        :param sql_statement: custom sql statement
 
-        makes use of the existing database connection to run a custom query
-        """
-        
-        conn = psycopg2.connect(host=config['db']['hostname'], dbname=config['db']['database'], user=config['db']['username'], password=config['db']['password'], port=config['db']['port'])
-        
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(sql_statement)
-                if fetch is True:
-                    return cur.fetchall()
+def execute_sql_statement(sql_statement, fetch=True):
+    """
+    :param sql_statement: custom sql statement
+
+    makes use of the existing database connection to run a custom query
+    """
+
+    conn = psycopg2.connect(
+        host=config["db"]["hostname"],
+        dbname=config["db"]["database"],
+        user=config["db"]["username"],
+        password=config["db"]["password"],
+        port=config["db"]["port"],
+    )
+
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(sql_statement)
+            if fetch is True:
+                return cur.fetchall()
+
 
 def main():
     try:
         return export_threedi(**vars(get_parser().parse_args()))
     except SystemExit:
         raise  # argparse does this
+
 
 if __name__ == "__main__":
     main()

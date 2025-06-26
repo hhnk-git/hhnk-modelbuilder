@@ -777,4 +777,3 @@ FROM {schema}.{connection_node_table} AS b
 WHERE a.connection_node_end_id = b.id
 ;
 """
-

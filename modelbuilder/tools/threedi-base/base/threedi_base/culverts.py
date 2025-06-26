@@ -1,25 +1,29 @@
 from collections import defaultdict
 
-from base.threedi_base.constants import CULVERT_SNAPPED_TABLE_NAME
 from base.threedi_base import position
-from base.threedi_base.logger import Logger
 from base.threedi_base.apps import ThreediBaseConfig as conf
+from base.threedi_base.constants import CULVERT_SNAPPED_TABLE_NAME
 from base.threedi_base.exceptions import InsertError
+from base.threedi_base.logger import Logger
 
 logger = Logger.get(__name__, conf.LOG_LEVEL)
 
 
 def get_chunk(l, n=2):
     n = max(1, n)
-    return (l[i:i+n] for i in range(0, len(l), n))
+    return (l[i : i + n] for i in range(0, len(l), n))
 
 
 class CulvertChannelLines:
-
-    def __init__(self, db, buffer_size, culvert_input_table,
-                 channel_input_table,
-                 culvert_output_table_name,
-                 channel_output_table_name):
+    def __init__(
+        self,
+        db,
+        buffer_size,
+        culvert_input_table,
+        channel_input_table,
+        culvert_output_table_name,
+        channel_output_table_name,
+    ):
         """
         :param db: ThreediDatabase instance
         :param buffer_size: size to buffer the start and
@@ -33,12 +37,12 @@ class CulvertChannelLines:
         self.buffer_size = buffer_size
         self.channel_input_table_name = channel_input_table
         self.culvert_input_table_name = culvert_input_table
-        self.corrected_valids_table_name = 'culvert_valid_corrected'
-        self.buffer_table_name = 'culvert_buff_pnts'
-        self.valids_table_name = 'culvert_valid'
-        self.misfits_table_name = 'culvert_misfits'
+        self.corrected_valids_table_name = "culvert_valid_corrected"
+        self.buffer_table_name = "culvert_buff_pnts"
+        self.valids_table_name = "culvert_valid"
+        self.misfits_table_name = "culvert_misfits"
         self.culvert_snapped_table_name = CULVERT_SNAPPED_TABLE_NAME
-        self.connection_nodes_tables = 'tmp_connection_nodes_structures'
+        self.connection_nodes_tables = "tmp_connection_nodes_structures"
         self.channel_output_table_name = channel_output_table_name
         self.culvert_channel_mapping = defaultdict(list)
         self.channel_culvert_mapping = defaultdict(list)
@@ -56,9 +60,8 @@ class CulvertChannelLines:
 
     def remove_tmp_tables(self):
         """remove intermediate tables"""
-        for table_name in (self.buffer_table_name,
-                           self.valids_table_name):
-            self.db.drop_item(name_item=table_name, type_item='TABLE')
+        for table_name in (self.buffer_table_name, self.valids_table_name):
+            self.db.drop_item(name_item=table_name, type_item="TABLE")
 
     def _create_culvert_buffers(self):
         """
@@ -88,22 +91,22 @@ class CulvertChannelLines:
         FROM
           {schema}.{input_table_name} AS a
         ;
-        """.format(schema=self.db.schema,
-                   input_table_name=self.culvert_input_table_name,
-                   table_name=self.buffer_table_name,
-                   buffer_size=self.buffer_size)
+        """.format(
+            schema=self.db.schema,
+            input_table_name=self.culvert_input_table_name,
+            table_name=self.buffer_table_name,
+            buffer_size=self.buffer_size,
+        )
         self.db.free_form(statement, fetch=False)
-        self.db.create_index(
-            self.buffer_table_name, 'idx_startb', 'start_b', gist=True)
-        self.db.create_index(
-            self.buffer_table_name, 'idx_endb', 'end_b', gist=True)
+        self.db.create_index(self.buffer_table_name, "idx_startb", "start_b", gist=True)
+        self.db.create_index(self.buffer_table_name, "idx_endb", "end_b", gist=True)
 
     def _identify_misfits(self):
         """
         identify the culverts the are (partly) too
         far away from the channels
         """
-        self.db.drop_item(self.misfits_table_name, 'TABLE')
+        self.db.drop_item(self.misfits_table_name, "TABLE")
         misfits_statement = """
         -- get misfits
         DROP SEQUENCE IF EXISTS misfits_id_seq;
@@ -126,9 +129,12 @@ class CulvertChannelLines:
         WHERE
           b.id IS NULL
         ORDER by a.id
-        ;""".format(schema=self.db.schema, buffer_table=self.buffer_table_name,
-                    misfits_table=self.misfits_table_name,
-                    channel_input_table=self.channel_input_table_name)
+        ;""".format(
+            schema=self.db.schema,
+            buffer_table=self.buffer_table_name,
+            misfits_table=self.misfits_table_name,
+            channel_input_table=self.channel_input_table_name,
+        )
         self.db.free_form(misfits_statement, fetch=False)
 
     def get_count_misfits(self):
@@ -167,10 +173,12 @@ class CulvertChannelLines:
           b.id IS NOT NULL
         ORDER by a.id
         ;
-        """.format(schema=self.db.schema,
-                   valids_table_name=self.valids_table_name,
-                   buffer_table=self.buffer_table_name,
-                   channel_input_table_name=self.channel_input_table_name)
+        """.format(
+            schema=self.db.schema,
+            valids_table_name=self.valids_table_name,
+            buffer_table=self.buffer_table_name,
+            channel_input_table_name=self.channel_input_table_name,
+        )
         self.db.free_form(valids_statement, fetch=False)
 
     def get_corrected_valids(self):
@@ -199,8 +207,11 @@ class CulvertChannelLines:
             ;""".format(
                 schema=self.db.schema,
                 valids_table_name=self.valids_table_name,
-                corrected_valids_table_name=self.corrected_valids_table_name),
-            fetch=True, fetch_as='dict')
+                corrected_valids_table_name=self.corrected_valids_table_name,
+            ),
+            fetch=True,
+            fetch_as="dict",
+        )
         return entries
 
     def get_valids(self):
@@ -218,9 +229,12 @@ class CulvertChannelLines:
               ST_AsText(geom_ch) AS geom_ch
             FROM
               {schema}.{valids_table_name}
-            ;""".format(schema=self.db.schema,
-                        valids_table_name=self.valids_table_name),
-            fetch=True, fetch_as='dict')
+            ;""".format(
+                schema=self.db.schema, valids_table_name=self.valids_table_name
+            ),
+            fetch=True,
+            fetch_as="dict",
+        )
         return entries
 
     def _create_channel_culvert_mappings(self):
@@ -245,15 +259,11 @@ class CulvertChannelLines:
         """
         valids = self.get_valids()
         corrected_entries = self._correct_entries(valids)
-        self.create_corrected_valids_table(
-            corrected_entries
-        )
+        self.create_corrected_valids_table(corrected_entries)
         corrected_valids = self.get_corrected_valids()
         for c_entry in corrected_valids:
-            self.culvert_channel_mapping[
-                c_entry['culvert_id']].append(c_entry)
-            self.channel_culvert_mapping[
-                c_entry['channel_id']].append(c_entry)
+            self.culvert_channel_mapping[c_entry["culvert_id"]].append(c_entry)
+            self.channel_culvert_mapping[c_entry["channel_id"]].append(c_entry)
 
     def _correct_entries(self, valids):
         """
@@ -276,40 +286,45 @@ class CulvertChannelLines:
         for entry in valids:
             entry_cpos = position.correct_positions_by_threshold(entry)
             entry_cd = position.correct_positions_by_distance(entry_cpos)
-            _corrected[entry['culvert_id']].append(entry_cd)
+            _corrected[entry["culvert_id"]].append(entry_cd)
 
         corrected_entries = []
         for culvert_id, entries in _corrected.items():
             if len(entries) > 1:
-                corrected_crossings = position.correct_crossings(
-                    culvert_id, entries
-                )
+                corrected_crossings = position.correct_crossings(culvert_id, entries)
                 corrected_entries.extend(corrected_crossings)
             else:
                 entry = entries[0]
                 corrected_entries.append(
-                    (entry['channel_id'], entry['culvert_id'],
-                     entry['pal_e'], entry['pal_s'])
+                    (
+                        entry["channel_id"],
+                        entry["culvert_id"],
+                        entry["pal_e"],
+                        entry["pal_s"],
+                    )
                 )
         return corrected_entries
 
     def create_corrected_valids_table(self, corrected_entries):
-        field_names = 'channel_id, culvert_id, pal_e, pal_s'
+        field_names = "channel_id, culvert_id, pal_e, pal_s"
         self.db.create_table(
-            self.corrected_valids_table_name, field_names.split(','),
-            ['bigint', 'bigint', 'double precision', 'double precision']
+            self.corrected_valids_table_name,
+            field_names.split(","),
+            ["bigint", "bigint", "double precision", "double precision"],
         )
-        
+
         self.db.commit_values(
             self.corrected_valids_table_name, field_names, corrected_entries
         )
         self.db.create_index(
             table_name=self.valids_table_name,
-            index_name='idx_valids_culvert_id', column='culvert_id'
+            index_name="idx_valids_culvert_id",
+            column="culvert_id",
         )
         self.db.create_index(
             table_name=self.corrected_valids_table_name,
-            index_name='idx_corrected_valids_culvert_id', column='culvert_id'
+            index_name="idx_corrected_valids_culvert_id",
+            column="culvert_id",
         )
 
     def create_tmp_culverts(self):
@@ -318,10 +333,9 @@ class CulvertChannelLines:
         self.db.create_table(
             self.culvert_snapped_table_name,
             ["culvert_id", "geom"],
-            ["bigint", "geometry"]
+            ["bigint", "geometry"],
         )
-        for culvert_id, channel_map in \
-                self.culvert_channel_mapping.items():
+        for culvert_id, channel_map in self.culvert_channel_mapping.items():
             self.merge_culvert_subparts(culvert_id, channel_map)
 
     def clip_channels_by_culverts(self):
@@ -329,7 +343,7 @@ class CulvertChannelLines:
         self.db.create_table(
             table_name=self.channel_output_table_name,
             field_names=["channel_id", "part_id", "geom"],
-            field_types=["bigint", "smallint", "geometry"]
+            field_types=["bigint", "smallint", "geometry"],
         )
 
         channels_to_be_removed = []
@@ -347,9 +361,7 @@ class CulvertChannelLines:
             cleaned_ordered_positions = position.remove_duplicate_positions(
                 ordered_positions
             )
-            positions = position.add_start_end_position(
-                cleaned_ordered_positions
-            )
+            positions = position.add_start_end_position(cleaned_ordered_positions)
             flipped_positions = position.flip_start_end_position(positions)
             self.create_channel_sub_lines(channel_id, flipped_positions)
 
@@ -391,15 +403,17 @@ class CulvertChannelLines:
                     schema=self.db.schema,
                     valids_table_name=self.valids_table_name,
                     output_table_name=self.channel_output_table_name,
-                    channel_id=channel_id, cnt=cnt,
-                    st_line_substring=statement_line_substring
+                    channel_id=channel_id,
+                    cnt=cnt,
+                    st_line_substring=statement_line_substring,
                 )
                 self.db.free_form(insert_statement, fetch=False)
                 cnt += 1
         except ValueError:
-            msg = 'Failed to create line for channel {}. ' \
-                  'Has the following positions {}'.\
-                format(channel_id, positions)
+            msg = (
+                "Failed to create line for channel {}. "
+                "Has the following positions {}".format(channel_id, positions)
+            )
             logger.exception(msg)
             raise InsertError(msg)
 
@@ -437,13 +451,13 @@ class CulvertChannelLines:
         current_selection = set()
         fully_covered_by = set()
         for entry in entries:
-            positions = [entry['pal_e'], entry['pal_s']]
+            positions = [entry["pal_e"], entry["pal_s"]]
             positions.sort()
             if position.must_be_skipped(positions):
                 continue
             if position.fully_covered(positions):
-                fully_covered_by.add(entry['channel_id'])
-            current_selection.add(entry['channel_id'])
+                fully_covered_by.add(entry["channel_id"])
+            current_selection.add(entry["channel_id"])
         filtered_channel_ids = current_selection.difference(
             self.channels_fully_replaced
         )
@@ -459,20 +473,17 @@ class CulvertChannelLines:
         channel_ids = self.filter_channels(entries)
         if not channel_ids:
             return
-        if all([channel_id in self.channels_fully_replaced
-                for channel_id in channel_ids]):
+        if all(
+            [channel_id in self.channels_fully_replaced for channel_id in channel_ids]
+        ):
             for channel_id in channel_ids:
-                self.insert_into_culvert_output_table(
-                    [channel_id], culvert_id
-                )
+                self.insert_into_culvert_output_table([channel_id], culvert_id)
         else:
             self.insert_into_culvert_output_table(channel_ids, culvert_id)
 
     def insert_into_culvert_output_table(self, channel_ids, culvert_id):
-        """
-
-        """
-        ids_str = ','.join([str(x) for x in channel_ids])
+        """ """
+        ids_str = ",".join([str(x) for x in channel_ids])
 
         insert_statement = """
         INSERT INTO
@@ -530,16 +541,16 @@ class CulvertChannelLines:
             if False (default) as integers
         :returns a list of channel_ids
         """
-        return [str(item['channel_id'])
-                if as_string
-                else item['channel_id']
-                for item in items]
+        return [
+            str(item["channel_id"]) if as_string else item["channel_id"]
+            for item in items
+        ]
 
     def get_start_or_end_point(self, geom_as_text, position):
-        if position == 'start':
-            st = 'ST_Startpoint'
-        elif position == 'end':
-            st = 'ST_Endpoint'
+        if position == "start":
+            st = "ST_Startpoint"
+        elif position == "end":
+            st = "ST_Endpoint"
 
         statement = """
         SELECT
@@ -555,8 +566,7 @@ class CulvertChannelLines:
         return self.db.free_form(statement, fetch=True)[0][0]
 
     def move_multi_geoms_to_misfits(self):
-        """
-        """
+        """ """
 
         insert_to_misfits_statement = """
         INSERT INTO
@@ -570,8 +580,9 @@ class CulvertChannelLines:
         WHERE
           ST_NumGeometries(geom) > 1
         ;""".format(
-            schema=self.db.schema, misfits_table=self.misfits_table_name,
-            culverts_snapped_table=self.culvert_snapped_table_name
+            schema=self.db.schema,
+            misfits_table=self.misfits_table_name,
+            culverts_snapped_table=self.culvert_snapped_table_name,
         )
         self.db.free_form(insert_to_misfits_statement, fetch=False)
 
@@ -583,12 +594,11 @@ class CulvertChannelLines:
         ;
         """.format(
             schema=self.db.schema,
-            culverts_snapped_table=self.culvert_snapped_table_name
+            culverts_snapped_table=self.culvert_snapped_table_name,
         )
         self.db.free_form(del_from_snapped_table_statement, fetch=False)
 
     def add_missing_culverts_to_misfits(self):
-
         add_missing_statemet = """
         INSERT INTO
           {schema}.{misfits_table} (id, culvert_id, geom)
@@ -615,6 +625,6 @@ class CulvertChannelLines:
             schema=self.db.schema,
             culverts_snapped_table=self.culvert_snapped_table_name,
             culvert_input_table_name=self.culvert_input_table_name,
-            misfits_table=self.misfits_table_name
+            misfits_table=self.misfits_table_name,
         )
         self.db.free_form(add_missing_statemet, fetch=False)

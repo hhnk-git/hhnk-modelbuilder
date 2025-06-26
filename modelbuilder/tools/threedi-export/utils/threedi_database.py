@@ -1,18 +1,18 @@
-#from .sqlalchemy_add_columns import create_and_upgrade
-from osgeo import ogr
-#from qgis.PyQt.QtCore import QSettings
-from sqlalchemy import create_engine
-from sqlalchemy.event import listen
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import text
-#from ThreeDiToolbox.utils.user_messages import StatusProgressBar
-
+# from .sqlalchemy_add_columns import create_and_upgrade
+# from ThreeDiToolbox.utils.user_messages import StatusProgressBar
 import collections
 import copy
 import logging
 import os
 
+from osgeo import ogr
+
+# from qgis.PyQt.QtCore import QSettings
+from sqlalchemy import create_engine
+from sqlalchemy.event import listen
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 
 Base = declarative_base()
 
@@ -54,7 +54,10 @@ logger = logging.getLogger(__name__)
 
 def load_spatialite(con, connection_record):
     import sqlite3
-    MOD_SPATIALITE_PATH = r"C:\ProgramData\miniforge-pypy3\mod_spatialite-5.0.1-win-amd64"
+
+    MOD_SPATIALITE_PATH = (
+        r"C:\ProgramData\miniforge-pypy3\mod_spatialite-5.0.1-win-amd64"
+    )
     conn = con
     try:
         # conn = sqlite3.connect(self.path)
@@ -78,7 +81,6 @@ def load_spatialite(con, connection_record):
                 raise e from None
 
 
-
 class ThreediDatabase(object):
     def __init__(self, connection_settings, db_type="spatialite", echo=False):
         """
@@ -99,14 +101,12 @@ class ThreediDatabase(object):
         self._base_metadata = None
 
     def create_and_check_fields(self):
-
         # engine = self.get_engine()
         create_and_upgrade(self.engine, self.get_metadata())
         # self.metadata(engine=engine, force_refresh=True)
 
     def create_db(self, overwrite=False):
         if self.db_type == "spatialite":
-
             if overwrite and os.path.isfile(self.settings["db_file"]):
                 os.remove(self.settings["db_file"])
 
@@ -124,11 +124,12 @@ class ThreediDatabase(object):
         return self.get_engine()
 
     def get_engine(self, get_seperate_engine=False):
-
         if self._engine is None or get_seperate_engine:
             if self.db_type == "spatialite":
                 engine = create_engine(
-                    "sqlite:///{0}".format(self.settings["db_path"]), echo=self.echo,connect_args={'check_same_thread': False}
+                    "sqlite:///{0}".format(self.settings["db_path"]),
+                    echo=self.echo,
+                    connect_args={"check_same_thread": False},
                 )
                 listen(engine, "connect", load_spatialite)
                 if get_seperate_engine:
@@ -151,7 +152,6 @@ class ThreediDatabase(object):
         return self._engine
 
     def get_metadata(self, including_existing_tables=True, engine=None):
-
         if including_existing_tables:
             metadata = copy.deepcopy(Base.metadata)
             if engine is None:
@@ -284,7 +284,6 @@ class ThreediDatabase(object):
             logger.warning(msg)
 
     def get_missing_index_tables(self, expected_index_table_names):
-
         existing_tables = self.engine.table_names()
         existing_index_tables = [
             table
@@ -313,7 +312,7 @@ class ThreediDatabase(object):
         return missing_index_tables
 
     def fix_spatial_indices(self):
-        """ fixes spatial index all tables in spatialite in multiple steps
+        """fixes spatial index all tables in spatialite in multiple steps
         1.  Create new spatial indices.
             -   Each v2_ tbl must have spatial index, otherwise one gets an SQL error
                 while deleting an feature (row) from a table (e.g.
@@ -356,7 +355,7 @@ class ThreediDatabase(object):
         progress_bar = StatusProgressBar(total_progress, "prepare schematisation")
         expected_index_table_names = [table[0] for table in expected_index_tables]
         missing_index_tables = self.get_missing_index_tables(expected_index_table_names)
-        for (table, geom_column) in expected_index_tables:
+        for table, geom_column in expected_index_tables:
             # 1. create spatial index (idx_ tables) if not exists
             if table in missing_index_tables:
                 self.create_spatial_index(table, geom_column)
@@ -374,9 +373,7 @@ class ThreediDatabase(object):
         if self.db_type == "spatialite":
             select_statement = """
                SELECT CreateSpatialIndex('{table_name}', '{geom_column}');
-            """.format(
-                table_name=table_name, geom_column=geom_column
-            )
+            """.format(table_name=table_name, geom_column=geom_column)
             with self.engine.begin() as connection:
                 connection.execute(text(select_statement))
 
@@ -410,9 +407,7 @@ class ThreediDatabase(object):
         if self.db_type == "spatialite":
             select_statement = """
                SELECT CheckSpatialIndex('{table_name}', '{geom_column}');
-            """.format(
-                table_name=table_name, geom_column=geom_column
-            )
+            """.format(table_name=table_name, geom_column=geom_column)
             with self.engine.begin() as connection:
                 result = connection.execute(text(select_statement))
                 return bool(result.fetchone()[0])
@@ -426,9 +421,7 @@ class ThreediDatabase(object):
         if self.db_type == "spatialite":
             select_statement = """
                SELECT RecoverSpatialIndex('{table_name}', '{geom_column}');
-            """.format(
-                table_name=table_name, geom_column=geom_column
-            )
+            """.format(table_name=table_name, geom_column=geom_column)
             with self.engine.begin() as connection:
                 result = connection.execute(text(select_statement))
                 return bool(result.fetchone()[0])
@@ -437,9 +430,7 @@ class ThreediDatabase(object):
         if self.db_type == "spatialite":
             select_statement = """
                SELECT DisableSpatialIndex('{table_name}', '{geom_column}');
-            """.format(
-                table_name=table_name, geom_column=geom_column
-            )
+            """.format(table_name=table_name, geom_column=geom_column)
             with self.engine.begin() as connection:
                 connection.execute(text(select_statement))
 
@@ -500,13 +491,13 @@ def get_databases():
             },
         }
 
-        if qs.value(prefix + "/saveUsername") == u"true":
+        if qs.value(prefix + "/saveUsername") == "true":
             settings["saveUsername"] = True
             settings["db_settings"]["username"] = qs.value(prefix + "/username")
         else:
             settings["saveUsername"] = False
 
-        if qs.value(prefix + "/savePassword") == u"true":
+        if qs.value(prefix + "/savePassword") == "true":
             settings["savePassword"] = True
             settings["db_settings"]["password"] = qs.value(prefix + "/password")
         else:

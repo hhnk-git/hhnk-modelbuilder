@@ -1,18 +1,16 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.rst.
 # -*- coding: utf-8 -*-
 
-import sys
 import logging
+import sys
 
-BASIC_FORMAT = '(%(name)s) %(asctime)s: [%(levelname)s] %(message)s'
+BASIC_FORMAT = "(%(name)s) %(asctime)s: [%(levelname)s] %(message)s"
 
 
 class Logger(object):
-
     _logger = None
 
     def __init__(self, name, loglevel=logging.DEBUG, format=BASIC_FORMAT):
-
         if loglevel is None:
             loglevel = logging.DEBUG
 
