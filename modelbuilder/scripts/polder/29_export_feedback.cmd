@@ -15,8 +15,8 @@ ogr2ogr -overwrite -sql "SELECT * FROM deelgebied.polder" -nln polder_polygon -f
 ogr2ogr -clipsrc -f gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\polder_polygon.shp \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\datachecker_output.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\datachecker_output.gpkg -nlt PROMOTE_TO_MULTI
 
 ogr2ogr -clipsrc \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\polder_polygon.shp -overwrite -sql "SELECT * FROM deelgebied.fixeddrainagelevelarea" -nln peilgebieden -f "ESRI Shapefile" \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\peilgebieden\peilgebieden.shp PG:"host=localhost user=postgres dbname=datachecker port=5433 password=postgres" -a_srs EPSG:28992
-copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\input\DAMO.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\DAMO.gpkg
-copy \\corp.hhnk.nl\data\Hydrologen_data\01.basisgegevens\00.HDB\Hydro_database.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\HDB.gpkg
+rem copy \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\input\DAMO.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\DAMO.gpkg
+rem copy \\corp.hhnk.nl\data\Hydrologen_data\01.basisgegevens\00.HDB\Hydro_database.gpkg \\corp.hhnk.nl\data\Hydrologen_data\Data\modelbuilder\data\output\01_source_data\HDB.gpkg
 
 rem rm -r ./logging/modelbuilder_logfiles/
 rem mkdir ./logging/modelbuilder_logfiles/
