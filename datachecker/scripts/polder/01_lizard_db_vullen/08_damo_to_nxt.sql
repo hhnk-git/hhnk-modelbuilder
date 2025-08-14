@@ -291,12 +291,9 @@ select
             IS NOT FALSE
             then 'LEEG'
             ELSE code
-    END
-  , -- code
-    5
-  , -- type
-    9999
-  , -- type_fuctnion =9999 want niet aan-, af- of terugloopvoorziening
+    END, -- code
+    500, -- type
+    9999, -- type_function =9999 want niet aan-, af- of terugloopvoorziening
     case
         when CAST(ws_categorie AS INT) is null
             then 9999
