@@ -193,7 +193,7 @@ WHERE
     ST_Intersects(a.bufgeom,b.geom)
 ;
 
---Voeg kanalen toe aan tmp.wrong_channels die intersecten met vispassages (weir type = 5)
+--Voeg kanalen toe aan tmp.wrong_channels die intersecten met vispassages (weir type = 500)
 INSERT INTO tmp.wrong_channels
 SELECT DISTINCT
 ON
@@ -210,7 +210,7 @@ FROM
   , checks.weirs   b
 WHERE
     ST_Intersects(a.bufgeom,b.geom)
-    AND b.type LIKE '5'
+    AND b.type LIKE '500'
 ;
 
 -- voeg kanalen toe in foute peilafwijkingen
