@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS checks.fixeddrainagelevelarea
 CREATE TABLE checks.fixeddrainagelevelarea AS
 SELECT
     id
-  , NULL::integer as peil_id
+  , id as peil_id
   , NULL organisation_id
   , NULL created
   , code
