@@ -251,12 +251,12 @@ WHERE
        ST_Intersects(a.geom,b.geom)
 ;
 
-DELETE
-FROM
-       deelgebied.weirs
-WHERE
-       type LIKE '5'
-;
+-- DELETE
+-- FROM
+--        deelgebied.weirs
+-- WHERE
+--        type LIKE '5'
+-- ;
 
 DROP TABLE IF EXISTS tmp.culvert_to_weir
 ;
