@@ -28,7 +28,7 @@ debug = False
 if debug:
     log_level = "DEBUG"
 else:
-    log_level = "INFO" 
+    log_level = "INFO"
 work_dir = Path.cwd()
 
 logger = logging_hrt.get_logger(
@@ -122,12 +122,20 @@ def execute_bash_file(file_path):
 
 # Define function for executing cmd files
 def execute_cmd_file(file_path):
-    logger.info("START execute cmd file: {}".format(file_path))
-    file_path = Path(file_path)
-    cmd = file_path.as_posix()
-    log_file = work_dir.joinpath(f"code/datachecker/logging_{file_path.stem}.log")
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
-    log_file.write_bytes(p)
+    logger.info("START execute cmd file: %s", file_path)
+    log_file = work_dir.joinpath(f"code/datachecker/logging_{Path(file_path).stem}.log")
+
+    # pushd asigna una letra temporal para el UNC y vuelve con popd
+    cmdline = f'cmd /v:off /c "pushd {work_dir} && {Path(file_path)} && popd"'
+
+    p = subprocess.run(
+        cmdline, capture_output=True, text=True, encoding="utf-8", shell=True
+    )
+    log_file.write_text((p.stdout or "") + "\n--- STDERR ---\n" + (p.stderr or ""))
+
+    if p.returncode != 0:
+        logger.error("CMD failed: %s", p.stderr)
+        raise RuntimeError(f"CMD failed with exit code {p.returncode}")
 
 
 def create_database(db_name):
@@ -159,8 +167,8 @@ def datachecker(**kwargs):
         logger.info("Starting datachecker")
         run_file.write_text("")
 
-        damo_path = Path(r"E:\modelbuilder\data\input\DAMO.gpkg")
-        hdb_path = Path(r"E:\modelbuilder\data\input\HDB.gpkg")
+        damo_path = Path(r"D:\modelbuilder\data\input\DAMO.gpkg")
+        hdb_path = Path(r"D:\modelbuilder\data\input\HDB.gpkg")
         if not damo_path.exists():
             raise FileExistsError(damo_path)
         if not hdb_path.exists():

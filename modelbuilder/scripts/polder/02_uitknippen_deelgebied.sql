@@ -256,7 +256,7 @@ WHERE
 --        deelgebied.weirs
 -- WHERE
 --        type LIKE '5'
--- ;
+-- ; 
 
 DROP TABLE IF EXISTS tmp.culvert_to_weir
 ;

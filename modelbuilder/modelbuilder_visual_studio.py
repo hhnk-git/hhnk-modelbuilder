@@ -252,7 +252,7 @@ def main():
 
 # Set polder id and name, see https://threedi.github.io/hhnk-threedi-plugin/md_files/polder_clusters/
 if __name__ == "__main__":
-    modelbuilder(polder_id="20", polder_name="Wijdewormer")  # main()
+    modelbuilder(polder_id="28", polder_name="Waterland")  # main()
 
     print("modelbuilder klaar")
 
