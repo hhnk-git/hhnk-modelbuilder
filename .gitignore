@@ -7,3 +7,4 @@ __pycache__/
 modelbuilder/tools/threedi-base/deploy/
 datachecker/datachecker_running.txt
 modelbuilder/modelbuilder_running.txt
+pixi.lock
