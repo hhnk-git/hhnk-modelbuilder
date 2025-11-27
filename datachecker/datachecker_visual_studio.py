@@ -120,13 +120,12 @@ def execute_bash_file(file_path):
     subprocess.call(["bash", file_path])
 
 
-# Define function for executing cmd files
-def execute_cmd_file(file_path):
+def execute_cmd_file(file_path: Path, data_dir: Path):
     logger.info("START execute cmd file: %s", file_path)
     log_file = work_dir.joinpath(f"code/datachecker/logging_{Path(file_path).stem}.log")
 
-    # pushd asigna una letra temporal para el UNC y vuelve con popd
-    cmdline = f'cmd /v:off /c "pushd {work_dir} && {Path(file_path)} && popd"'
+    # pushd assigns a temporary drive letter for a UNC path; popd restores the previous directory (removing the temporary mapping).
+    cmdline = f'cmd /v:off /c "pushd {work_dir} && {Path(file_path)} {data_dir} && popd"'
 
     p = subprocess.run(
         cmdline, capture_output=True, text=True, encoding="utf-8", shell=True
@@ -164,11 +163,13 @@ def create_database(db_name):
 
 def datachecker(**kwargs):
     if kwargs.get("file") is None:
-        logger.info("Starting datachecker")
+        logger.info(f"Starting datachecker from working dir {work_dir}")
         run_file.write_text("")
 
-        damo_path = Path(r"D:\modelbuilder\data\input\DAMO.gpkg")
-        hdb_path = Path(r"D:\modelbuilder\data\input\HDB.gpkg")
+        data_dir = work_dir.joinpath("data")
+        damo_path = data_dir.joinpath("input/DAMO.gpkg")
+        hdb_path = data_dir.joinpath("input/HDB.gpkg")
+        
         if not damo_path.exists():
             raise FileExistsError(damo_path)
         if not hdb_path.exists():
@@ -180,13 +181,13 @@ def datachecker(**kwargs):
         try:
             for root, subdirs, files in sorted(os.walk(walk_dir)):
                 for f in sorted(files):
-                    print(f)
+                    # print(f)
                     script += 1
                     file_path = root + "/" + f
 
                     logger.debug("Opening file: {}".format(file_path))
                     result = ""
-                    print(file_path)
+                    # print(file_path)
                     if file_path.endswith(".sql"):
                         # execute .sql file
                         logger.debug("Executing .sql file")
@@ -198,7 +199,7 @@ def datachecker(**kwargs):
                         result = execute_bash_file(file_path)
                     elif file_path.endswith(".cmd") and windows:
                         logger.debug("Executing .cmd file")
-                        result = execute_cmd_file(file_path)
+                        result = execute_cmd_file(file_path, data_dir)
                     else:
                         logger.debug(
                             "File is no .sql or .sh file, don't know what to do with it, skipping"
