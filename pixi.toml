@@ -28,7 +28,7 @@ fastapi = "*"
 psycopg2-binary = "==2.9.9"
 geoalchemy2= "==0.9"
 sqlalchemy = "==1.4.1"
-hhnk-research-tools = { git = "https://github.com/hhnk/hhnk-research-tools.git", rev = "main" }
+hhnk-research-tools = "==2025.1.0"
 threedi-modelchecker = "==0.10.1"
 threedi-schema = "==0.219.3"
 threedigrid = "==2.3.3"
