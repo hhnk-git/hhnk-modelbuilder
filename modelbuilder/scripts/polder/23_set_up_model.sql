@@ -212,9 +212,9 @@ INSERT INTO v2_global_settings
             , --start_time
               '2015-01-01'
             , --start_date
-              20
+              10
             , --grid_space
-              3
+              4
             , --kmax
               40
             , --dist_calc_points
