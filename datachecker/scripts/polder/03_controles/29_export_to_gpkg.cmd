@@ -36,5 +36,5 @@ copy "%DATA_ROOT%\tmp\datachecker_output.gpkg" "%DATA_ROOT%\output\01_source_dat
 rmdir /s /q "%DATA_ROOT%\tmp"
 
 echo "Copy input to output folder"
-copy "\\corp.hhnk.nl\data\Hydrologen_data\Data\01.basisgegevens\00.HDB\Hydro_database.gpkg" "\\corp.hhnk.nl\data\Hydrologen_data\Data\01.basisgegevens\00.HDB\Hydro_database.gpkg"
+copy "\\corp.hhnk.nl\data\Hydrologen_data\Data\01.basisgegevens\00.HDB\Hydro_database.gpkg" "%DATA_ROOT%\output\01_source_data\HDB.gpkg"
 copy "%DATA_ROOT%\input\DAMO.gpkg" "%DATA_ROOT%\output\01_source_data\DAMO.gpkg"
