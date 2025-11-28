@@ -168,12 +168,10 @@ def datachecker(**kwargs):
 
         data_dir = work_dir.joinpath("data")
         damo_path = data_dir.joinpath("input/DAMO.gpkg")
-        hdb_path = data_dir.joinpath("input/HDB.gpkg")
         
         if not damo_path.exists():
             raise FileExistsError(damo_path)
-        if not hdb_path.exists():
-            raise FileExistsError(hdb_path)
+        
 
         create_database(config["db"]["database"])
 
