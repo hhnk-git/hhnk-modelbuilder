@@ -1,8 +1,8 @@
 # hhnk-modelbuilder
 
-This modelbuilder convert a DAMO export from Hoogheemraadschap Hollands Noorderkwartier (HHNK) to a 3Di model. It was originally developed by Nelen & Schuurmans. Since then Royal-Haskoning and HHNK made contributions. 
+This modelbuilder convert a DAMO export from Hoogheemraadschap Hollands Noorderkwartier (HHNK) to a 3Di model. It was originally developed by Nelen & Schuurmans. Since then, Royal-Haskoning and HHNK made contributions. 
 
-Originally this modelbuilder ran in docker, but has been transformed to work on Wondows. There are still some LInux based relics in the code.
+Originally this modelbuilder ran in docker, but has been transformed to work on Windows. There are still some LInux based relics in the code.
 
 The code refers to several hard-coded paths within the HHNK environment. 
 
