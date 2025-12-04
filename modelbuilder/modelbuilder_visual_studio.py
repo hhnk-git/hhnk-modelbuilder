@@ -121,28 +121,19 @@ def execute_sql_file_multiple_transactions(file_path, polder_id, polder_name):
     db_cur.close()
     db_conn.close()
 
-
-# Define function for executing bash files
-def execute_bash_file(file_path, polder_id, polder_name):
-    logging.info("START execute bash file")
-    file_name = file_path.split("/")[-1]
-    f = open("/code/modelbuilder/logging_" + file_name + ".log", "w")
-    subprocess.call(["bash", file_path, polder_id, polder_name], stdout=f)
-
-
 # Define function for executing cmd files
-def execute_cmd_file(file_path, polder_id, polder_name):
+def execute_cmd_file(file_path: Path, polder_id: str, polder_name: str, work_dir: Path):
     logging.info("START execute cmd file: {}".format(file_path))
     file_path = Path(file_path)
     cmd = file_path.as_posix()
     log_file = work_dir.joinpath(f"code/modelbuilder/logging_{file_path.stem}.log")
     p = subprocess.Popen(
-        [cmd, polder_id, polder_name], stdout=subprocess.PIPE
+        [cmd, polder_id, polder_name, work_dir], stdout=subprocess.PIPE
     ).stdout.read()
     log_file.write_bytes(p)
 
 
-def execute_file(file_path, polder_id, polder_name):
+def execute_file(file_path: Path, polder_id: str, polder_name: str, work_dir: Path):
     if file_path.endswith(".sql"):
         # execute .sql file
         logging.debug("Executing .sql file")
@@ -151,12 +142,12 @@ def execute_file(file_path, polder_id, polder_name):
             file_path, polder_id, polder_name
         )
     elif file_path.endswith(".sh") and not windows:
-        logging.debug("Executing .sh file")
+        logging.debug(".sh no longer supported")
 
-        result = execute_bash_file(file_path)
+        # result = execute_bash_file(file_path)
     elif file_path.endswith(".cmd") and windows:
         logging.debug("Executing .cmd file")
-        result = execute_cmd_file(file_path, polder_id, polder_name)
+        result = execute_cmd_file(file_path, polder_id, polder_name, work_dir)
 
     else:
         logging.debug(
@@ -213,6 +204,7 @@ def modelbuilder(**kwargs):
     polder_name = kwargs.get("polder_name")
     polder_name = polder_name.lower()
     file_path = kwargs.get("file")
+    work_dir = Path.cwd()
 
     if kwargs.get("file") is None:
         logging.info("Starting modelbuilder")
@@ -228,7 +220,7 @@ def modelbuilder(**kwargs):
                         logging.debug("Opening file: {}".format(file_path))
                         result = ""
                         print(file_path)
-                        execute_file(file_path, polder_id, polder_name)
+                        execute_file(file_path, polder_id, polder_name,work_dir)
             except psycopg2.Error as e:
                 logging.error(e)
                 if run_file.is_file():
@@ -252,7 +244,7 @@ def main():
 
 # Set polder id and name, see https://threedi.github.io/hhnk-threedi-plugin/md_files/polder_clusters/
 if __name__ == "__main__":
-    modelbuilder(polder_id="20", polder_name="Wijdewormer")  # main()
+    modelbuilder(polder_id="49", polder_name="Waarland")  # main()
 
     print("modelbuilder klaar")
 

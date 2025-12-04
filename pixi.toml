@@ -1,0 +1,35 @@
+[project]
+name = "modelbuilder"
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[environments]
+modelbuilder = { features = ["default"] }
+
+[dependencies]
+python = "==3.9.18"
+gdal = "==3.8.5"
+pip = "==24.0"
+rtree = "==1.0.1"
+postgresql="==16.7"
+scipy = "==1.10.1"
+
+# HHNK deps
+lazy-loader = "*"
+
+# Datachecker
+flask = "==1.1.2"  # oude datachecker
+sqlparse = "==0.3.1"  # oude datachecker
+django = "==3.0.6"  # datachecker (<4 wegens compatibility met 3Di modules)
+fastapi = "*" 
+
+[pypi-dependencies]
+
+psycopg2-binary = "==2.9.9"
+geoalchemy2= "==0.9"
+sqlalchemy = "==1.4.1"
+hhnk-research-tools = "==2025.1.0"
+threedi-modelchecker = "==0.10.1"
+threedi-schema = "==0.219.3"
+threedigrid = "==2.3.3"
+threedigrid-builder = "==1.14.4"

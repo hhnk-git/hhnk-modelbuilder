@@ -207,14 +207,14 @@ def main():
 
 # %%
 # Run single sql file
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\01_setup_database.sql"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\02_load_data.cmd"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\03_create_tables_not_delivered.sql"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\04_setup_nxt_schema.sql"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\05_fix_geometry.sql"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\06_drainage_areas_union.sql"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\07_damo_profiles.sql"
-file_path = r"E:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\08_damo_to_nxt.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\01_setup_database.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\02_load_data.cmd"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\03_create_tables_not_delivered.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\04_setup_nxt_schema.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\05_fix_geometry.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\06_drainage_areas_union.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\07_damo_profiles.sql"
+file_path = r"D:\modelbuilder\code\datachecker\scripts\polder\01_lizard_db_vullen\08_damo_to_nxt.sql"
 
 
 if file_path.endswith(".sql"):
