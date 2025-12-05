@@ -10,8 +10,8 @@ The code refers to several hard-coded paths within the HHNK environment.
 
 This modelbuilder requires an installation of Pixi, PostgreSQL and POSTGIS Bundle.
 
-1. Pull the latest code from this repository using git/GitHub desktop. and place in folder name 'code'.
-2. Place another folder named data at the same level as the code folder. In it paste a folder with 'fixed data' and `input`. The `fixed_data` is available from HHNK.
+1. Pull the latest code from this repository using git/GitHub desktop. and place in folder name `code`.
+2. Place another folder named data at the same level as the `code` folder. In it paste a folder with `fixed data` and `input`. The `fixed_data` is available from HHNK.
 3. Run `pixi shell`
 
 ## Usage
@@ -19,7 +19,8 @@ The recommended way to run the datachecker and modelbuilder is to use VS Code wi
 
 ### To run the datachecker
 1. Place DAMO export `DAMO.gpkg` in the input folder
-2. Run `datachecker\datachecker_visual_studio.py`
+2. In VS Code, navigate to the folder `code`.
+3. Run `datachecker\datachecker_visual_studio.py`
 
 Output is placed in `data\output\01_source_data`.
 
