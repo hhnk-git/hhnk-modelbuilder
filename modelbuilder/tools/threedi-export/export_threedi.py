@@ -1,3 +1,4 @@
+# %%
 import argparse
 import configparser
 import os
@@ -47,14 +48,16 @@ from utils.model_schematisation import (
     Windshielding,
 )
 from utils.threedi_database import ThreediDatabase
+from pathlib import Path
 
 config = configparser.ConfigParser()
-print("cwd", os.getcwd())
-config.read(
-    r"\\corp.hhnk.nl/data/Hydrologen_data/Data/modelbuilder/code/datachecker/datachecker_config.ini"
-)  # TODO make single config file
-print(config["db"]["database"], "connected")
+cwd = Path.cwd()
+config_path = os.path.join(cwd,"code","datachecker","datachecker_config.ini")
+print("Reading config file", config_path)
 
+config.read( config_path)  # TODO make single config file
+print(config["db"]["database"], "connected")
+# %%
 
 def get_parser():
     """Return argument parser."""
