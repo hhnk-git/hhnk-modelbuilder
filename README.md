@@ -14,6 +14,14 @@ This modelbuilder requires an installation of Pixi, PostgreSQL and POSTGIS Bundl
 2. Place another folder named data at the same level as the `code` folder. In it paste a folder with `fixed data` and `input`. The `fixed_data` is available from HHNK.
 3. Run `pixi shell`
 
+**Tip:** To do this, open a command prompt (preferably in VS Code), navigate to the folder where the code is located, and activate the Pixi environment by typing:
+
+```bash
+cd D:\modelbuilder\code
+pixi shell
+```
+Before running modelbuilder or datachecker, make sure that VS Code has selected the kernel Python 3.9.18 (default: Pixi).
+
 ## Usage
 The recommended way to run the datachecker and modelbuilder is to use VS Code with Python and Jupyter extensions.
 
