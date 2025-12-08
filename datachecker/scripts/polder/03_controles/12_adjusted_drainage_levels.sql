@@ -453,6 +453,12 @@ USING gist
     )
 ;
 
+UPDATE checks.fixeddrainagelevelarea as c
+SET opmerking = concat_ws(',',c.opmerking,t.opmerking_peil)
+FROM checks.fdla_sp_nowayout as t
+WHERE c.code = t.code;
+
+
 -- tabellen weggooien
 DROP TABLE IF EXISTS tmp.min_max_neighbours
 ;
