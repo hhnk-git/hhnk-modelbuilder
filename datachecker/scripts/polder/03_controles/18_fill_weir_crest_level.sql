@@ -63,24 +63,31 @@ FROM
     tmp.weir_level_radius AS b
 WHERE
     a.code LIKE b.weir_code
-    AND
-    (
-        crest_level   IS NULL
-        OR b.max_streefpeil > crest_level
-    )
     AND type_function != 1
+;
+
+--Update crest level van inlaatstuwen met hoogstedoorstroomhoogte
+UPDATE
+    checks.weirs AS a
+SET crest_level = a.hoogstedoorstroomhoogte
+  , aanname     = 'inlaatstuw op hoogstedoorstroomhoogte'
+FROM
+    tmp.weir_level_radius AS b
+WHERE
+    a.code LIKE b.weir_code
+    AND type_function     = 1
 ;
 
 --Update crest level van inlaatstuwen
 UPDATE
     checks.weirs AS a
-SET crest_level = b.max_streefpeil + 0.5
-  , aanname     = 'max peil+0.5 in radius'
+SET crest_level = b.max_streefpeil + 1.0
+  , aanname     = 'inlaatstuw op max peil+1m in radius'
 FROM
     tmp.weir_level_radius AS b
 WHERE
-    a.code             LIKE b.weir_code
-    AND crest_level IS NULL
+    a.code LIKE b.weir_code
+    AND a.hoogstedoorstroomhoogte IS NULL
     AND type_function     = 1
 ;
 

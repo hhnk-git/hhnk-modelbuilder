@@ -73,6 +73,8 @@ SELECT
   , controlled_ficeddrainagelevelarea_code
   , channel_code
   , type_function
+  , laagstedoorstroomhoogte
+  , hoogstedoorstroomhoogte
   , NULL::varchar(250) as opmerking
   , NULL::integer      as wgtype_id
   , channel_type_id

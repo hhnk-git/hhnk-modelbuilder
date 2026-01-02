@@ -156,6 +156,10 @@ alter table nxt.weir add column type_function integer
 
 alter table nxt.weir add column channel_type_id integer
 ;
+alter table nxt.weir add column laagstedoorstroomhoogte double precision
+;
+alter table nxt.weir add column hoogstedoorstroomhoogte double precision
+;
 
 delete
 from
@@ -175,6 +179,8 @@ insert into nxt.weir
       , geometry
       , num_timeseries
       , shape
+      , laagstedoorstroomhoogte
+      , hoogstedoorstroomhoogte
     )
 select
     id
@@ -221,7 +227,7 @@ select
         when kruinbreedte is not null
             then kruinbreedte
     end
-  , laagstedoorstroomhoogte
+  , NULL
   , case
         when (
                 naam = ' '
@@ -252,12 +258,13 @@ select
             then 9999 -- leeg veld wordt leeg veld
             else 9999
     end
+    , laagstedoorstroomhoogte
+    , hoogstedoorstroomhoogte
 from
     damo_ruw.stuw
 ;
 
--- laagstedoorstroomhoogte en hoogstedoorstroomhoogte is niet handig om als crest_level voor stuwen. Want dat is bandbreedte.
---> op basis van streefpeil crest_level instellen
+
 /*
 -- de vispassage (als punt aangeleverd) vullen we in in nxt.weir
 
