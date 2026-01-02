@@ -8,14 +8,13 @@ Python script reading sql and bash files in order to automatically execute datac
 # import libraries
 import argparse
 import configparser
-import logging
 import os
 import subprocess
 from pathlib import Path
 
 import psycopg2
 import sqlparse
-from hhnk_research_tools import logging as logging_hrt
+from hhnk_research_tools import logging 
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -31,7 +30,7 @@ else:
     log_level = "INFO"
 work_dir = Path.cwd()
 
-logger = logging_hrt.get_logger(
+logger = logging.get_logger(
     name=__name__,
     filepath=work_dir.joinpath("code/datachecker/datachecker.log"),
     level=log_level,
@@ -179,13 +178,11 @@ def datachecker(**kwargs):
         try:
             for root, subdirs, files in sorted(os.walk(walk_dir)):
                 for f in sorted(files):
-                    # print(f)
                     script += 1
                     file_path = root + "/" + f
 
                     logger.debug("Opening file: {}".format(file_path))
                     result = ""
-                    # print(file_path)
                     if file_path.endswith(".sql"):
                         # execute .sql file
                         logger.debug("Executing .sql file")
@@ -224,5 +221,5 @@ def main():
 if __name__ == "__main__":
     datachecker()  # main()
 
-print("datachecker klaar")
+logger.info("Datachecker finished successfully")
 # %%

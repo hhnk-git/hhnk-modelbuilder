@@ -8,13 +8,13 @@ Python script reading sql and bash files in order to automatically execute datac
 # import libraries
 import argparse
 import configparser
-import logging
 import os
 import subprocess
 from pathlib import Path
 
 import psycopg2
 import sqlparse
+from hhnk_research_tools import logging 
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -23,18 +23,19 @@ if not Path("code").absolute().resolve().exists():
     os.chdir(Path(__file__).absolute().resolve().parents[2])
 
 windows = True
-debug = True
+debug = False
 if debug:
-    log_level = logging.DEBUG
+    log_level = "DEBUG"
 else:
-    log_level = logging.INFO
+    log_level = "INFO"
 work_dir = Path.cwd()
-# setup logging to write debug log to file
-logging.basicConfig(
-    filename=work_dir.joinpath("code/modelbuilder/modelbuilder_visual_studio.log"),
-    filemode="w",
-    format="%(asctime)s - %(levelname)s - %(message)s",
+
+# setup logger to write debug log to file
+logger = logging.get_logger(
+    name=__name__,
+    filename=work_dir.joinpath("code/modelbuilder/modelbuilder.log"),
     level=log_level,
+    filemode="w",
 )
 
 # Read configuration file
@@ -46,7 +47,7 @@ walk_dir = work_dir.joinpath("code/modelbuilder/scripts/polder")
 run_file = work_dir.joinpath("code/modelbuilder/modelbuilder_running.txt")
 
 
-# %%
+
 def get_parser():
     """Return argument parser."""
 
@@ -77,11 +78,11 @@ def execute_sql_file_multiple_transactions(file_path, polder_id, polder_name):
         )
         db_cur = db_conn.cursor()
     except psycopg2.OperationalError as e:
-        logging.error("Could not connect to database with error: {}".format(e))
+        logger.error("Could not connect to database with error: {}".format(e))
         raise
 
     # Read file
-    logging.info("Executing SQL script: {}".format(file_path))
+    logger.debug("Executing SQL script: {}".format(file_path))
     sqlfile = open(file_path)
     sqlfile_content = (
         sqlfile.read()
@@ -102,18 +103,18 @@ def execute_sql_file_multiple_transactions(file_path, polder_id, polder_name):
         # voer queries 1-voor-1 uit en commit
         for query in parsed_content:
             if debug:
-                logging.debug("Query: {}".format(query))
+                logger.debug("Query: {}".format(query))
             try:
                 db_cur.execute(str(query))
                 db_conn.commit()
             except psycopg2.Error as e:
-                logging.error("SQL error: {}".format(e))
+                logger.error("SQL error: {}".format(e))
                 if debug:
                     raise e
         return 1
 
     except psycopg2.Error as e:
-        logging.error("SQL error: {}".format(e))
+        logger.error("SQL error: {}".format(e))
         db_cur.close()
         db_conn.close()
         raise
@@ -123,10 +124,10 @@ def execute_sql_file_multiple_transactions(file_path, polder_id, polder_name):
 
 # Define function for executing cmd files
 def execute_cmd_file(file_path: Path, polder_id: str, polder_name: str, work_dir: Path):
-    logging.info("START execute cmd file: {}".format(file_path))
+    logger.debug("START execute cmd file: {}".format(file_path))
     file_path = Path(file_path)
     cmd = file_path.as_posix()
-    log_file = work_dir.joinpath(f"code/modelbuilder/logging_{file_path.stem}.log")
+    log_file = work_dir.joinpath(f"code/modelbuilder/logger_{file_path.stem}.log")
     p = subprocess.Popen(
         [cmd, polder_id, polder_name, work_dir], stdout=subprocess.PIPE
     ).stdout.read()
@@ -136,27 +137,27 @@ def execute_cmd_file(file_path: Path, polder_id: str, polder_name: str, work_dir
 def execute_file(file_path: Path, polder_id: str, polder_name: str, work_dir: Path):
     if file_path.endswith(".sql"):
         # execute .sql file
-        logging.debug("Executing .sql file")
+        logger.debug("Executing .sql file")
         # result = execute_sql_file_multiple_transactions(file_path)
         result = execute_sql_file_multiple_transactions(
             file_path, polder_id, polder_name
         )
     elif file_path.endswith(".sh") and not windows:
-        logging.debug(".sh no longer supported")
+        logger.debug(".sh no longer supported")
 
         # result = execute_bash_file(file_path)
     elif file_path.endswith(".cmd") and windows:
-        logging.debug("Executing .cmd file")
+        logger.debug("Executing .cmd file")
         result = execute_cmd_file(file_path, polder_id, polder_name, work_dir)
 
     else:
-        logging.debug(
+        logger.debug(
             "File is no .sql or .sh file, don't know what to do with it, skipping"
         )
 
 
 def create_database(db_name):
-    logging.info("Creating database {}".format(db_name))
+    logger.info("Creating database {}".format(db_name))
     con = psycopg2.connect(
         dbname="postgres",
         host=config["db"]["hostname"],
@@ -183,7 +184,7 @@ def check_polder_contains_data(polder_id):
         )
         db_cur = db_conn.cursor()
     except psycopg2.OperationalError as e:
-        logging.error("Could not connect to database with error: {}".format(e))
+        logger.error("Could not connect to database with error: {}".format(e))
         raise
 
     db_cur.execute(
@@ -192,7 +193,7 @@ def check_polder_contains_data(polder_id):
         )
     )
     channel_count = int(db_cur.fetchone()[0])
-    logging.info(
+    logger.info(
         "Amount of channels contained in selected polder: {}".format(channel_count)
     )
 
@@ -205,9 +206,10 @@ def modelbuilder(**kwargs):
     polder_name = polder_name.lower()
     file_path = kwargs.get("file")
     work_dir = Path.cwd()
+    create_rasters = kwargs.get("create_rasters", False)
 
     if kwargs.get("file") is None:
-        logging.info("Starting modelbuilder")
+        logger.info("Starting modelbuilder")
 
         # check if there are any channels in the polder. If not, the filled in polder_id is most probably wrong
         if check_polder_contains_data(polder_id):
@@ -217,17 +219,19 @@ def modelbuilder(**kwargs):
                     for f in sorted(files):
                         script += 1
                         file_path = root + "/" + f
-                        logging.debug("Opening file: {}".format(file_path))
+                        if 'raster' in file_path and not create_rasters:
+                            logger.info("Skipping raster creation as per user request: {}".format(file_path))
+                            continue
+                        logger.info("Running file: {}".format(file_path))
                         result = ""
-                        print(file_path)
                         execute_file(file_path, polder_id, polder_name,work_dir)
             except psycopg2.Error as e:
-                logging.error(e)
+                logger.error(e)
                 if run_file.is_file():
                     run_file.unlink()
         else:
-            logging.info("No channels found in polder, stopping the modelbuilder")
-        logging.info("Stopping modelbuilder")
+            logger.warning("No channels found in polder, stopping the modelbuilder")
+        logger.info("Stopping modelbuilder")
         if run_file.is_file():
             run_file.unlink()
 
@@ -244,8 +248,9 @@ def main():
 
 # Set polder id and name, see https://threedi.github.io/hhnk-threedi-plugin/md_files/polder_clusters/
 if __name__ == "__main__":
-    modelbuilder(polder_id="49", polder_name="Waarland_test")  # main()
+    modelbuilder(polder_id="54", polder_name="Anna Paulowna",create_rasters=False)  # main()
 
-    print("modelbuilder klaar")
+
+    logger.info("Modelbuilder finished successfully")
 
 # %%
